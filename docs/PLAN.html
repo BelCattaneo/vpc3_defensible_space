@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Plan TP · Vision Transformers · Defensible Space</title>
+<style>
+:root{
+  --green:#143c2e;
+  --green-dark:#0a2418;
+  --cream:#f0e9d6;
+  --cream-light:#faf6ea;
+  --yellow:#f4c02f;
+  --yellow-soft:#fef3d0;
+  --red:#d3453a;
+  --red-soft:#fce4e2;
+  --blue:#2f6690;
+  --blue-soft:#d9e6f2;
+  --grey:#6b6b6b;
+  --grey-light:#e5e5e5;
+  --text:#1a1a1a;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  color:var(--text);
+  background:var(--cream-light);
+  line-height:1.55;
+  font-size:16px;
+}
+.wrap{max-width:1100px;margin:0 auto;padding:0 24px}
+
+/* HEADER */
+header.hero{
+  background:linear-gradient(135deg,var(--green) 0%,var(--green-dark) 100%);
+  color:var(--cream);
+  padding:64px 0 48px;
+  border-bottom:6px solid var(--yellow);
+}
+header.hero .tag{
+  display:inline-block;
+  background:var(--yellow);
+  color:var(--green-dark);
+  padding:4px 12px;
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+  border-radius:2px;
+  margin-bottom:16px;
+}
+header.hero h1{
+  font-size:44px;
+  line-height:1.1;
+  margin-bottom:12px;
+  font-weight:800;
+}
+header.hero .sub{
+  font-size:20px;
+  opacity:.85;
+  max-width:800px;
+  margin-bottom:32px;
+}
+header.hero .meta{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:16px;
+  margin-top:24px;
+}
+header.hero .meta div{
+  background:rgba(255,255,255,.08);
+  padding:12px 16px;
+  border-left:3px solid var(--yellow);
+}
+header.hero .meta strong{
+  display:block;
+  font-size:11px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  opacity:.7;
+  margin-bottom:4px;
+}
+header.hero .meta span{font-size:15px;font-weight:600}
+
+/* NAV */
+nav.toc{
+  background:var(--cream);
+  border-bottom:1px solid var(--grey-light);
+  padding:16px 0;
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+nav.toc ul{
+  display:flex;
+  gap:24px;
+  list-style:none;
+  flex-wrap:wrap;
+  font-size:13px;
+  font-weight:600;
+}
+nav.toc a{color:var(--green);text-decoration:none;border-bottom:2px solid transparent;padding-bottom:2px;transition:border-color .15s}
+nav.toc a:hover{border-color:var(--yellow)}
+
+/* SECTIONS */
+section{padding:56px 0;border-bottom:1px solid var(--grey-light)}
+section h2{
+  font-size:32px;
+  color:var(--green);
+  margin-bottom:8px;
+  font-weight:800;
+}
+section .lead{
+  color:var(--grey);
+  font-size:17px;
+  margin-bottom:32px;
+  max-width:800px;
+}
+section h3{
+  font-size:22px;
+  color:var(--green-dark);
+  margin:24px 0 12px;
+  font-weight:700;
+}
+section p{margin-bottom:14px}
+section ul,section ol{margin:12px 0 16px 24px}
+section li{margin-bottom:6px}
+
+/* TL;DR */
+.tldr{
+  background:var(--green);
+  color:var(--cream);
+  padding:32px;
+  border-radius:8px;
+  border-left:6px solid var(--yellow);
+  margin-bottom:32px;
+}
+.tldr h3{color:var(--yellow);margin-top:0}
+.tldr strong{color:var(--yellow)}
+
+/* DATASET CARDS */
+.ds-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:16px;
+  margin:24px 0;
+}
+.ds-card{
+  background:white;
+  border:1px solid var(--grey-light);
+  border-top:4px solid var(--blue);
+  padding:20px;
+  border-radius:6px;
+}
+.ds-card .ds-id{
+  font-family:"SF Mono",Menlo,monospace;
+  color:var(--grey);
+  font-size:11px;
+  margin-bottom:6px;
+}
+.ds-card h4{
+  font-size:16px;
+  color:var(--green-dark);
+  margin-bottom:12px;
+  line-height:1.3;
+}
+.ds-card .metric{
+  display:flex;
+  justify-content:space-between;
+  padding:4px 0;
+  font-size:13px;
+  border-bottom:1px dotted var(--grey-light);
+}
+.ds-card .metric:last-child{border-bottom:none}
+.ds-card .metric span:first-child{color:var(--grey)}
+.ds-card .metric span:last-child{font-weight:600;font-family:"SF Mono",Menlo,monospace}
+.ds-card .accuracy-low{color:var(--red)}
+.ds-card .accuracy-mid{color:#c98a1e}
+.ds-card .accuracy-high{color:#2d8659}
+
+/* TIMELINE */
+.timeline{
+  display:grid;
+  grid-template-columns:120px 1fr;
+  gap:0;
+  margin:24px 0;
+  border:1px solid var(--grey-light);
+  border-radius:6px;
+  overflow:hidden;
+}
+.timeline .th{
+  background:var(--green);
+  color:var(--cream);
+  padding:12px 16px;
+  font-size:12px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  border-bottom:1px solid rgba(255,255,255,.1);
+}
+.timeline .th.wk{background:var(--green-dark)}
+.timeline .row{display:contents}
+.timeline .cell{
+  background:white;
+  padding:14px 16px;
+  border-bottom:1px solid var(--grey-light);
+  font-size:14px;
+}
+.timeline .cell.wk{
+  background:var(--cream);
+  font-weight:700;
+  font-family:"SF Mono",Menlo,monospace;
+  color:var(--green-dark);
+  font-size:13px;
+}
+.timeline .row:last-child .cell{border-bottom:none}
+.timeline .phase-chip{
+  display:inline-block;
+  padding:2px 10px;
+  border-radius:12px;
+  font-size:12px;
+  font-weight:600;
+  margin:2px 4px 2px 0;
+}
+.chip-0{background:#e5e5e5;color:#333}
+.chip-1{background:var(--blue-soft);color:var(--blue)}
+.chip-2{background:#d9f0e5;color:#0a6635}
+.chip-3{background:var(--yellow-soft);color:#8a6a00}
+.chip-4{background:#f3d9f0;color:#7a2f7a}
+.chip-5{background:#ffe0d1;color:#a04400}
+.chip-6{background:var(--red-soft);color:var(--red)}
+.chip-7{background:#333;color:white}
+
+/* PHASE CARDS */
+.phase{
+  background:white;
+  border:1px solid var(--grey-light);
+  border-left:6px solid var(--green);
+  margin:20px 0;
+  border-radius:6px;
+  overflow:hidden;
+}
+.phase.p-0{border-left-color:#666}
+.phase.p-1{border-left-color:var(--blue)}
+.phase.p-2{border-left-color:#0a6635}
+.phase.p-3{border-left-color:var(--yellow)}
+.phase.p-4{border-left-color:#7a2f7a}
+.phase.p-5{border-left-color:#a04400}
+.phase.p-6{border-left-color:var(--red)}
+.phase.p-7{border-left-color:#333}
+.phase summary{
+  padding:20px 24px;
+  cursor:pointer;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:16px;
+  font-weight:700;
+  color:var(--green-dark);
+  font-size:17px;
+  list-style:none;
+  user-select:none;
+}
+.phase summary::-webkit-details-marker{display:none}
+.phase summary::after{
+  content:"▸";
+  color:var(--grey);
+  font-size:14px;
+  transition:transform .15s;
+}
+.phase[open] summary::after{transform:rotate(90deg)}
+.phase .phase-num{
+  display:inline-block;
+  width:36px;
+  height:36px;
+  line-height:36px;
+  text-align:center;
+  background:var(--cream);
+  color:var(--green-dark);
+  border-radius:50%;
+  font-weight:800;
+  margin-right:12px;
+}
+.phase .phase-title{flex:1}
+.phase .phase-week{
+  font-size:12px;
+  color:var(--grey);
+  font-weight:500;
+  font-family:"SF Mono",Menlo,monospace;
+}
+.phase .body{padding:0 24px 24px}
+.phase .kv{
+  display:grid;
+  grid-template-columns:150px 1fr;
+  gap:12px 20px;
+  margin:16px 0;
+  font-size:14px;
+}
+.phase .kv dt{
+  color:var(--green);
+  font-weight:700;
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+  padding-top:2px;
+}
+.phase .kv dd{margin:0}
+.phase .why{
+  background:var(--yellow-soft);
+  padding:14px 18px;
+  border-radius:4px;
+  border-left:3px solid var(--yellow);
+  margin:16px 0;
+  font-size:14px;
+}
+.phase .why strong{color:#8a6a00}
+.phase .risk{
+  background:var(--red-soft);
+  padding:12px 16px;
+  border-radius:4px;
+  border-left:3px solid var(--red);
+  margin:12px 0;
+  font-size:14px;
+}
+.phase .risk strong{color:var(--red)}
+.phase h5{
+  font-size:13px;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+  color:var(--green);
+  margin:16px 0 8px;
+  font-weight:700;
+}
+
+/* RISK MATRIX */
+table.matrix{
+  width:100%;
+  border-collapse:collapse;
+  margin:24px 0;
+  font-size:14px;
+  background:white;
+  border:1px solid var(--grey-light);
+}
+table.matrix th{
+  background:var(--green);
+  color:var(--cream);
+  padding:12px;
+  text-align:left;
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+}
+table.matrix td{
+  padding:14px 12px;
+  border-top:1px solid var(--grey-light);
+  vertical-align:top;
+}
+.impact{display:inline-block;padding:3px 10px;border-radius:4px;font-size:11px;font-weight:700;text-transform:uppercase}
+.i-high{background:var(--red-soft);color:var(--red)}
+.i-med{background:var(--yellow-soft);color:#8a6a00}
+.i-low{background:var(--blue-soft);color:var(--blue)}
+
+/* METRICS TABLE */
+table.metrics{
+  width:100%;
+  border-collapse:collapse;
+  margin:16px 0;
+  font-size:14px;
+  background:white;
+  border:1px solid var(--grey-light);
+}
+table.metrics th{
+  background:var(--cream);
+  padding:10px;
+  text-align:left;
+  font-weight:700;
+  color:var(--green-dark);
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+  border-bottom:2px solid var(--green);
+}
+table.metrics td{padding:10px;border-bottom:1px solid var(--grey-light)}
+table.metrics td code{background:var(--cream-light);padding:1px 6px;border-radius:3px;font-size:12px}
+
+/* FOOTER */
+footer{
+  background:var(--green-dark);
+  color:var(--cream);
+  padding:32px 0;
+  text-align:center;
+  font-size:13px;
+}
+footer a{color:var(--yellow);text-decoration:none}
+footer .lawal{
+  font-family:"SF Mono",Menlo,monospace;
+  letter-spacing:2px;
+  font-weight:800;
+  color:var(--yellow);
+  margin-bottom:12px;
+  font-size:16px;
+}
+
+/* PRINT */
+@media print{
+  nav.toc{display:none}
+  header.hero{background:var(--green) !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .phase{page-break-inside:avoid}
+  .phase details[open]{page-break-inside:avoid}
+  details{page-break-inside:avoid}
+}
+
+/* RESPONSIVE */
+@media (max-width:640px){
+  header.hero h1{font-size:32px}
+  header.hero .sub{font-size:16px}
+  .timeline{grid-template-columns:80px 1fr}
+  .phase .kv{grid-template-columns:1fr}
+  section{padding:40px 0}
+}
+
+.highlight-box{
+  background:linear-gradient(135deg,var(--yellow-soft) 0%,#fef7dc 100%);
+  border:1px solid var(--yellow);
+  padding:20px 24px;
+  border-radius:6px;
+  margin:20px 0;
+}
+.highlight-box h4{
+  color:#8a6a00;
+  margin-bottom:8px;
+  font-size:16px;
+}
+
+code.inline{background:var(--cream);padding:1px 6px;border-radius:3px;font-size:.9em;font-family:"SF Mono",Menlo,monospace}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="tag">Trabajo Práctico Final · CEIA FIUBA</span>
+    <h1>Measuring the Defensible Space</h1>
+    <p class="sub">Comparación empírica de arquitecturas Vision Transformer vs baseline CNN para detección de riesgo de incendio de interfase urbano-forestal en imágenes de dron patagónicas.</p>
+    <div class="meta">
+      <div><strong>Materia</strong><span>Vision por Computadora III</span></div>
+      <div><strong>Cursada</strong><span>24 ago – oct 2026</span></div>
+      <div><strong>Entrega</strong><span>5 de octubre 2026 · Clase 7</span></div>
+      <div><strong>Marco</strong><span>HOT Open Call 2026 · LAWAL</span></div>
+    </div>
+  </div>
+</header>
+
+<nav class="toc">
+  <div class="wrap">
+    <ul>
+      <li><a href="#tldr">Resumen</a></li>
+      <li><a href="#datasets">Datasets fAIr</a></li>
+      <li><a href="#dataset-strategy">Estrategia de datos</a></li>
+      <li><a href="#timeline">Cronograma</a></li>
+      <li><a href="#fases">Fases</a></li>
+      <li><a href="#riesgos">Riesgos</a></li>
+      <li><a href="#metricas">Métricas</a></li>
+      <li><a href="#biblio">Bibliografía</a></li>
+      <li><a href="#estado">Estado</a></li>
+    </ul>
+  </div>
+</nav>
+
+<section id="tldr">
+  <div class="wrap">
+    <h2>Resumen ejecutivo</h2>
+    <div class="tldr">
+      <h3>La idea en tres líneas</h3>
+      <p>Se reencuadra la propuesta HOT ya aprobada de Lawal (<em>Measuring the Defensible Space</em>) como Trabajo Práctico Final de Vision Transformers. El pipeline HOT usa <strong>YOLOv8</strong> por defecto y alcanza <strong>22–63%</strong> de accuracy sobre Villa La Angostura. El TP explora si <strong>DETR, SAM y CLIP</strong> pueden mejorar esos resultados sobre el mismo dataset — respondiendo la pregunta central de la Clase 1 (slide 17) sobre el sesgo inductivo débil de los ViT en datasets chicos.</p>
+    </div>
+
+    <div class="highlight-box">
+      <h4>Por qué esta reformulación funciona</h4>
+      <ul>
+        <li><strong>Aplicación al contexto real garantizada:</strong> Villa La Angostura tiene emergencia declarada por incendios, Protección Civil como usuario primario, y HOT ya aprobó la propuesta.</li>
+        <li><strong>Dataset existente:</strong> tres datasets fAIr ya publicados con imagen a 6 cm/px y baselines YOLO con métricas oficiales para comparar.</li>
+        <li><strong>Pregunta académica bien planteada:</strong> ¿los foundation models multimodales (CLIP, SAM) y DETR mejoran o empeoran vs YOLO sobre ~1000 samples de dominio específico?</li>
+        <li><strong>Contribución mutua:</strong> los hallazgos del TP alimentan la nota metodológica que la propuesta HOT ya lista como deliverable (página 17).</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="datasets">
+  <div class="wrap">
+    <h2>Datasets fAIr disponibles</h2>
+    <p class="lead">Se encontraron tres datasets ya publicados sobre Villa La Angostura en la plataforma fAIr, todos con modelo YOLOv8 ya entrenado y métricas oficiales. Este hallazgo reduce el trabajo de anotación y provee el baseline gratuito.</p>
+
+    <div class="ds-grid">
+      <div class="ds-card">
+        <div class="ds-id">DATASET 382</div>
+        <h4>Villa La Angustura – Barrio</h4>
+        <div class="metric"><span>Modelo</span><span>Ma.Pa - Barrio</span></div>
+        <div class="metric"><span>Base</span><span>YOLO_V8_V1</span></div>
+        <div class="metric"><span>Accuracy</span><span class="accuracy-low">22.5%</span></div>
+        <div class="metric"><span>Publicado</span><span>19/05/2026</span></div>
+        <div class="metric"><span>Usuario</span><span>suricata88</span></div>
+      </div>
+      <div class="ds-card">
+        <div class="ds-id">DATASET 383</div>
+        <h4>Villa La Angostura • Barrio Calafate</h4>
+        <div class="metric"><span>Modelo</span><span>Ma.Pa · V.L.A.</span></div>
+        <div class="metric"><span>Base</span><span>YOLO_V8_V2</span></div>
+        <div class="metric"><span>Accuracy</span><span class="accuracy-mid">63.6%</span></div>
+        <div class="metric"><span>Publicado</span><span>19/05/2026</span></div>
+        <div class="metric"><span>Usuario</span><span>suricata88</span></div>
+      </div>
+      <div class="ds-card">
+        <div class="ds-id">DATASET 393</div>
+        <h4>A neighborhood in Villa La Angostura</h4>
+        <div class="metric"><span>Modelo</span><span>Buildings in V.L.A.</span></div>
+        <div class="metric"><span>Base</span><span>YOLO_V8_V2</span></div>
+        <div class="metric"><span>Accuracy</span><span class="accuracy-mid">57.7%</span></div>
+        <div class="metric"><span>Publicado</span><span>01/06/2026</span></div>
+        <div class="metric"><span>Usuario</span><span>suricata88</span></div>
+      </div>
+    </div>
+
+    <div class="highlight-box">
+      <h4>Qué implica este hallazgo</h4>
+      <ul>
+        <li><strong>Baseline gratis:</strong> el modelo YOLOv8 sobre Villa La Angostura ya existe con accuracy 57–63%. No hace falta entrenarlo — se cita directamente en la comparación.</li>
+        <li><strong>Clase cubierta:</strong> solo edificios (<em>buildings</em>). Para árboles, tanques de gas, leña y reservorios de agua sigue siendo necesaria anotación propia.</li>
+        <li><strong>Margen para mejora:</strong> 57–63% no es techo. Si DETR o los foundation models alcanzan mayor accuracy, el TP tiene resultado defendible.</li>
+        <li><strong>Imagery compartida:</strong> los tres datasets usan la misma imagen base de OpenAerialMap, evitando problemas de comparación cruzada.</li>
+      </ul>
+    </div>
+
+    <h3 style="margin-top:40px">Datasets externos de benchmark</h3>
+    <p>Para dar comparabilidad con literatura reciente y desarrollar el pipeline mientras se espera imagen adicional de Villa La Angostura, se descargaron dos datasets estándar de segmentación aérea. Ambos ya están en <code class="inline">data/external/</code>.</p>
+
+    <div class="ds-grid">
+      <div class="ds-card" style="border-top-color:#0a6635">
+        <div class="ds-id">UAVID · benchmark primario</div>
+        <h4>arakesh/uavid-15-hq-mixedres</h4>
+        <div class="metric"><span>Tamaño</span><span>4.0 GB</span></div>
+        <div class="metric"><span>Formato</span><span>9 parquet files</span></div>
+        <div class="metric"><span>Volumen</span><span>200 train + 70 test</span></div>
+        <div class="metric"><span>Resolución</span><span>4K (3840×2160)</span></div>
+        <div class="metric"><span>Clases</span><span>8 (building, tree, ...)</span></div>
+        <div class="metric"><span>Licencia</span><span>Research NC</span></div>
+      </div>
+      <div class="ds-card" style="border-top-color:#7a2f7a">
+        <div class="ds-id">AEROSCAPES · complementario</div>
+        <h4>dronefreak/Aeroscapes</h4>
+        <div class="metric"><span>Tamaño</span><span>~400 MB</span></div>
+        <div class="metric"><span>Formato</span><span>images + masks</span></div>
+        <div class="metric"><span>Volumen</span><span>1000 train + 648 val</span></div>
+        <div class="metric"><span>Resolución</span><span>720×1280</span></div>
+        <div class="metric"><span>Clases</span><span>12 (construction, vegetation, ...)</span></div>
+        <div class="metric"><span>Licencia</span><span>CC-BY-SA 4.0</span></div>
+      </div>
+    </div>
+
+    <div class="highlight-box">
+      <h4>Cómo se usan estos datasets</h4>
+      <ul>
+        <li><strong>Desarrollo del pipeline:</strong> UAVid y Aeroscapes sirven como dataset de trabajo mientras El Mallín es el único sector volado de Villa La Angostura.</li>
+        <li><strong>Benchmark comparativo:</strong> métricas de los modelos ViT sobre UAVid se reportan en el informe para dar comparabilidad con literatura reciente de segmentación aérea con transformers.</li>
+        <li><strong>Análisis de gap de dominio:</strong> la diferencia entre performance en UAVid (urbano europeo) vs El Mallín (interfaz forestal patagónica) es en sí una contribución del TP, útil también para la nota metodológica que la propuesta HOT lista como deliverable.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="dataset-strategy">
+  <div class="wrap">
+    <h2>Estrategia de datos</h2>
+    <p class="lead">Combinación de recursos existentes en fAIr y anotación propia para las clases no cubiertas.</p>
+
+    <h3>Recursos disponibles</h3>
+    <ul>
+      <li><strong>Imagen de dron de El Mallín:</strong> publicada en OpenAerialMap durante la semana MA.PA de mayo 2026. Resolución 6 cm/px, superficie ~1.08 km², licencia CC-BY 4.0.</li>
+      <li><strong>Anotaciones de edificios en fAIr:</strong> los tres datasets 382 / 383 / 393 descriptos arriba, con etiquetas ya validadas por la comunidad.</li>
+      <li><strong>Baseline YOLOv8 sobre Villa La Angostura:</strong> modelo ya entrenado con métricas oficiales (57–63%).</li>
+      <li><strong>Datasets externos descargados:</strong> UAVid (4 GB) y Aeroscapes (~400 MB) en <code class="inline">data/external/</code> para benchmark y desarrollo del pipeline.</li>
+      <li><strong>Ambiente Python:</strong> venv creado en <code class="inline">.venv/</code> con <code class="inline">huggingface_hub</code> instalado.</li>
+    </ul>
+
+    <h3>Recursos ausentes que requieren anotación propia</h3>
+    <ul>
+      <li>Árboles individuales (solo 33 registrados en OSM para toda la localidad).</li>
+      <li>Tanques de gas LPG.</li>
+      <li>Pilas de leña.</li>
+      <li>Reservorios de agua (0 en OSM).</li>
+      <li>Máscaras binarias de canopy continuo para evaluar SAM.</li>
+    </ul>
+
+    <h3>Datasets externos</h3>
+    <p><strong>Pesos pre-entrenados</strong> para mitigar la limitación de tamaño del dataset propio:</p>
+    <ul>
+      <li><strong>COCO</strong> — pesos base para DETR y YOLOv8.</li>
+      <li><strong>SA-1B</strong> — pre-entrenamiento nativo de SAM (1000M máscaras).</li>
+      <li><strong>LAION-2B</strong> — pre-entrenamiento nativo de OpenCLIP.</li>
+    </ul>
+    <p><strong>Datasets externos ya descargados</strong> para benchmark comparativo y desarrollo del pipeline (ver arriba para detalles):</p>
+    <ul>
+      <li><strong>UAVid</strong> — benchmark primario. Reporte de métricas comparables con literatura de segmentación aérea reciente.</li>
+      <li><strong>Aeroscapes</strong> — complementario. Segundo punto de comparación con esquema de clases distinto.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="timeline">
+  <div class="wrap">
+    <h2>Cronograma</h2>
+    <p class="lead">Seis semanas calendario hasta la entrega (25 ago → 5 oct 2026), más una semana para la presentación.</p>
+
+    <div class="timeline">
+      <div class="th wk">Semana</div><div class="th">Fase(s) principal(es)</div>
+      <div class="row"><div class="cell wk">1 · 25–31 ago</div><div class="cell">
+        <span class="phase-chip chip-1">Fase 1 · Setup repo</span>
+      </div></div>
+      <div class="row"><div class="cell wk">2 · 1–7 sep</div><div class="cell">
+        <span class="phase-chip chip-2">Fase 2 · Data pipeline</span>
+      </div></div>
+      <div class="row"><div class="cell wk">3 · 8–14 sep</div><div class="cell">
+        <span class="phase-chip chip-3">Fase 3 · Zero-shot CLIP + SAM</span>
+      </div></div>
+      <div class="row"><div class="cell wk">4 · 15–21 sep</div><div class="cell">
+        <span class="phase-chip chip-4">Fase 4 · Baseline CNN + DETR</span>
+      </div></div>
+      <div class="row"><div class="cell wk">5 · 22–28 sep</div><div class="cell">
+        <span class="phase-chip chip-5">Fase 5 · Compliance index</span>
+        <span class="phase-chip chip-6">Fase 6 · Inicio informe</span>
+      </div></div>
+      <div class="row"><div class="cell wk">6 · 29 sep – 5 oct</div><div class="cell">
+        <span class="phase-chip chip-6">Fase 6 · Informe final + entrega</span>
+      </div></div>
+      <div class="row"><div class="cell wk">7 · 6–12 oct</div><div class="cell">
+        <span class="phase-chip chip-7">Fase 7 · Presentación Clase 8</span>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<section id="fases">
+  <div class="wrap">
+    <h2>Fases del proyecto</h2>
+    <p class="lead">Cada fase se estructura con: <strong>objetivo</strong>, <strong>por qué es necesaria</strong>, <strong>ideas principales</strong>, <strong>actividades concretas</strong>, <strong>deliverables</strong>, <strong>criterio de done</strong> y <strong>riesgos</strong>. Click en cada fase para expandir.</p>
+
+    <details class="phase p-0" open>
+      <summary>
+        <span><span class="phase-num">0</span> <span class="phase-title">Alineación y confirmación con docentes</span></span>
+        <span class="phase-week">Semana 1 · bloqueante</span>
+      </summary>
+      <div class="body">
+        <dl class="kv">
+          <dt>Objetivo</dt><dd>Obtener validación explícita de Abraham Rodriguez y Oksana Bokhonok sobre el reencuadre del TP y la modalidad individual antes de invertir tiempo en implementación.</dd>
+        </dl>
+        <div class="why">
+          <strong>Por qué es necesaria:</strong> la rúbrica de la Clase 1 (slide 4) especifica modalidad grupal obligatoria. Cualquier desviación (modalidad individual, uso de un proyecto externo como base) requiere autorización expresa. Arrancar a codear sin esta validación implica riesgo de rediseño completo.
+        </div>
+        <h5>Ideas principales</h5>
+        <ul>
+          <li>La materia habilita cierto margen de reencuadre si la aplicación al contexto real está bien argumentada.</li>
+          <li>El uso de una propuesta ya aprobada por HOT es una fortaleza, no un problema — pero conviene explicitarlo con transparencia.</li>
+          <li>La comparación arquitectural ViT vs CNN es exactamente lo que la Clase 1 slide 17 propone investigar.</li>
+        </ul>
+        <h5>Actividades</h5>
+        <ol>
+          <li>Redactar mail conciso a los docentes: reencuadre, marco HOT, pregunta de investigación, cronograma, modalidad.</li>
+          <li>Aguardar respuesta o consulta en la próxima clase teórica.</li>
+          <li>Registrar la respuesta por escrito en el repositorio.</li>
+        </ol>
+        <h5>Deliverables</h5>
+        <ul><li>Mail enviado (copia archivada).</li><li>Confirmación por escrito de los docentes.</li></ul>
+        <h5>Criterio de done</h5>
+        <p>Existe una confirmación explícita (mail, mensaje, minuta de clase) que autoriza el reencuadre y la modalidad individual.</p>
+        <div class="risk"><strong>Riesgo:</strong> si los docentes piden modalidad grupal obligatoria, se explora sumar a otro estudiante interesado en el problema. En última instancia, se reencuadra como TP grupal con roles claros.</div>
+      </div>
+    </details>
+
+    <details class="phase p-1">
+      <summary>
+        <span><span class="phase-num">1</span> <span class="phase-title">Setup del repositorio y del ambiente</span></span>
+        <span class="phase-week">Semana 1</span>
+      </summary>
+      <div class="body">
+        <dl class="kv">
+          <dt>Objetivo</dt><dd>Crear el esqueleto del proyecto con estructura de nivel preproducción, listo para recibir código a partir de la Fase 2.</dd>
+        </dl>
+        <div class="why">
+          <strong>Por qué es necesaria:</strong> la rúbrica de la Clase 1 (slides 6–11) es explícita sobre la diferencia entre código EDA y código preproducción. No es opcional. Arrancar con la estructura correcta desde el día 1 evita refactors costosos hacia el final del cronograma.
+        </div>
+        <h5>Ideas principales</h5>
+        <ul>
+          <li>Estructura tipo Cookiecutter Data Science: separación clara entre <code class="inline">data/</code>, <code class="inline">src/</code>, <code class="inline">models/</code>, <code class="inline">notebooks/</code>, <code class="inline">reports/</code>.</li>
+          <li>Configuraciones externas en YAML, nunca hardcodeadas.</li>
+          <li>Logging con niveles (INFO, WARNING, ERROR, DEBUG) desde el arranque.</li>
+          <li>MLflow para trackear experimentos: hiperparámetros, métricas, artefactos.</li>
+          <li>Control de dependencias con <code class="inline">requirements.txt</code> pineado o <code class="inline">poetry</code>/<code class="inline">uv</code>.</li>
+          <li>Pre-commit hooks básicos: black, ruff, isort.</li>
+        </ul>
+        <h5>Actividades</h5>
+        <ol>
+          <li>Crear la estructura de carpetas.</li>
+          <li>Inicializar git y hacer el primer commit.</li>
+          <li>Configurar <code class="inline">pyproject.toml</code> con PyTorch (con soporte MPS), transformers, ultralytics, segment-anything, open-clip-torch, mlflow, hydra o pydantic, pytest.</li>
+          <li>Escribir <code class="inline">src/config.py</code> que cargue configuraciones desde <code class="inline">configs/*.yaml</code>.</li>
+          <li>Escribir <code class="inline">src/utils/logging.py</code> con setup del logger.</li>
+          <li>Escribir smoke test que verifique PyTorch + MPS.</li>
+          <li>Redactar el README inicial.</li>
+        </ol>
+        <h5>Deliverables</h5>
+        <ul><li>Repositorio git funcional con estructura preproducción.</li><li>README inicial.</li><li>Smoke test corriendo en verde.</li></ul>
+        <h5>Criterio de done</h5>
+        <p><code class="inline">pytest</code> corre sin errores, el logger imprime a stdout y a archivo, y <code class="inline">torch.backends.mps.is_available()</code> devuelve <code class="inline">True</code>.</p>
+        <div class="risk"><strong>Riesgo:</strong> compatibilidad de PyTorch con MPS requiere versión específica; se pinea desde el arranque.</div>
+      </div>
+    </details>
+
+    <details class="phase p-2">
+      <summary>
+        <span><span class="phase-num">2</span> <span class="phase-title">Data pipeline</span></span>
+        <span class="phase-week">Semana 1–2</span>
+      </summary>
+      <div class="body">
+        <dl class="kv">
+          <dt>Objetivo</dt><dd>Preparar los datos y anotaciones necesarias para todos los experimentos posteriores. Al final de la fase, todos los modelos consumen los mismos splits sin más preparación.</dd>
+        </dl>
+        <div class="why">
+          <strong>Por qué es necesaria:</strong> sin datos no hay experimentos. Y si cada modelo (CLIP, SAM, DETR, YOLO) consume datos preparados de forma distinta, la comparación no es justa. Esta fase estandariza el input.
+        </div>
+        <h5>Ideas principales</h5>
+        <ul>
+          <li>Tileado consistente: 512×512 px con overlap del 20% para no cortar objetos en bordes.</li>
+          <li>A 6 cm/px, un tile de 512 px cubre ~30 m de terreno — apropiado para las distancias del protocolo municipal (Zonas 1, 2 y 3).</li>
+          <li>Splits estratificados por régimen (urban matrix vs forest fringe) para métricas comparables.</li>
+          <li>Formato de anotaciones: COCO JSON (compatible con DETR, YOLOv8 con conversión, MMDetection, Detectron2).</li>
+          <li>Ground truth de canopy: máscara raster binaria para evaluar IoU de SAM.</li>
+          <li><strong>Reutilizar datasets fAIr 382/383/393</strong> para la clase "edificios".</li>
+        </ul>
+        <h5>Actividades</h5>
+        <ol>
+          <li>Descargar tiles de El Mallín desde OpenAerialMap.</li>
+          <li>Descargar labels de los tres datasets fAIr (382/383/393) vía API.</li>
+          <li>Consolidar UAVid y Aeroscapes (ya descargados en <code class="inline">data/external/</code>) en formato consumible por los dataloaders del proyecto.</li>
+          <li>Verificar coherencia entre datasets fAIr y la imagen base.</li>
+          <li>Definir splits train/val/test estratificados para El Mallín; usar splits estándar publicados para UAVid y Aeroscapes.</li>
+          <li>Anotar manualmente las clases no cubiertas por fAIr: árboles, tanques, leña, reservorios.</li>
+          <li>Anotar máscaras binarias de canopy en subset representativo.</li>
+          <li>Escribir <code class="inline">src/data/dataset.py</code> con <code class="inline">DefensibleSpaceDataset</code> (El Mallín) y <code class="inline">BenchmarkDataset</code> (UAVid/Aeroscapes) sobre la misma interfaz.</li>
+        </ol>
+        <h5>Deliverables</h5>
+        <ul>
+          <li><code class="inline">data/raw/</code> con tiles descargados.</li>
+          <li><code class="inline">data/interim/</code> con tiles re-tilados y splits.</li>
+          <li><code class="inline">data/processed/annotations_coco.json</code>.</li>
+          <li><code class="inline">data/processed/canopy_masks/</code>.</li>
+          <li>Módulo <code class="inline">src/data/dataset.py</code>.</li>
+        </ul>
+        <h5>Criterio de done</h5>
+        <p>El dataloader devuelve batches con imagen + anotaciones sin errores; se visualiza un sample con anotaciones superpuestas.</p>
+        <div class="risk"><strong>Riesgo:</strong> anotar 200–300 samples por clase es la tarea más subestimada. Se prioriza anotar completamente 2 clases (estructuras + árboles) antes de intentar las 5. Reutilizar datasets fAIr descarga la mayor parte de la clase "estructuras".</div>
+      </div>
+    </details>
+
+    <details class="phase p-3">
+      <summary>
+        <span><span class="phase-num">3</span> <span class="phase-title">Zero-shot: CLIP + MobileSAM</span></span>
+        <span class="phase-week">Semana 2–3</span>
+      </summary>
+      <div class="body">
+        <dl class="kv">
+          <dt>Objetivo</dt><dd>Obtener resultados iniciales sobre El Mallín sin entrenar nada, cubriendo clasificación de tiles (CLIP) y segmentación de canopy (SAM).</dd>
+        </dl>
+        <div class="why">
+          <strong>Por qué es necesaria:</strong> esta fase es el <em>safety net</em> del cronograma. Aunque las fases 4 y 5 fallen, el TP tiene resultados sólidos sobre dos arquitecturas ViT-family. Además, corresponde directamente a los contenidos de Clase 5 (CLIP) y Clase 6 (SAM).
+        </div>
+        <h5>Ideas principales · CLIP</h5>
+        <ul>
+          <li>OpenCLIP ViT-B/32 con pesos LAION-2B.</li>
+          <li>Tarea binaria: "¿este tile contiene canopy continuo?" — corresponde a Zona 3.</li>
+          <li>Prompts en inglés y español, evaluación comparativa.</li>
+          <li>Métricas: accuracy, F1, matriz de confusión.</li>
+          <li>Comparación zero-shot vs head lineal fine-tuneado sobre embeddings congelados (si el tiempo lo permite).</li>
+        </ul>
+        <h5>Ideas principales · SAM (comparación MobileSAM vs SAM ViT-H)</h5>
+        <ul>
+          <li>Se corren <strong>ambas variantes</strong> sobre El Mallín en modo zero-shot para reportar el trade-off calidad/velocidad empíricamente.
+            <ul>
+              <li><strong>SAM ViT-H</strong> (~636M params, ~2.4 GB): calidad de referencia. Inference lenta en M4 (~2-4 seg/tile). No se fine-tunea (no cabe en 24 GB con gradientes).</li>
+              <li><strong>MobileSAM</strong> (~9.66M params, ~40 MB): mismo prompt encoder + mask decoder que SAM, image encoder destilado a ViT-Tiny. Inference sub-segundo en M4, fine-tunable localmente.</li>
+            </ul>
+          </li>
+          <li>Prompting: seed points automáticos en grid 16×16 por tile.</li>
+          <li>Métricas por modelo: mean IoU, boundary F1, tiempo de inference por tile, huella de memoria.</li>
+          <li>Análisis del gap: cuánto pierde MobileSAM en calidad y cuánto gana en velocidad. Directamente útil para HOT: ¿qué modelo desplegar en producción?</li>
+          <li>Análisis crítico esperado: SAM (en cualquiera de sus dos variantes) falla en bosque nativo cerrado de coihue/ñire (la propia propuesta HOT lo señala como <em>honest caveat</em> en página 14). Este failure mode es material valioso.</li>
+          <li>Opcional si el tiempo lo permite: sumar <strong>SAM2</strong> como tercer punto de comparación.</li>
+        </ul>
+        <h5>Actividades</h5>
+        <ol>
+          <li>Instalar OpenCLIP y MobileSAM.</li>
+          <li>Escribir <code class="inline">src/models/clip_zeroshot.py</code>.</li>
+          <li>Escribir <code class="inline">src/models/sam_zeroshot.py</code> con prompting automático.</li>
+          <li>Correr experimentos sobre split de test.</li>
+          <li>Loguear en MLflow.</li>
+          <li>Generar visualizaciones: matriz de confusión CLIP + overlays SAM.</li>
+        </ol>
+        <h5>Deliverables</h5>
+        <ul><li>Módulos zero-shot funcionando.</li><li>Métricas en MLflow.</li><li>Notebook de visualización.</li></ul>
+        <h5>Criterio de done</h5>
+        <p>Existen métricas cuantitativas y visualizaciones para ambos modelos sobre el split de test.</p>
+        <div class="risk"><strong>Riesgo:</strong> si CLIP zero-shot rinde muy alto (>95%), el fine-tuning aporta poco. Se dedica ese tiempo al análisis por régimen.</div>
+      </div>
+    </details>
+
+    <details class="phase p-4">
+      <summary>
+        <span><span class="phase-num">4</span> <span class="phase-title">Baseline CNN + DETR/ViT</span></span>
+        <span class="phase-week">Semana 3–4</span>
+      </summary>
+      <div class="body">
+        <dl class="kv">
+          <dt>Objetivo</dt><dd>Comparar DETR (con backbone ViT y/o ResNet-50) contra el baseline YOLOv8 sobre detección de objetos (Zonas 1 y 2 del protocolo).</dd>
+        </dl>
+        <div class="why">
+          <strong>Por qué es necesaria:</strong> es la fase más pesada computacionalmente y la que responde de forma más directa la pregunta central de investigación. Sin esta fase, el TP pierde su columna vertebral argumentativa.
+        </div>
+        <h5>Ideas principales · Baseline</h5>
+        <ul>
+          <li>Se citan directamente los resultados de los modelos fAIr 382/383/393 (accuracy 22–63%) como baseline ya publicado.</li>
+          <li>Adicionalmente, se entrena YOLOv8n localmente en M4 sobre el dataset propio para tener control de hiperparámetros.</li>
+          <li>Métricas: mAP@0.5, mAP@0.5:0.95, per clase.</li>
+        </ul>
+        <h5>Ideas principales · DETR/ViT</h5>
+        <ul>
+          <li>Implementación HuggingFace <code class="inline">transformers</code> (facebook/detr-resnet-50 como punto de partida) y opcional backbone ViT-Small.</li>
+          <li>Fine-tuning en Colab gratuito (T4 GPU, sesiones de 12 h).</li>
+          <li>Métricas comparables con YOLO.</li>
+          <li>Análisis del entrenamiento: curvas de loss, learning rate schedule, cantidad de queries.</li>
+        </ul>
+        <h5>Análisis comparativo</h5>
+        <ul>
+          <li>Tablas per clase, per régimen (urban vs forest fringe).</li>
+          <li>Análisis explícito del sesgo inductivo: ¿DETR requiere más samples que YOLO para converger?</li>
+          <li>Referencia obligada a la slide 17 de Clase 1.</li>
+          <li><strong>Benchmark externo sobre UAVid:</strong> se reportan métricas de los modelos entrenados en UAVid para dar comparabilidad con literatura reciente. Se comparan además con las de El Mallín para medir el gap de dominio (urbano europeo vs interfaz forestal patagónica).</li>
+        </ul>
+        <h5>Actividades</h5>
+        <ol>
+          <li>Escribir <code class="inline">src/models/yolo_baseline.py</code>.</li>
+          <li>Escribir <code class="inline">src/models/detr_finetune.py</code>.</li>
+          <li>Notebook de entrenamiento DETR para Colab.</li>
+          <li>Entrenar YOLOv8n localmente en M4.</li>
+          <li>Entrenar DETR en Colab.</li>
+          <li>Correr evaluación sobre test.</li>
+          <li>Generar tablas y curvas.</li>
+        </ol>
+        <h5>Deliverables</h5>
+        <ul><li>Modelos entrenados en <code class="inline">models/</code>.</li><li>Métricas comparativas en MLflow.</li><li>Análisis por régimen.</li></ul>
+        <h5>Criterio de done</h5>
+        <p>Existen métricas comparables (mismo split, mismas clases) para YOLOv8n y DETR, con al menos un análisis por régimen.</p>
+        <div class="risk"><strong>Riesgo:</strong> si DETR fine-tuning no converge en 12 h de Colab, Plan B: DETR pre-entrenado en COCO evaluado zero-shot sobre las clases coincidentes (persona, car → estructuras approx). La comparación sigue siendo válida.</div>
+      </div>
+    </details>
+
+    <details class="phase p-5">
+      <summary>
+        <span><span class="phase-num">5</span> <span class="phase-title">Integración y compliance index</span></span>
+        <span class="phase-week">Semana 5</span>
+      </summary>
+      <div class="body">
+        <dl class="kv">
+          <dt>Objetivo</dt><dd>Unificar los outputs de los cuatro modelos (CLIP, SAM, YOLO, DETR) en el compliance index per estructura definido por el protocolo municipal.</dd>
+        </dl>
+        <div class="why">
+          <strong>Por qué es necesaria:</strong> sin esta fase, el TP es una colección de tres experimentos independientes. Con esta fase, es un pipeline coherente que resuelve un problema real y demuestra el valor de cada arquitectura en el sistema completo.
+        </div>
+        <h5>Ideas principales</h5>
+        <ul>
+          <li>Compliance index según página 7 de propuesta HOT: buffers geodésicos 2 m / 10 m / 30 m alrededor de cada estructura.</li>
+          <li><strong>Zona 1:</strong> sin copas a menos de 2 m, sin tanques, sin leña.</li>
+          <li><strong>Zona 2:</strong> ≥3 m entre copas, sin tanques, sin leña.</li>
+          <li><strong>Zona 3:</strong> distancia mínima a canopy continuo cerrado.</li>
+          <li>Módulo agnóstico al modelo de detección: se puede correr con detecciones de YOLO, DETR, fAIr indistintamente.</li>
+          <li>Análisis de propagación de error: ¿mAP 5% más bajo se traduce en cuánta diferencia en el índice?</li>
+        </ul>
+        <h5>Actividades</h5>
+        <ol>
+          <li>Escribir <code class="inline">src/analysis/compliance.py</code> con reglas geométricas.</li>
+          <li>Calcular índice usando cada combinación de modelos.</li>
+          <li>Generar mapas de compliance por régimen.</li>
+          <li>Análisis cuantitativo de sensibilidad.</li>
+        </ol>
+        <h5>Deliverables</h5>
+        <ul><li>Módulo <code class="inline">compliance.py</code> documentado.</li><li>Tablas y mapas.</li><li>Análisis de sensibilidad.</li></ul>
+        <h5>Criterio de done</h5>
+        <p><code class="inline">python -m src.analysis.compliance --model detr</code> produce CSV con índice per estructura + mapas.</p>
+        <div class="risk"><strong>Riesgo:</strong> si el tiempo aprieta, se acota el análisis a un solo modelo (el mejor) y se deja la comparación de sensibilidad como trabajo futuro.</div>
+      </div>
+    </details>
+
+    <details class="phase p-6">
+      <summary>
+        <span><span class="phase-num">6</span> <span class="phase-title">Informe técnico + README final</span></span>
+        <span class="phase-week">Semana 5–6 · deadline 5 oct</span>
+      </summary>
+      <div class="body">
+        <dl class="kv">
+          <dt>Objetivo</dt><dd>Producir el informe PDF y README del repositorio con la calidad exigida por la rúbrica.</dd>
+        </dl>
+        <div class="why">
+          <strong>Por qué es necesaria:</strong> el informe es la mitad de la entrega. Un buen resultado técnico mal comunicado se percibe como mal resultado. Media semana completa de escritura no es lujo, es requisito.
+        </div>
+        <h5>Estructura del informe (Clase 1 slide 4)</h5>
+        <ol>
+          <li>Objetivo del proyecto.</li>
+          <li>Arquitectura general (diagrama + descripción).</li>
+          <li>Implementación técnica (herramientas, módulos clave).</li>
+          <li>Evaluación (métricas per modelo).</li>
+          <li>Resultados y ejemplos.</li>
+          <li>Conclusiones y mejoras futuras.</li>
+          <li>Planificación (tabla con tareas, responsables y estado).</li>
+        </ol>
+        <h5>Estilo</h5>
+        <ul>
+          <li><strong>Voz impersonal a lo largo de todo el documento:</strong> "se implementó", "se comparó", "se encontró". Nunca "hicimos", "encontramos", "nuestros resultados".</li>
+          <li>Referencias bibliográficas mínimas: Vaswani 2017, Dosovitskiy 2020, Carion 2020, Radford 2021, Kirillov 2023.</li>
+        </ul>
+        <h5>Sección "aplicación en contexto real"</h5>
+        <p>Se apoya en la propuesta HOT ya escrita: se resume la problemática de Villa La Angostura, el estándar de defensible space y el rol operacional del pipeline.</p>
+        <h5>Actividades</h5>
+        <ol>
+          <li>Redactar informe en LaTeX o Markdown → PDF (pandoc).</li>
+          <li>Generar figuras finales.</li>
+          <li>Actualizar README.</li>
+          <li>Completar tabla de planificación con estados finales.</li>
+          <li>Revisión final: consistencia, unidades, voz impersonal, ortografía.</li>
+        </ol>
+        <h5>Deliverables</h5>
+        <ul><li><code class="inline">reports/informe_tp_final.pdf</code>.</li><li><code class="inline">README.md</code> actualizado.</li><li>Repositorio entregable.</li></ul>
+        <h5>Criterio de done</h5>
+        <p>Las 7 secciones cubiertas, figuras numeradas y referenciadas, voz impersonal consistente, sin pendientes técnicos.</p>
+        <div class="risk"><strong>Riesgo:</strong> la escritura siempre lleva más de lo estimado. Segunda mitad de la semana 6 reservada exclusivamente para redacción, sin experimentos nuevos.</div>
+      </div>
+    </details>
+
+    <details class="phase p-7">
+      <summary>
+        <span><span class="phase-num">7</span> <span class="phase-title">Presentación · Clase 8</span></span>
+        <span class="phase-week">Semana 7 · post-entrega</span>
+      </summary>
+      <div class="body">
+        <dl class="kv">
+          <dt>Objetivo</dt><dd>Comunicar los resultados en 15 minutos con foco en métricas, visualizaciones y aplicación real.</dd>
+        </dl>
+        <div class="why">
+          <strong>Por qué es necesaria:</strong> la Clase 1 la pide explícitamente y forma parte de la evaluación. Es también la oportunidad de defender ante los docentes las decisiones tomadas.
+        </div>
+        <h5>Ideas principales</h5>
+        <ul>
+          <li>15 min = ~8–10 slides efectivas.</li>
+          <li>Foco pedido por la rúbrica: análisis de resultados con énfasis en métricas, visualizaciones del modelo, y explicación de cómo el modelo se aplica en contexto real.</li>
+        </ul>
+        <h5>Estructura sugerida (15 min)</h5>
+        <ol>
+          <li><strong>Problema</strong> (2 min): Villa La Angostura + emergencia + protocolo defensible space.</li>
+          <li><strong>Pipeline</strong> (3 min): CLIP + SAM + DETR + baseline.</li>
+          <li><strong>Resultados por modelo</strong> (6 min): tablas, plots, ejemplos.</li>
+          <li><strong>Compliance index integrado</strong> (3 min): mapas por régimen.</li>
+          <li><strong>Aplicación real + trabajo futuro</strong> (1 min).</li>
+        </ol>
+        <h5>Deliverables</h5>
+        <ul><li>Deck en PDF.</li><li>Guion escrito.</li></ul>
+        <h5>Criterio de done</h5>
+        <p>El deck se recorre en 15 min ± 1, con transiciones claras.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<section id="riesgos">
+  <div class="wrap">
+    <h2>Matriz de riesgos</h2>
+    <p class="lead">Riesgos identificados con su impacto y estrategia de mitigación.</p>
+    <table class="matrix">
+      <thead>
+        <tr><th>Riesgo</th><th>Impacto</th><th>Mitigación</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>No existen anotaciones previas para clases distintas de edificios</td><td><span class="impact i-high">Alto</span></td><td>Reutilizar datasets fAIr 382/383/393 para edificios. Priorizar anotación de solo 2 clases (estructuras + árboles) si el tiempo aprieta.</td></tr>
+        <tr><td>DETR fine-tuning no cabe en MacBook M4</td><td><span class="impact i-med">Medio</span></td><td>Diseñar para caber en Colab gratuito (12 h). Plan B: DETR pre-entrenado sin fine-tune.</td></tr>
+        <tr><td>Bugs de PyTorch backend MPS en modelos foundation</td><td><span class="impact i-med">Medio</span></td><td>Test end-to-end con 10 samples antes de escalar.</td></tr>
+        <tr><td>SAM ViT-H inference lenta en M4 (~2-4 seg/tile)</td><td><span class="impact i-low">Bajo</span></td><td>Correr SAM ViT-H solo sobre subset de test; MobileSAM sobre el dataset completo.</td></tr>
+        <tr><td>SAM ViT-H fine-tuning no cabe en M4 con 24 GB</td><td><span class="impact i-med">Medio</span></td><td>Solo MobileSAM se fine-tunea; SAM ViT-H se reporta zero-shot únicamente. Se documenta en el informe.</td></tr>
+        <tr><td>Mapatones HOT no llegan a tiempo</td><td><span class="impact i-low">Bajo</span></td><td>El TP no depende del cronograma HOT; se resuelve con anotación propia + datasets fAIr existentes.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="metricas">
+  <div class="wrap">
+    <h2>Métricas de evaluación</h2>
+    <p class="lead">Todas las métricas se reportan además desagregadas por régimen (urban matrix vs forest fringe), siguiendo la hipótesis dual-regime de la propuesta HOT.</p>
+    <table class="metrics">
+      <thead><tr><th>Tarea</th><th>Modelo</th><th>Métrica principal</th><th>Métrica secundaria</th></tr></thead>
+      <tbody>
+        <tr><td>Clasificación de tiles (canopy Zona 3)</td><td>CLIP</td><td>Accuracy</td><td>F1, matriz de confusión</td></tr>
+        <tr><td>Segmentación de canopy</td><td>SAM</td><td>mean IoU</td><td>Boundary F1, análisis de failure modes</td></tr>
+        <tr><td>Detección de objetos (Zonas 1 y 2)</td><td>YOLOv8n / DETR</td><td>mAP@0.5</td><td>mAP@0.5:0.95 per clase</td></tr>
+        <tr><td>Compliance index integrado</td><td>Pipeline completo</td><td>% estructuras compliant per régimen</td><td>Sensibilidad al error de detección</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="biblio">
+  <div class="wrap">
+    <h2>Bibliografía mínima</h2>
+    <ul>
+      <li><strong>Vaswani, A. et al. (2017).</strong> Attention Is All You Need. NeurIPS.</li>
+      <li><strong>Dosovitskiy, A. et al. (2020).</strong> An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale. ICLR.</li>
+      <li><strong>Carion, N. et al. (2020).</strong> End-to-End Object Detection with Transformers. ECCV. (DETR)</li>
+      <li><strong>Radford, A. et al. (2021).</strong> Learning Transferable Visual Models From Natural Language Supervision. ICML. (CLIP)</li>
+      <li><strong>Kirillov, A. et al. (2023).</strong> Segment Anything. ICCV. (SAM)</li>
+      <li><strong>Zhang, C. et al. (2023).</strong> Faster Segment Anything: Towards Lightweight SAM for Mobile Applications. (MobileSAM)</li>
+      <li><strong>Zhang, H. et al. (2023).</strong> Understanding Why ViT Trains Badly on Small Datasets. arXiv.</li>
+    </ul>
+
+    <h3>Referencias del contexto HOT</h3>
+    <ul>
+      <li>Propuesta LAWAL HOT Open Call 2026: <code class="inline">../LAWAL_HOT_Proposal.pdf</code></li>
+      <li>Convocatoria: <a href="https://hotosm.github.io/fAIrswipe-call-2026/">hotosm.github.io/fAIrswipe-call-2026</a></li>
+      <li>Repositorio fAIr: <a href="https://github.com/hotosm/fAIr">github.com/hotosm/fAIr</a></li>
+      <li>Dataset 382: <a href="https://fair.hotosm.org/datasets/382">fair.hotosm.org/datasets/382</a></li>
+      <li>Dataset 383: <a href="https://fair.hotosm.org/datasets/383">fair.hotosm.org/datasets/383</a></li>
+      <li>Dataset 393: <a href="https://fair.hotosm.org/datasets/393">fair.hotosm.org/datasets/393</a></li>
+    </ul>
+  </div>
+</section>
+
+<section id="estado" style="background:var(--cream)">
+  <div class="wrap">
+    <h2>Estado del plan</h2>
+    <p class="lead">Documento vivo. Se actualiza al cerrar cada fase.</p>
+
+    <h3>Trabajo preparatorio ya realizado</h3>
+    <p>Antes de la aprobación formal de Fase 0, se completaron los siguientes pasos preparatorios que no bloquean nada del plan original:</p>
+    <ul>
+      <li><strong>Sondeo del API de fAIr:</strong> confirmada la existencia de tres datasets etiquetados de Villa La Angostura (382, 383, 393) con modelo YOLOv8 asociado y accuracy oficial. Endpoints funcionales en <code class="inline">api-prod.fair.hotosm.org</code>.</li>
+      <li><strong>Descarga de bibliografía:</strong> 13 papers arxiv descargados y organizados en <code class="inline">references/</code> con orden de lectura pedagógico.</li>
+      <li><strong>Descarga de datasets externos:</strong>
+        <ul>
+          <li>UAVid: completo, 4.0 GB, 9 parquet files en <code class="inline">data/external/uavid/</code>.</li>
+          <li>Aeroscapes: descarga parcial (rate-limit HTTP 429 tras 496 archivos), retry en curso con menos workers.</li>
+        </ul>
+      </li>
+      <li><strong>Ambiente Python:</strong> venv creado en <code class="inline">.venv/</code> con <code class="inline">huggingface_hub</code> instalado.</li>
+    </ul>
+
+    <h3>Estado de las fases</h3>
+    <table class="metrics">
+      <thead><tr><th>Fase</th><th>Estado</th><th>Fecha de cierre</th></tr></thead>
+      <tbody>
+        <tr><td>1 · Setup repo</td><td>Pendiente</td><td>—</td></tr>
+        <tr><td>2 · Data pipeline</td><td>Trabajo preparatorio en curso</td><td>—</td></tr>
+        <tr><td>3 · Zero-shot CLIP + SAM</td><td>Pendiente</td><td>—</td></tr>
+        <tr><td>4 · Baseline CNN + DETR</td><td>Pendiente</td><td>—</td></tr>
+        <tr><td>5 · Compliance index</td><td>Pendiente</td><td>—</td></tr>
+        <tr><td>6 · Informe + README</td><td>Pendiente</td><td>—</td></tr>
+        <tr><td>7 · Presentación</td><td>Pendiente</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="lawal">LAWAL</div>
+    <p>Plan del Trabajo Práctico Final · Vision por Computadora III · CEIA FIUBA</p>
+    <p>Documento vivo · Se actualiza al cierre de cada fase</p>
+  </div>
+</footer>
+
+</body>
+</html>

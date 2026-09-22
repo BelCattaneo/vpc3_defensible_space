@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Guidelines de anotación · Defensible Space · Villa La Angostura</title>
+<style>
+:root{
+  --green:#143c2e;
+  --green-dark:#0a2418;
+  --cream:#f0e9d6;
+  --cream-light:#faf6ea;
+  --yellow:#f4c02f;
+  --red:#d3453a;
+  --grey:#6b6b6b;
+  --grey-light:#e5e5e5;
+  --text:#1a1a1a;
+  --cls-building:#2f6690;
+  --cls-tree:#2d8659;
+  --cls-canopy:#0a4d2e;
+  --cls-gas:#d3453a;
+  --cls-wood:#a04400;
+  --cls-water:#4b7cbd;
+  --cls-conifer:#7a5cbd;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  color:var(--text);
+  background:var(--cream-light);
+  font-size:13px;
+  line-height:1.45;
+  padding:16px;
+}
+.page{
+  max-width:900px;
+  margin:0 auto;
+  background:white;
+  padding:20px 24px;
+  border:1px solid var(--grey-light);
+  border-radius:6px;
+}
+
+header{
+  border-bottom:3px solid var(--yellow);
+  padding-bottom:10px;
+  margin-bottom:14px;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  gap:16px;
+  flex-wrap:wrap;
+}
+header h1{
+  font-size:20px;
+  color:var(--green);
+  font-weight:800;
+  line-height:1.1;
+}
+header .meta{
+  font-size:11px;
+  color:var(--grey);
+  font-family:"SF Mono",Menlo,monospace;
+  text-align:right;
+}
+header .meta strong{color:var(--green-dark)}
+
+h2{
+  font-size:13px;
+  color:var(--green);
+  text-transform:uppercase;
+  letter-spacing:.8px;
+  font-weight:700;
+  margin:14px 0 8px;
+  border-bottom:1px solid var(--grey-light);
+  padding-bottom:3px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:10px;
+  margin-bottom:12px;
+}
+.card{
+  border:1px solid var(--grey-light);
+  border-left:4px solid var(--grey);
+  padding:8px 10px;
+  border-radius:4px;
+  background:#fdfcf7;
+}
+.card.building{border-left-color:var(--cls-building)}
+.card.tree{border-left-color:var(--cls-tree)}
+.card.canopy{border-left-color:var(--cls-canopy)}
+.card.gas{border-left-color:var(--cls-gas)}
+.card.wood{border-left-color:var(--cls-wood)}
+.card.water{border-left-color:var(--cls-water)}
+.card.conifer{border-left-color:var(--cls-conifer);background:#f4f0fa}
+
+.card .name{
+  font-family:"SF Mono",Menlo,monospace;
+  font-weight:700;
+  font-size:12px;
+  color:var(--green-dark);
+  margin-bottom:4px;
+}
+.card .geom{
+  display:inline-block;
+  background:var(--cream);
+  padding:1px 6px;
+  border-radius:3px;
+  font-size:10px;
+  font-weight:600;
+  color:var(--green-dark);
+  margin-left:6px;
+}
+.card ul{margin:4px 0 0 14px;padding:0;font-size:11.5px}
+.card li{margin-bottom:2px}
+.yes{color:#2d8659;font-weight:600}
+.no{color:var(--red);font-weight:600}
+
+.rules{
+  background:var(--cream-light);
+  padding:10px 14px;
+  border-radius:4px;
+  border-left:3px solid var(--yellow);
+  margin-bottom:12px;
+}
+.rules ol{margin:4px 0 0 20px;font-size:12px}
+.rules li{margin-bottom:4px}
+.rules strong{color:var(--green-dark)}
+
+.two-col{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.checklist{
+  background:#f0f7f2;
+  padding:10px 14px;
+  border-radius:4px;
+  border-left:3px solid #2d8659;
+}
+.checklist ul{list-style:none;margin:4px 0 0 0;font-size:12px}
+.checklist li{margin-bottom:3px;padding-left:20px;position:relative}
+.checklist li::before{content:"☐ ";position:absolute;left:0;font-size:14px;color:var(--green)}
+
+.footer{
+  margin-top:14px;
+  padding-top:8px;
+  border-top:1px solid var(--grey-light);
+  font-size:10.5px;
+  color:var(--grey);
+  display:flex;
+  justify-content:space-between;
+  gap:16px;
+  flex-wrap:wrap;
+}
+.footer code{background:var(--cream);padding:1px 4px;border-radius:2px}
+
+@media print{
+  body{background:white;padding:0;font-size:11px}
+  .page{border:none;padding:12px 16px;max-width:none}
+  header{padding-bottom:6px;margin-bottom:10px}
+  h2{margin:10px 0 4px}
+  .card{padding:6px 8px}
+  .card ul{font-size:10.5px}
+  .grid{gap:6px}
+  @page{size:A4;margin:12mm}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <div>
+    <h1>Guidelines de anotación · Defensible Space</h1>
+    <div style="font-size:11.5px;color:var(--grey);margin-top:2px">Villa La Angostura · POC HOT · 3 sectores Drone-TM</div>
+  </div>
+  <div class="meta">
+    <div><strong>v1.1</strong> · borrador para kick-off</div>
+    <div>fecha: sep 2026 · equipo: 6 anotadores</div>
+    <div>herramienta: HOT Tasking Manager + iD editor</div>
+  </div>
+</header>
+
+<h2>Esquema de clases</h2>
+<div class="grid">
+  <div class="card building">
+    <div class="name">building<span class="geom">POLÍGONO</span></div>
+    <ul>
+      <li><span class="yes">SÍ:</span> techo completo visible desde vista cenital, silueta cerrada</li>
+      <li><span class="yes">SÍ:</span> silueta inferida si copa oculta parte del techo</li>
+      <li><span class="no">NO:</span> estructuras temporales (carpas, gazebos)</li>
+    </ul>
+  </div>
+  <div class="card tree">
+    <div class="name">individual_tree<span class="geom">POLÍGONO</span></div>
+    <ul>
+      <li><span class="yes">SÍ:</span> copa con boundary trazable respecto de vecinas</li>
+      <li><span class="yes">SÍ:</span> polígono envuelve la proyección de la copa</li>
+      <li><span class="no">NO:</span> si la copa se toca con vecinas sin frontera → va a closed_canopy</li>
+    </ul>
+  </div>
+  <div class="card canopy">
+    <div class="name">closed_canopy<span class="geom">POLÍGONO</span></div>
+    <ul>
+      <li><span class="yes">SÍ:</span> masa continua de bosque donde las copas se solapan</li>
+      <li><span class="yes">SÍ:</span> incluye arbustos densos adyacentes (continuidad Zona 3)</li>
+      <li><span class="no">NO:</span> árboles aislados en jardín → van a individual_tree</li>
+    </ul>
+  </div>
+  <div class="card gas">
+    <div class="name">gas_tank<span class="geom">BBOX</span></div>
+    <ul>
+      <li><span class="yes">SÍ:</span> cilindro vertical, superficie clara/blanca, forma característica LPG</li>
+      <li><span class="no">NO:</span> tanques de agua chicos, calderas, cilindros de dudosa identidad</li>
+      <li><em>Ante duda: no etiquetar.</em></li>
+    </ul>
+  </div>
+  <div class="card wood">
+    <div class="name">firewood_pile<span class="geom">BBOX</span></div>
+    <ul>
+      <li><span class="yes">SÍ:</span> pila apilada visible desde vista cenital, patrón regular de troncos cortados</li>
+      <li><span class="yes">SÍ:</span> aunque esté parcialmente cubierta con lona</li>
+      <li><span class="no">NO:</span> troncos sueltos dispersos sin apilamiento</li>
+    </ul>
+  </div>
+  <div class="card water">
+    <div class="name">water_reservoir<span class="geom">BBOX</span></div>
+    <ul>
+      <li><span class="yes">SÍ:</span> piletas, cisternas visibles, tanques elevados de agua</li>
+      <li><span class="no">NO:</span> charcos temporales, piletas plásticas chicas de patio</li>
+    </ul>
+  </div>
+</div>
+
+<h2>Clase opcional — decidir post-calibración</h2>
+<div class="grid" style="grid-template-columns:1fr">
+  <div class="card conifer">
+    <div class="name">exotic_conifer<span class="geom">POLÍGONO</span></div>
+    <ul>
+      <li>Copa cónica marcada, forma triangular vista desde arriba (pino, ciprés, etc.)</li>
+      <li><strong>Se decide en el kick-off:</strong> si el equipo coincide en identificarlas → se agrega al schema. Si hay dispersión &gt;30% → se descarta y todas van a <code style="font-family:'SF Mono',Menlo,monospace;background:var(--cream);padding:1px 4px;border-radius:2px">individual_tree</code> o <code style="font-family:'SF Mono',Menlo,monospace;background:var(--cream);padding:1px 4px;border-radius:2px">closed_canopy</code>.</li>
+    </ul>
+  </div>
+</div>
+
+<h2>Reglas transversales</h2>
+<div class="rules">
+  <ol>
+    <li><strong>Objeto en borde de tile:</strong> anotar la parte visible. El tile queda con tag <code style="font-family:'SF Mono',Menlo,monospace;background:white;padding:1px 4px;border-radius:2px">edge</code> para posible descarte en test.</li>
+    <li><strong>Oclusión (copa sobre edificio):</strong> anotar la silueta inferida del edificio + la copa completa por separado. Marcar el edificio con atributo <code style="font-family:'SF Mono',Menlo,monospace;background:white;padding:1px 4px;border-radius:2px">occluded=true</code>.</li>
+    <li><strong>Tamaño mínimo:</strong> descartar objetos &lt;16×16 píxeles (~1 m² real). Debajo de eso la anotación es ruido.</li>
+    <li><strong>Ante duda: no etiquetar.</strong> Un no-label es mejor que un false positive que degrada el training.</li>
+    <li><strong>iD editor + pre-suggestions:</strong> si el flujo incluye máscaras pre-generadas por SAM como referencia visual, revisar siempre la propuesta antes de aceptar. SAM a veces incluye sombra u overshoot en bordes — corregir manualmente al ajustar el polígono en iD.</li>
+    <li><strong>Un objeto por polígono/bbox:</strong> no combinar dos árboles en un polígono ni dos edificios en un bbox.</li>
+  </ol>
+</div>
+
+<div class="two-col">
+  <div>
+    <h2>Checklist QA pre-cierre de task</h2>
+    <div class="checklist">
+      <ul>
+        <li>Todas las 6 clases revisadas dentro del task</li>
+        <li>Polígonos cerrados (primer y último vértice coinciden)</li>
+        <li>Bboxes / puntos ajustados al objeto (sin padding excesivo)</li>
+        <li>Sin duplicados (mismo objeto dos veces)</li>
+        <li>Objetos en borde marcados con tag <code>edge</code></li>
+        <li>Objetos ocultos marcados con <code>occluded=yes</code></li>
+        <li>Changeset con hashtag <code>#defensible-space-vla</code></li>
+        <li>Marcar task como <em>"mapped"</em> en HOT-TM</li>
+      </ul>
+    </div>
+  </div>
+  <div>
+    <h2>Métricas de calidad del dataset</h2>
+    <div class="checklist" style="background:#fdf5e8;border-left-color:var(--yellow)">
+      <ul style="list-style:disc;margin-left:18px">
+        <li>Doble-anotación en 20% de los tiles</li>
+        <li>Se calcula Cohen's kappa per clase sobre el subset doble-anotado</li>
+        <li>Umbral aceptable: κ &gt; 0.7 per clase</li>
+        <li>Si una clase queda &lt;0.7 → se revisa guideline y se re-etiqueta esa clase</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <div>Proyecto: <strong>defensible-space POC</strong> · Villa La Angostura · Neuquén · Argentina</div>
+  <div>Dudas durante la sesión: preguntar antes de asumir · guidelines viven en el repo, se actualizan tras kick-off</div>
+</div>
+
+</div>
+</body>
+</html>

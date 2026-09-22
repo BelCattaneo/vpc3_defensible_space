@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Pipeline de datos · Del dron al dataset entrenable</title>
+<style>
+:root{
+  --green:#143c2e;
+  --green-dark:#0a2418;
+  --cream:#f0e9d6;
+  --cream-light:#faf6ea;
+  --yellow:#f4c02f;
+  --yellow-soft:#fef3d0;
+  --red:#d3453a;
+  --red-soft:#fce4e2;
+  --blue:#2f6690;
+  --blue-soft:#d9e6f2;
+  --grey:#6b6b6b;
+  --grey-light:#e5e5e5;
+  --text:#1a1a1a;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  color:var(--text);
+  background:var(--cream-light);
+  line-height:1.55;
+  font-size:16px;
+}
+.wrap{max-width:1100px;margin:0 auto;padding:0 24px}
+
+header.hero{
+  background:linear-gradient(135deg,var(--green) 0%,var(--green-dark) 100%);
+  color:var(--cream);
+  padding:56px 0 44px;
+  border-bottom:6px solid var(--yellow);
+}
+header.hero .tag{
+  display:inline-block;
+  background:var(--yellow);
+  color:var(--green-dark);
+  padding:4px 12px;
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+  border-radius:2px;
+  margin-bottom:16px;
+}
+header.hero h1{
+  font-size:40px;
+  line-height:1.1;
+  margin-bottom:12px;
+  font-weight:800;
+}
+header.hero .sub{
+  font-size:18px;
+  opacity:.85;
+  max-width:800px;
+  margin-bottom:24px;
+}
+header.hero .meta{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:12px;
+  margin-top:24px;
+}
+header.hero .meta div{
+  background:rgba(255,255,255,.08);
+  padding:12px 16px;
+  border-left:3px solid var(--yellow);
+}
+header.hero .meta strong{
+  display:block;
+  font-size:11px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  opacity:.7;
+  margin-bottom:4px;
+}
+header.hero .meta span{font-size:14px;font-weight:600}
+
+nav.toc{
+  background:var(--cream);
+  border-bottom:1px solid var(--grey-light);
+  padding:14px 0;
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+nav.toc ul{
+  display:flex;
+  gap:24px;
+  list-style:none;
+  flex-wrap:wrap;
+  font-size:13px;
+  font-weight:600;
+}
+nav.toc a{color:var(--green);text-decoration:none;border-bottom:2px solid transparent;padding-bottom:2px;transition:border-color .15s}
+nav.toc a:hover{border-color:var(--yellow)}
+
+section{padding:48px 0;border-bottom:1px solid var(--grey-light)}
+section h2{font-size:28px;color:var(--green);margin-bottom:8px;font-weight:800}
+section .lead{color:var(--grey);font-size:16px;margin-bottom:28px;max-width:800px}
+section h3{font-size:19px;color:var(--green-dark);margin:24px 0 12px;font-weight:700}
+section p{margin-bottom:12px}
+section ul,section ol{margin:10px 0 14px 22px}
+section li{margin-bottom:5px}
+
+.diagram{
+  background:white;
+  border:1px solid var(--grey-light);
+  border-radius:8px;
+  padding:24px;
+  margin:20px 0;
+  font-family:"SF Mono",Menlo,monospace;
+  font-size:13px;
+  overflow-x:auto;
+  white-space:pre;
+  line-height:1.4;
+}
+
+.phase{
+  background:white;
+  border:1px solid var(--grey-light);
+  border-left:6px solid var(--blue);
+  margin:16px 0;
+  border-radius:6px;
+  padding:24px;
+}
+.phase.a{border-left-color:#666}
+.phase.b{border-left-color:var(--blue)}
+.phase.c{border-left-color:#0a6635}
+.phase.d{border-left-color:var(--yellow)}
+.phase.e{border-left-color:#7a2f7a}
+.phase.f{border-left-color:var(--red)}
+
+.phase .header{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  margin-bottom:12px;
+}
+.phase .num{
+  display:inline-block;
+  width:38px;
+  height:38px;
+  line-height:38px;
+  text-align:center;
+  background:var(--cream);
+  color:var(--green-dark);
+  border-radius:50%;
+  font-weight:800;
+  flex-shrink:0;
+}
+.phase .title{
+  font-size:19px;
+  color:var(--green-dark);
+  font-weight:700;
+  flex:1;
+}
+.phase .time{
+  font-size:12px;
+  color:var(--grey);
+  font-family:"SF Mono",Menlo,monospace;
+}
+.phase h5{
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+  color:var(--green);
+  margin:16px 0 6px;
+  font-weight:700;
+}
+.phase .goal{
+  background:var(--yellow-soft);
+  padding:12px 16px;
+  border-radius:4px;
+  border-left:3px solid var(--yellow);
+  margin:8px 0 14px;
+  font-size:14px;
+}
+.phase .goal strong{color:#8a6a00}
+.phase .caveat{
+  background:var(--red-soft);
+  padding:10px 14px;
+  border-radius:4px;
+  border-left:3px solid var(--red);
+  margin:12px 0;
+  font-size:13px;
+}
+.phase .caveat strong{color:var(--red)}
+.phase code{background:var(--cream-light);padding:1px 6px;border-radius:3px;font-size:.9em;font-family:"SF Mono",Menlo,monospace}
+.phase pre{
+  background:#1a2822;
+  color:#c8dbca;
+  padding:12px 16px;
+  border-radius:4px;
+  font-size:12px;
+  overflow-x:auto;
+  margin:8px 0;
+  font-family:"SF Mono",Menlo,monospace;
+  line-height:1.5;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin:16px 0;
+  font-size:14px;
+  background:white;
+  border:1px solid var(--grey-light);
+}
+table th{
+  background:var(--green);
+  color:var(--cream);
+  padding:10px 12px;
+  text-align:left;
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+}
+table td{padding:10px 12px;border-top:1px solid var(--grey-light);vertical-align:top}
+table code{background:var(--cream-light);padding:1px 6px;border-radius:3px;font-size:.9em;font-family:"SF Mono",Menlo,monospace}
+
+.highlight{
+  background:linear-gradient(135deg,var(--yellow-soft) 0%,#fef7dc 100%);
+  border:1px solid var(--yellow);
+  padding:18px 22px;
+  border-radius:6px;
+  margin:16px 0;
+}
+.highlight h4{color:#8a6a00;margin-bottom:6px;font-size:15px}
+
+footer{
+  background:var(--green-dark);
+  color:var(--cream);
+  padding:28px 0;
+  text-align:center;
+  font-size:13px;
+}
+footer .lawal{
+  font-family:"SF Mono",Menlo,monospace;
+  letter-spacing:2px;
+  font-weight:800;
+  color:var(--yellow);
+  margin-bottom:10px;
+  font-size:15px;
+}
+
+@media print{
+  nav.toc{display:none}
+  header.hero{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .phase{page-break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="tag">TP · Vision Transformers · POC de pipeline de datos</span>
+    <h1>Del dron al dataset entrenable</h1>
+    <p class="sub">Prueba de concepto end-to-end sobre el stack HOT: <strong>Drone-TM → OpenAerialMap → HOT Tasking Manager → OpenStreetMap → COCO</strong>. Valida el pipeline completo con 3 sectores de Villa La Angostura antes de escalar al proyecto HOT completo.</p>
+    <div class="meta">
+      <div><strong>Alcance</strong><span>POC · 3 sectores</span></div>
+      <div><strong>Adquisición</strong><span>Drone-TM</span></div>
+      <div><strong>Dron</strong><span>DJI Mini 5 Pro · clase A</span></div>
+      <div><strong>Equipo labeling</strong><span>6 anotadores</span></div>
+      <div><strong>Herramienta</strong><span>HOT Tasking Manager + iD</span></div>
+      <div><strong>Formato salida</strong><span>OSM (ODbL) → COCO derivado</span></div>
+    </div>
+  </div>
+</header>
+
+<nav class="toc">
+  <div class="wrap">
+    <ul>
+      <li><a href="#objetivo">Objetivo</a></li>
+      <li><a href="#pipeline">Pipeline</a></li>
+      <li><a href="#prereq">Prerequisitos</a></li>
+      <li><a href="#fases">Fases</a></li>
+      <li><a href="#tiempos">Tiempos</a></li>
+      <li><a href="#deliverables">Deliverables</a></li>
+      <li><a href="#integracion">Integración</a></li>
+    </ul>
+  </div>
+</nav>
+
+<section id="objetivo">
+  <div class="wrap">
+    <h2>Objetivo del pipeline</h2>
+    <p>Se produce un dataset POC custom sobre 3 sectores de Villa La Angostura con labels manuales de calidad controlada, en formato COCO JSON, listo para entrenar los modelos del TP (DETR, YOLOv8n, opcionalmente Mask2Former). El POC valida el pipeline end-to-end antes de escalarlo al proyecto HOT completo de 6 sectores.</p>
+
+    <h3>Sectores del POC (proyectos Drone-TM ya creados)</h3>
+    <table>
+      <thead><tr><th>Proyecto Drone-TM</th><th>Sector propuesta HOT</th><th>Régimen dominante</th></tr></thead>
+      <tbody>
+        <tr><td><code>defensible-space-cruce-piedritas</code></td><td>Sector 1 · El Cruce + Las Piedritas</td><td>Denso · núcleo comercial+residencial</td></tr>
+        <tr><td><code>defensible-space-barrio-norte</code></td><td>Sector 2 · Macrolotes 5/6 + Norte</td><td>Frontera de expansión</td></tr>
+        <tr><td><code>defensible-space-correntoso-arauco</code></td><td>Sectores 4+6 combinados · Puerto Arauco + Villa Correntoso</td><td>Baja densidad · lakeside forest</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:13px;color:var(--grey);margin-top:6px">Los 3 sectores cubren los tres regímenes de la hipótesis dual-regime de la propuesta HOT (denso, expansión, baja densidad). El Mallín queda fuera del POC porque ya está volado y publicado en OpenAerialMap desde mayo 2026.</p>
+
+    <h3>Clases objetivo</h3>
+    <table>
+      <thead><tr><th>Clase</th><th>Geometría</th><th>Regla del protocolo que alimenta</th></tr></thead>
+      <tbody>
+        <tr><td><code>building</code></td><td>Polígono</td><td>Zonas 1, 2 y 3 · objeto central del compliance index</td></tr>
+        <tr><td><code>individual_tree</code></td><td>Polígono</td><td>Zonas 1 y 2 · distancia copa→casa, distancia copa→copa</td></tr>
+        <tr><td><code>closed_canopy</code></td><td>Polígono</td><td>Zona 3 · borde de bosque continuo</td></tr>
+        <tr><td><code>gas_tank</code></td><td>Bounding box</td><td>Zonas 1 y 2 · fuel no permitido cerca de vivienda</td></tr>
+        <tr><td><code>firewood_pile</code></td><td>Bounding box</td><td>Zonas 1 y 2 · fuel no permitido cerca de vivienda</td></tr>
+        <tr><td><code>water_reservoir</code></td><td>Bounding box</td><td>Zona 3 · recurso de supresión disponible</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="pipeline">
+  <div class="wrap">
+    <h2>Pipeline visual</h2>
+    <p class="lead">De izquierda a derecha: cada bloque es una fase, cada flecha un handoff de datos.</p>
+    <div class="diagram">3 proyectos Drone-TM ya creados
+      │
+      ▼
+[A]  Preparación · permisos ANAC + coordinación local
+      │
+      ▼
+[B]  Captura · vuelo por sector siguiendo task de Drone-TM
+      │  → fotos JPG con EXIF GPS subidas vía app Drone-TM
+      ▼
+     [Backend Drone-TM procesa ortomosaico y publica a OAM]
+      │
+      ▼
+[C]  Ingesta · descarga de ortomosaico desde OAM + tileado
+      │  → tiles JPG georreferenciados por sector
+      ▼
+[D]  Setup HOT Tasking Manager (proyecto por sector, split de tasks, guidelines)
+      │  → 3 proyectos HOT-TM con tasks generados y equipo invitado
+      ▼
+[E]  Sesión de labeling con equipo (calibración + labeling + QA)
+      │  → labels contribuidos a OpenStreetMap (ODbL)
+      ▼
+[F]  Extracción desde OSM + conversión a COCO + splits cross-régimen
+      │
+      ▼
+    data/processed/{train,val,test} listo para modelos</div>
+  </div>
+</section>
+
+<section id="prereq">
+  <div class="wrap">
+    <h2>Prerequisitos</h2>
+
+    <h3>Regulatorio</h3>
+    <ul>
+      <li>Registro del dron en ANAC — RUEA (Registro Único de Empresas y Aeronaves), gratis, online, ~1 semana.</li>
+      <li>Confirmación de que el sector a volar cae en <strong>ejido urbano municipal</strong> — no en Parque Nacional Nahuel Huapi. Res. 550/2025 lo permite para clase A sub-250g.</li>
+      <li>Chequeo de zonas restringidas en app DJI Fly y mapa ANAC.</li>
+      <li>Sin alerta activa de incendio (diciembre a marzo son ventana de riesgo).</li>
+    </ul>
+
+    <h3>Coordinación local</h3>
+    <ul>
+      <li>Aviso previo a Dirección de Protección Civil de Villa La Angostura.</li>
+      <li>Aviso a Bomberos Voluntarios de Villa La Angostura.</li>
+      <li>Aviso informal a vecinos del sector (por grupo WhatsApp de barrio).</li>
+      <li><strong>Encuadre bajo el proyecto HOT ya aprobado</strong> — se consulta con Hernán / equipo Lawal para aprovechar permisos gestionados.</li>
+    </ul>
+
+    <h3>Hardware</h3>
+    <ul>
+      <li>Dron DJI Mini 5 Pro cargado.</li>
+      <li>Mínimo 4 baterías + cargador de auto.</li>
+      <li>Tarjetas SD ≥128 GB, clase 10.</li>
+      <li>Laptop en campo (backup de fotos entre baterías).</li>
+      <li>Tablet o celular con app de misión planning.</li>
+    </ul>
+
+    <h3>Software (planning e ingesta)</h3>
+    <ul>
+      <li><strong>App Drone-TM</strong> instalada en el celular — para tomar tasks y subir las fotos capturadas.</li>
+      <li><strong>DJI Fly</strong> para ejecutar el vuelo según los parámetros especificados por el task de Drone-TM.</li>
+      <li><code>gdal_retile</code> (dentro de GDAL) para tilear el ortomosaico descargado desde OpenAerialMap.</li>
+      <li><code>rasterio</code> (Python) para lectura de geotiff y extracción de metadata GPS por tile.</li>
+    </ul>
+    <p style="font-size:13px;color:var(--grey);margin-top:6px"><strong>Drone-TM reemplaza:</strong> planning manual (Litchi), extracción de frames de video (ffmpeg), procesamiento de ortomosaico (WebODM local), y subida manual a OpenAerialMap. Todo eso lo hace el backend de la plataforma.</p>
+
+    <h3>Software (labeling)</h3>
+    <ul>
+      <li><strong>HOT Tasking Manager</strong> — instancia oficial en <code>tasks.hotosm.org</code>. Coordinador de tasks, no editor.</li>
+      <li><strong>iD editor</strong> — editor default de OSM, browser-based, curva baja para equipo de 6. JOSM opcional para power users.</li>
+      <li>Opcional: <strong>SAM como pre-procesador externo</strong>. Se pre-generan máscaras candidatas fuera del flujo HOT-TM y se cargan como referencia visual en iD. Reduce tiempo de anotación por polígono si se implementa el workflow; sin esto, el labeling en iD es puramente manual.</li>
+      <li>Cuentas OSM de los 6 anotadores (crear en <code>openstreetmap.org</code> si no las tienen).</li>
+    </ul>
+
+    <h3>Humano</h3>
+    <ul>
+      <li>Equipo confirmado de 6 anotadores con disponibilidad para 3 sesiones de ~3.5 h.</li>
+      <li>Un revisor senior (vos) que hace QA + reconciliación.</li>
+      <li>Guidelines escritas y calibradas antes de la primera sesión.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="fases">
+  <div class="wrap">
+    <h2>Fases del pipeline</h2>
+    <p class="lead">Cada fase con objetivo, actividades, salida y caveat honesto.</p>
+
+    <div class="phase a">
+      <div class="header">
+        <span class="num">A</span>
+        <span class="title">Preparación y permisos</span>
+        <span class="time">~3–5 días previos</span>
+      </div>
+      <div class="goal"><strong>Objetivo:</strong> tener permisos, hardware y planning listos antes de la primera salida a campo.</div>
+
+      <h5>Actividades</h5>
+      <ol>
+        <li>Se registra el dron en RUEA (ANAC).</li>
+        <li>Se verifica que los 3 proyectos Drone-TM (<code>cruce-piedritas</code>, <code>barrio-norte</code>, <code>correntoso-arauco</code>) tengan las AOIs finalizadas y los tasks generados.</li>
+        <li>Se consulta con equipo Lawal / HOT el encuadre operativo bajo la propuesta aprobada.</li>
+        <li>Se envía aviso previo a Protección Civil VLA y Bomberos Voluntarios.</li>
+        <li>Se instala la app de Drone-TM en el celular y se hace login con cuenta HOT-OSM.</li>
+        <li>Se cargan baterías y se preparan SD cards.</li>
+        <li>Se definen ventanas meteorológicas para los 3 vuelos (viento &lt;10 m/s, sin precipitación, buena luz).</li>
+      </ol>
+
+      <h5>Salida</h5>
+      <p>Checklist completa, 3 tasks Drone-TM listos para ejecutar, ventanas meteorológicas identificadas.</p>
+
+      <div class="caveat"><strong>Caveat:</strong> los tiempos de ANAC pueden variar. Si el registro se demora, se puede volar bajo el paraguas del proyecto HOT (que ya lo tiene resuelto).</div>
+    </div>
+
+    <div class="phase b">
+      <div class="header">
+        <span class="num">B</span>
+        <span class="title">Captura con el dron vía Drone-TM</span>
+        <span class="time">3 vuelos · uno por proyecto · ~2 h cada uno</span>
+      </div>
+      <div class="goal"><strong>Objetivo:</strong> ejecutar los 3 tasks de Drone-TM (uno por sector) y subir las fotos capturadas al backend de la plataforma, que se encarga del procesamiento posterior.</div>
+
+      <h5>Flujo por sector (repetir 3 veces)</h5>
+      <ol>
+        <li>Se toma el task correspondiente al sector desde la app Drone-TM (o desde <code>drone.hotosm.org</code>).</li>
+        <li>La app muestra los parámetros del vuelo definidos en el proyecto: altitud, overlap, patrón de grilla.</li>
+        <li>Se ejecuta el vuelo con el Mini 5 Pro siguiendo esos parámetros (usando DJI Fly para el control real, con la grilla ya predefinida por Drone-TM).</li>
+        <li>Se verifica en campo que las fotos se están tomando con GPS válido (indicador del dron).</li>
+        <li>Se descargan las fotos de la SD al celular / laptop entre baterías.</li>
+        <li>Se suben las fotos al backend Drone-TM vía la app.</li>
+        <li>Se registra un log manual: sector, hora, condiciones meteorológicas, número de baterías usadas, task ID.</li>
+      </ol>
+
+      <h5>Salida por sector</h5>
+      <ul>
+        <li>Task Drone-TM marcado como "captured" con las fotos subidas.</li>
+        <li>Log manual del vuelo.</li>
+      </ul>
+
+      <h5>Salida global de Fase B</h5>
+      <p>Los 3 tasks marcados como capturados. El backend de Drone-TM comienza el procesamiento (generación de ortomosaico) de forma automática y asincrónica.</p>
+
+      <div class="caveat"><strong>Caveat:</strong> el procesamiento del backend Drone-TM puede tardar horas o días según la carga de la plataforma. No es bloqueante — se puede avanzar con setup de Fase D (HOT Tasking Manager) mientras se procesa.</div>
+    </div>
+
+    <div class="phase c">
+      <div class="header">
+        <span class="num">C</span>
+        <span class="title">Ingesta desde OpenAerialMap y tileado</span>
+        <span class="time">~2–3 h de trabajo propio</span>
+      </div>
+      <div class="goal"><strong>Objetivo:</strong> descargar los 3 ortomosaicos ya procesados desde OpenAerialMap y tenerlos georreferenciados listos para ser referenciados como imagery layer en los proyectos HOT-TM.</div>
+
+      <h5>Estructura propuesta</h5>
+      <pre>data/raw/oam/{sector}/orthomosaic.tif
+data/interim/tiles/{sector}/tile_XXXX_YYYY.jpg
+data/interim/tiles/{sector}/tile_XXXX_YYYY.geojson  (metadata GPS)</pre>
+
+      <h5>Actividades</h5>
+      <ol>
+        <li>Se identifican los 3 ortomosaicos publicados en OpenAerialMap (uno por proyecto Drone-TM). Cada uno tiene un UUID asignado por OAM.</li>
+        <li>Se descargan los tres archivos geotiff a <code>data/raw/oam/{sector}/</code>.</li>
+        <li>Se corre <code>gdal_retile</code> para dividir cada ortomosaico en tiles de 512×512 o 1024×1024 píxeles.</li>
+        <li>Se genera un sidecar GeoJSON por tile con las coordenadas de los cuatro corners (usando <code>rasterio</code>).</li>
+        <li>Se hace revisión visual rápida: descartar tiles totalmente vacíos (fuera del ortomosaico) o con artefactos gruesos del stitching.</li>
+      </ol>
+
+      <h5>Salida</h5>
+      <p>Tiles JPG georreferenciados por sector, aproximadamente 300–800 tiles totales según el tamaño de las AOIs de los 3 proyectos.</p>
+
+      <div class="caveat"><strong>Caveat:</strong> los tiles georreferenciados son la ventaja grande del stack HOT sobre un pipeline video-based — no hay que reconstruir ortomosaico ni sincronizar telemetría. Todo viene resuelto desde Drone-TM.</div>
+    </div>
+
+    <div class="phase d">
+      <div class="header">
+        <span class="num">D</span>
+        <span class="title">Setup de HOT Tasking Manager</span>
+        <span class="time">~3–4 h de trabajo propio</span>
+      </div>
+      <div class="goal"><strong>Objetivo:</strong> tener 3 proyectos HOT-TM (uno por sector) creados con AOI reducida al 20% de superficie, tasks generados, equipo invitado y guidelines listas antes de convocar al kick-off.</div>
+
+      <h5>Actividades</h5>
+      <ol>
+        <li>Se accede a <code>tasks.hotosm.org</code> con cuenta OSM del project manager.</li>
+        <li>Se crea un proyecto por sector (3 proyectos totales): título, descripción, hashtag <code>#defensible-space-vla</code>.</li>
+        <li>Se dibuja o importa la AOI reducida a ~20% de la superficie del sector volado — priorizando la zona con densidad visible de estructuras y vegetación.</li>
+        <li>Se apunta la imagery al ortomosaico del sector publicado en OpenAerialMap.</li>
+        <li>Se divide en tasks: grilla de ~50-100 m por lado (task size configurable).</li>
+        <li>Se redactan las <strong>guidelines de anotación</strong>: schema de 6 clases con tags OSM propuestos, edge cases (árboles cortados por borde de task, edificios ocultos por copa, tags custom para leña), formato como PDF de 1 carilla (ver <code>LABELING_GUIDELINES.html</code>).</li>
+        <li>Se verifica que los 6 anotadores tengan cuenta OSM activa; se invitan al proyecto.</li>
+        <li>Se anota un <strong>task piloto de calibración</strong> (usado en el kick-off).</li>
+      </ol>
+
+      <h5>Salida</h5>
+      <ul>
+        <li>3 proyectos HOT-TM creados y públicos.</li>
+        <li>Tasks generados con AOI reducida por sector.</li>
+        <li>Guidelines escritas (PDF de 1 carilla).</li>
+        <li>6 anotadores invitados con cuenta OSM validada.</li>
+      </ul>
+
+      <div class="caveat"><strong>Caveat:</strong> iD editor no tiene SAM-assist nativo. Si se implementa el workflow de pre-suggestions con SAM externo (pre-generar máscaras candidatas fuera de HOT-TM y cargarlas como referencia visual en iD), es un desarrollo adicional que hay que resolver antes del kick-off. Sin esto, el labeling es puramente manual y las estimaciones de tiempo por task se ajustan hacia arriba (~10-15 min/task en vez de ~7).</div>
+    </div>
+
+    <div class="phase e">
+      <div class="header">
+        <span class="num">E</span>
+        <span class="title">Sesión de labeling con equipo</span>
+        <span class="time">3 sesiones × ~3.5 h · 6 personas · ~58 h-persona total</span>
+      </div>
+      <div class="goal"><strong>Objetivo:</strong> producir labels manuales de calidad controlada sobre ~20% de la superficie por sector (~500-600 tasks totales), contribuyendo directamente a OpenStreetMap y con inter-annotator agreement medido.</div>
+
+      <h5>Sesión 1 · Kick-off + labeling inicial (~3.5 h)</h5>
+      <ol>
+        <li><strong>30 min · Kick-off</strong>: revisión de guidelines, todos etiquetan el mismo task piloto en iD, comparación de resultados, discusión de desacuerdos y tags OSM, ajuste de guidelines si es necesario.</li>
+        <li><strong>2.5 h · Labeling distribuido</strong>: cada persona claima tasks en HOT-TM y etiqueta en iD. Ritmo esperado: ~7 min por task con SAM pre-suggestions activo, ~12 min por task en modo manual puro.</li>
+        <li><strong>30 min · Cierre</strong>: bloqueos y dudas registrados, próxima sesión coordinada.</li>
+      </ol>
+
+      <h5>Sesión 2 · Continuación (~3.5 h)</h5>
+      <ol>
+        <li><strong>3 h · Labeling</strong>: continuación del batch, distribución balanceada entre los 3 proyectos HOT-TM.</li>
+        <li><strong>30 min · Doble-anotación</strong>: 20% de los tasks completados son re-etiquetados por una segunda persona para calcular inter-annotator agreement.</li>
+      </ol>
+
+      <h5>Sesión 3 · Cierre + focalización en clases rare (~3.5 h)</h5>
+      <ol>
+        <li><strong>2.5 h · Labeling</strong>: completar los tasks faltantes, priorizando aquellos con presencia visible de fuel objects (gas, leña, reservorios) — clases con menos instancias esperadas.</li>
+        <li><strong>1 h · Revisión colectiva</strong>: discutir edge cases surgidos durante las sesiones y consolidar convenciones para el informe final.</li>
+      </ol>
+
+      <h5>QA (post-sesión, trabajo propio)</h5>
+      <ul>
+        <li>Se recorren un sample aleatorio (~10% del total) buscando errores gruesos.</li>
+        <li>Se calcula agreement per clase (Cohen's kappa o F1 pairwise) sobre el subset doble-anotado.</li>
+        <li>Se validan los tasks marcados como <em>mapped</em> pasándolos a <em>validated</em> en HOT-TM.</li>
+        <li>Se documentan tags OSM custom usados (namespace <code>defensible_space:*</code>) para reproducibilidad.</li>
+      </ul>
+
+      <h5>Salida</h5>
+      <ul>
+        <li>~500-600 tasks etiquetados y validados, distribuidos entre los 3 proyectos HOT-TM.</li>
+        <li>Labels contribuidos a OpenStreetMap bajo ODbL, con hashtag <code>#defensible-space-vla</code>.</li>
+        <li>Reporte de inter-annotator agreement per clase.</li>
+        <li>Guidelines actualizadas con los casos discutidos.</li>
+      </ul>
+
+      <div class="caveat"><strong>Caveat:</strong> es común subestimar el kick-off. 30 min bien invertidos ahí ahorran horas de reconciliación después — no skipearlo aunque el equipo tenga urgencia por arrancar. Segundo caveat: el tiempo por task depende críticamente de si hay SAM pre-suggestions activadas o labeling manual puro; la diferencia es ~40% de throughput.</div>
+    </div>
+
+    <div class="phase f">
+      <div class="header">
+        <span class="num">F</span>
+        <span class="title">Export a COCO + splits</span>
+        <span class="time">~2 h de trabajo propio</span>
+      </div>
+      <div class="goal"><strong>Objetivo:</strong> extraer los labels desde OpenStreetMap, convertirlos a formato COCO JSON, aplicar splits cross-régimen, dejar el dataset listo para consumir desde los dataloaders del proyecto.</div>
+
+      <h5>Actividades</h5>
+      <ol>
+        <li>Se extraen los labels desde OpenStreetMap vía Raw Data API o Overpass, filtrando por hashtag <code>#defensible-space-vla</code> y por bbox de cada AOI. Salida intermedia: GeoJSON con features (polígonos, puntos) y sus tags OSM.</li>
+        <li>Se convierten los GeoJSON a formato COCO JSON con script de conversión (<code>osm-to-coco</code>): se mapean tags OSM (<code>building=yes</code>, <code>natural=tree</code>, etc. + tags custom <code>defensible_space:*</code>) a las 6 categorías del schema, y se rasterizan los polígonos sobre los tiles georreferenciados del paso C.</li>
+        <li>Se aplican splits <strong>cross-régimen</strong>:
+          <ul style="margin-top:6px">
+            <li><strong>Train:</strong> ~80% de tiles de <code>cruce-piedritas</code> + ~80% de <code>barrio-norte</code></li>
+            <li><strong>Val:</strong> ~20% de tiles de <code>cruce-piedritas</code> + ~20% de <code>barrio-norte</code></li>
+            <li><strong>Test:</strong> 100% de tiles de <code>correntoso-arauco</code> (sector no visto en training — mide generalización cross-régimen: se entrena en denso/expansión, se testea en baja densidad)</li>
+          </ul>
+        </li>
+        <li>Se genera la estructura final:
+          <pre>data/processed/
+├── train/
+│   ├── images/*.jpg
+│   └── annotations.json  (COCO)
+├── val/
+│   ├── images/*.jpg
+│   └── annotations.json
+└── test/
+    ├── images/*.jpg
+    └── annotations.json</pre>
+        </li>
+        <li>Se genera un README del dataset con: número de tiles per split, distribución de instancias por clase, resolución, licencia, mapping tags OSM → categorías COCO, y protocolo de anotación resumido.</li>
+        <li>Se publica el dataset consolidado en HDX bajo CC-BY 4.0 como contribución al ecosistema HOT (deliverable mandatorio del HOT Open Call 2026).</li>
+      </ol>
+
+      <h5>Salida</h5>
+      <p>Dataset custom listo para entrenar, con documentación completa y publicación abierta.</p>
+
+      <div class="caveat"><strong>Caveat:</strong> el split cross-régimen es una decisión metodológica importante que se documenta en el informe — un random split inflaría las métricas porque tiles adyacentes espacialmente terminarían en train y val. Segundo caveat: la conversión OSM → COCO puede perder detalles si algunos tags OSM no mapean cleanly a las 6 categorías (por ejemplo, coníferas exóticas mapeadas a <code>individual_tree</code> pierden la distinción de especie). Se documenta el mapping exacto usado.</div>
+    </div>
+  </div>
+</section>
+
+<section id="tiempos">
+  <div class="wrap">
+    <h2>Estimación de tiempos</h2>
+    <p class="lead">Total realista para tener el dataset listo desde cero.</p>
+
+    <table>
+      <thead><tr><th>Fase</th><th>Trabajo propio</th><th>Trabajo del equipo</th><th>Duración calendario</th></tr></thead>
+      <tbody>
+        <tr><td>A · Preparación y permisos</td><td>3–5 h</td><td>—</td><td>~1 semana (esperando ANAC)</td></tr>
+        <tr><td>B · Captura con dron (3 vuelos)</td><td>~2 h campo × 3 vuelos = 6 h</td><td>—</td><td>3 días útiles (o menos si condiciones lo permiten)</td></tr>
+        <tr><td>C · Ingesta desde OAM + tileado</td><td>2–3 h</td><td>—</td><td>1 día (+ espera de procesamiento Drone-TM)</td></tr>
+        <tr><td>D · Setup HOT Tasking Manager</td><td>3–4 h</td><td>—</td><td>1 día</td></tr>
+        <tr><td>E · Labeling con equipo</td><td>5–6 h coord + QA</td><td>~58 h-persona</td><td>1.5 semanas (3 sesiones × 3.5 h)</td></tr>
+        <tr><td>F · Extracción OSM + COCO + splits</td><td>3–4 h</td><td>—</td><td>1 día</td></tr>
+        <tr><td><strong>TOTAL</strong></td><td><strong>~22–28 h propias</strong></td><td><strong>~58 h-persona</strong></td><td><strong>~3-4 semanas calendario</strong></td></tr>
+      </tbody>
+    </table>
+
+    <div class="highlight">
+      <h4>Encaje en el cronograma del TP</h4>
+      <p>Si la Fase A arranca el 1 de septiembre, el dataset queda listo alrededor del 21 de septiembre. Deja las últimas 2 semanas (22 sep – 5 oct) para entrenamiento, evaluación e informe. Cronograma ajustado pero factible.</p>
+      <p style="margin-top:8px"><strong>Dependencia crítica:</strong> el procesamiento del ortomosaico en el backend de Drone-TM (asincrónico, tiempos variables). Es la única parte del pipeline que no está bajo control propio — mitigación: subir los vuelos lo antes posible y en paralelo avanzar con Fase D.</p>
+    </div>
+  </div>
+</section>
+
+<section id="deliverables">
+  <div class="wrap">
+    <h2>Deliverables del pipeline</h2>
+    <ol>
+      <li><strong>3 ortomosaicos publicados en OpenAerialMap</strong> bajo CC-BY 4.0, uno por sector Drone-TM.</li>
+      <li><strong>Labels contribuidos a OpenStreetMap</strong> bajo ODbL, con hashtag <code>#defensible-space-vla</code> para trazabilidad.</li>
+      <li><strong>Dataset consolidado</strong> en <code>data/processed/</code>, formato COCO derivado de OSM, splits cross-régimen.</li>
+      <li><strong>3 proyectos HOT-TM públicos</strong> disponibles para que la comunidad HOT continúe completando el 80% restante de superficie por sector.</li>
+      <li><strong>Guidelines de anotación</strong> como PDF de 1 carilla, versionadas en el repo.</li>
+      <li><strong>Reporte de inter-annotator agreement</strong> per clase, para incluir en el informe del TP como sección de calidad de datos.</li>
+      <li><strong>README del dataset</strong> con estadísticas, protocolo, mapping OSM→COCO y licencia.</li>
+      <li><strong>Publicación en HDX</strong> bajo CC-BY 4.0 como contribución HOT (mandatorio del Open Call 2026).</li>
+    </ol>
+  </div>
+</section>
+
+<section id="integracion">
+  <div class="wrap">
+    <h2>Cómo se integra al TP y al proyecto HOT</h2>
+
+    <h3>Al TP (Vision por Computadora III)</h3>
+    <ul>
+      <li>El dataset alimenta el entrenamiento de DETR y YOLOv8n (comparación arquitectural, pregunta central del TP).</li>
+      <li>La sección "Contribución de datos" del informe se apoya en las guidelines + agreement + splits.</li>
+      <li>Habilita el compliance index por estructura sobre imagen real de Villa La Angostura.</li>
+      <li>El framing de <strong>POC</strong> se destaca en el informe: se muestra el pipeline end-to-end validado sobre 3 sectores, con el proyecto HOT completo (6 sectores) como trabajo futuro escalable.</li>
+    </ul>
+
+    <h3>Al proyecto HOT (Measuring the Defensible Space)</h3>
+    <ul>
+      <li>Los 3 vuelos ya realizados via Drone-TM quedan como base del proyecto — al momento de escalar a los otros 3 sectores (Puerto Manzano + demás), el pipeline ya está probado.</li>
+      <li>Los 3 ortomosaicos se publican en OpenAerialMap bajo el paraguas HOT y quedan disponibles a la comunidad OSM Argentina y a Protección Civil VLA.</li>
+      <li>El dataset custom se publica en HDX bajo CC-BY 4.0 para reutilización en el proyecto HOT y en otras localidades de la Comarca Andina.</li>
+      <li>Las guidelines de anotación pueden ser adoptadas por los mapatones de la Fase 2 del proyecto HOT.</li>
+      <li>Aporta directamente al deliverable "Reusable methodological note on where crown-level detection breaks down in Andean-Patagonian forest" (propuesta HOT, página 17).</li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="lawal">LAWAL</div>
+    <p>Pipeline de datos · TP Vision por Computadora III · CEIA FIUBA</p>
+    <p>Documento vivo · Complementa PLAN.html</p>
+  </div>
+</footer>
+
+</body>
+</html>
