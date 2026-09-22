@@ -1,0 +1,16 @@
+[project]
+name = "tp-defensible-space"
+version = "0.1.0"
+description = "TP Final Vision por Computadora III — Defensible space detection en Villa La Angostura"
+requires-python = ">=3.11"
+dependencies = [
+    "pillow>=12.3.0",
+    "rasterio>=1.4.4",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

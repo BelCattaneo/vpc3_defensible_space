@@ -1,0 +1,18 @@
+# python
+__pycache__/
+*.pyc
+.venv/
+.python-version
+
+# macos
+.DS_Store
+
+# ide
+.vscode/
+.idea/
+
+# env
+.env
+
+# data (grande, no versionar)
+data/
