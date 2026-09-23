@@ -16,3 +16,12 @@ __pycache__/
 
 # data (grande, no versionar)
 data/
+
+# trained model weights
+models/
+
+# training logs
+*.log
+
+# ultralytics pretrained cache
+yolov8n-seg.pt

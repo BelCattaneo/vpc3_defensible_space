@@ -1,5 +1,6 @@
 """Generate PNG previews of N random tiles for visual inspection."""
 
+import argparse
 import random
 from pathlib import Path
 
@@ -7,9 +8,14 @@ import numpy as np
 import rasterio
 from PIL import Image
 
-INPUT = Path("data/interim/tiles/correntoso-arauco")
-OUTPUT = Path("data/interim/previews")
 N_SAMPLES = 30
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--sector", required=True, help="sector name (folder under data/interim/tiles/)")
+args = parser.parse_args()
+
+INPUT = Path(f"data/interim/tiles/{args.sector}")
+OUTPUT = Path(f"data/interim/previews/{args.sector}")
 
 OUTPUT.mkdir(parents=True, exist_ok=True)
 random.seed(42)

@@ -1,16 +1,22 @@
 """Tile orthophotos into 1024x1024 patches with 20% overlap."""
 
+import argparse
 from pathlib import Path
 
 import rasterio
 from rasterio.windows import Window
 from rasterio.windows import transform as win_transform
 
-INPUT = Path("data/raw/correntoso-arauco")
-OUTPUT = Path("data/interim/tiles/correntoso-arauco")
 TILE_SIZE = 1024
 STEP = int(TILE_SIZE * 0.8)   # 20% overlap
 LIMIT = None                  # None to process all orthophotos
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--sector", required=True, help="sector name (folder under data/raw/)")
+args = parser.parse_args()
+
+INPUT = Path(f"data/raw/{args.sector}")
+OUTPUT = Path(f"data/interim/tiles/{args.sector}")
 
 OUTPUT.mkdir(parents=True, exist_ok=True)
 
