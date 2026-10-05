@@ -251,7 +251,7 @@ caption .v-ok, caption .v-ko, caption .v-mix, caption .v-open{
 <h2>1. Objetivo del proyecto</h2>
 
 <h3>1.1. Problema y aplicación</h3>
-<p>El trabajo aborda la detección automática de incumplimiento del protocolo municipal de <em>defensible space</em> en Villa La Angostura, Neuquén, mediante segmentación por instancias sobre imágenes aéreas de dron. El protocolo, publicado por la Dirección de Protección Civil, establece que ninguna vegetación debe encontrarse a menos de dos metros de una estructura habitacional, regla orientada a mitigar la propagación de incendios de interfase urbano-forestal. El <em>pipeline</em> produce, dada una ortofoto (imagen aérea georreferenciada con corrección geométrica para escala uniforme) de dron, un mapa interactivo donde cada edificio aparece coloreado según su cumplimiento. El trabajo se enmarca en una propuesta de la cooperativa Lawal a la convocatoria Open Call 2026 (<em>Map your city with fAIr</em>) del <em>Humanitarian OpenStreetMap Team</em> (HOT).</p>
+<p>El trabajo aborda la detección automática de incumplimiento del protocolo municipal de <em>defensible space</em> en Villa La Angostura, Neuquén, mediante segmentación por instancias sobre imágenes aéreas de dron. El protocolo, publicado por la Dirección de Protección Civil, establece que ninguna vegetación debe encontrarse a menos de dos metros de una estructura habitacional, regla orientada a mitigar la propagación de incendios de interfase urbano-forestal. El <em>pipeline</em> produce, dada una ortofoto de dron, un mapa interactivo donde cada edificio aparece coloreado según su cumplimiento. El trabajo se enmarca en una propuesta de la cooperativa Lawal a la convocatoria Open Call 2026 (<em>Map your city with fAIr</em>) del <em>Humanitarian OpenStreetMap Team</em> (HOT).</p>
 
 <h3>1.2. Pregunta de investigación</h3>
 <div class="pullquote">
@@ -461,7 +461,7 @@ caption .v-ok, caption .v-ko, caption .v-mix, caption .v-open{
 </table>
 
 <h3>3.2. Dataset y <em>splits</em></h3>
-<p>El dataset se construyó a partir de la ortofoto de cada tarea individual, no del mosaico global del proyecto, para evitar propagar errores de alineación entre tareas vecinas. En Correntoso/Arauco, que tiene la topografía más irregular, <em>Terrain Following</em> estuvo desactivado, lo que puede introducir cambios locales de escala en zonas de altitud variable. A partir de esa experiencia, en Lomas del Correntoso/Norte se activó el parámetro para mitigar esa deformación.</p>
+<p>El dataset se construyó a partir de la ortofoto (imagen aérea georreferenciada con corrección geométrica para escala uniforme) de cada tarea individual, no del mosaico global del proyecto, para evitar propagar errores de alineación entre tareas vecinas. En Correntoso/Arauco, que tiene la topografía más irregular, <em>Terrain Following</em> estuvo desactivado, lo que puede introducir cambios locales de escala en zonas de altitud variable. A partir de esa experiencia, en Lomas del Correntoso/Norte se activó el parámetro para mitigar esa deformación.</p>
 
 <p>El etiquetado se realizó en <code>Roboflow</code> con <em>Smart Polygon</em> (<code>SAM</code> asistido). El proyecto inicial fue etiquetado íntegramente por la autora y el dataset expandido se produjo con el aporte del equipo Lawal.</p>
 
