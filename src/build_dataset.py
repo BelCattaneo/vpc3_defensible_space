@@ -24,14 +24,23 @@ from pathlib import Path
 
 
 def canon(name: str) -> str:
-    """Strip Roboflow preprocessing suffix: 'foo_png.rf.<hash>.jpg' -> 'foo'."""
+    """Strip Roboflow preprocessing suffix: 'foo_png.rf.<hash>.jpg' -> 'foo'.
+
+    Elimina todos los sufijos conocidos en orden hasta que no queden mas, de
+    modo que ``foo_png.rf.<hash>.jpg`` y ``foo_png.jpg`` ambos devuelvan
+    ``foo`` (el loop original salia con el primer match y dejaba ``foo_png``).
+    """
     stem = name
     if ".rf." in stem:
         stem = stem.split(".rf.")[0]
-    for ext in ("_png", ".png", ".jpg", ".jpeg"):
-        if stem.endswith(ext):
-            stem = stem[: -len(ext)]
-            break
+    changed = True
+    while changed:
+        changed = False
+        for ext in (".jpeg", ".jpg", ".png", "_png"):
+            if stem.endswith(ext):
+                stem = stem[: -len(ext)]
+                changed = True
+                break
     return stem
 
 

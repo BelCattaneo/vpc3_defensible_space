@@ -10,6 +10,16 @@ import shutil
 import sys
 from pathlib import Path
 
+
+def _clean_dir(d: Path) -> None:
+    """Vacia ``d`` manteniendo el directorio para evitar mezclar versiones."""
+    if d.exists():
+        for item in d.iterdir():
+            if item.is_dir():
+                shutil.rmtree(item)
+            else:
+                item.unlink()
+
 from constants import KEEP_CLASSES
 
 # Override via CLI: ``python coco_to_yolo.py <coco_dir> <yolo_dir>``
@@ -33,6 +43,10 @@ def _convert_split(src_dir: Path, dst_split: str, yolo_class_ids: dict[int, int]
     lbl_out = DST / "labels" / dst_split
     img_out.mkdir(parents=True, exist_ok=True)
     lbl_out.mkdir(parents=True, exist_ok=True)
+    # Vaciar el directorio evita heredar imagenes/labels de una conversion
+    # anterior cuando SRC o DST apuntan a versiones distintas del dataset.
+    _clean_dir(img_out)
+    _clean_dir(lbl_out)
 
     coco = json.loads((src_dir / "_annotations.coco.json").read_text())
 
@@ -53,9 +67,12 @@ def _convert_split(src_dir: Path, dst_split: str, yolo_class_ids: dict[int, int]
         for a in anns_by_img.get(img["id"], []):
             cls = yolo_class_ids[a["category_id"]]
             # segmentation is a list of polygons; each polygon is [x1, y1, x2, y2, ...]
+            # Normalizar y clampear a [0, 1]: Roboflow emite ocasionalmente
+            # coords apenas fuera del borde (p.ej. 1024.5 en una imagen 1024),
+            # y la API de Ultralytics las rechaza.
             for poly in a["segmentation"]:
                 norm = [
-                    f"{(v / w if i % 2 == 0 else v / h):.6f}"
+                    f"{min(max(v / w if i % 2 == 0 else v / h, 0.0), 1.0):.6f}"
                     for i, v in enumerate(poly)
                 ]
                 lines.append(f"{cls} " + " ".join(norm))
@@ -69,7 +86,15 @@ def _convert_split(src_dir: Path, dst_split: str, yolo_class_ids: dict[int, int]
 
 def _write_data_yaml(yolo_class_ids: dict[int, int]) -> None:
     """Write the ultralytics ``data.yaml`` with class names in YOLO id order."""
-    coco = json.loads((SRC / "train" / "_annotations.coco.json").read_text())
+    # Prefer train split, fall back a cualquiera presente para soportar
+    # datasets test-only (p.ej. holdout_team).
+    for split in ("train", "valid", "test"):
+        candidate = SRC / split / "_annotations.coco.json"
+        if candidate.exists():
+            coco = json.loads(candidate.read_text())
+            break
+    else:
+        raise FileNotFoundError(f"no split with annotations found under {SRC}")
     src_id2name = {c["id"]: c["name"] for c in coco["categories"]}
     names_in_order = [
         src_id2name[cid]
