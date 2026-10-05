@@ -86,13 +86,13 @@ Las fuentes citadas (log + json + csv) son auditables.
 - Hipótesis alternativa pendiente: el test set de v7 (77 imgs filtradas a autora) tiene distribución distinta a v5/v9 (18 imgs). La reducción del test puede reflejar varianza en vez de calidad del modelo.
 - M2F cayó más que YOLO: su matcher Hungarian es más sensible a label noise.
 
-## Composición de v6 por labeler (de `reports/filenames_by_labeler.json`)
+## Composición de v6 por labeler
 
-- `belcattaneo@gmail.com` (autora, jobs): 400 imgs
+- autora (jobs): 400 imgs
 - v5 originales sin job (autora, pre-jobs): 86 imgs
-- `martin.silva@lawal.com.ar`: 197 imgs
-- `joaquin.mansilla@lawal.com.ar`: 165 imgs
-- `florencia.otarola@lawal.com.ar`: 79 imgs
+- equipo-A: 197 imgs
+- equipo-B: 165 imgs
+- equipo-C: 79 imgs
 - AUTOLABEL (en Roboflow, no exportados): 359 imgs — no entran a v6.
 
 ## Próximas iteraciones

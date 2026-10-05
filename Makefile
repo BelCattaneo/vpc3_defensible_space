@@ -29,15 +29,15 @@ tiles: ## Genera tiles 1024x1024 desde data/raw/
 labelers: ## Fetch mapping anotadora -> imagenes a reports/filenames_by_labeler.json
 	.venv/bin/python src/filter_autolabel.py
 
-dataset-v7: ## Dataset filtrado por autora (preserve-splits, 486 imagenes)
+dataset-v7: ## Dataset filtrado por autora (preserve-splits, 486 imagenes). Requiere AUTHOR_EMAIL
 	.venv/bin/python src/build_dataset.py \
-		--labelers belcattaneo@gmail.com \
+		--labelers $(AUTHOR_EMAIL) \
 		--output data/processed/dataset_coco_v7 \
 		--include-unmapped
 
-dataset-holdout: ## Dataset held-out team (merge-to-test, 441 imagenes)
+dataset-holdout: ## Dataset held-out team (merge-to-test, 441 imagenes). Requiere TEAM_EMAILS
 	.venv/bin/python src/build_dataset.py \
-		--labelers martin.silva@lawal.com.ar joaquin.mansilla@lawal.com.ar florencia.otarola@lawal.com.ar \
+		--labelers $(TEAM_EMAILS) \
 		--output data/processed/dataset_coco_holdout_team \
 		--mode merge-to-test
 

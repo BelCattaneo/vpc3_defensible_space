@@ -57,3 +57,7 @@ reports/alerts_*_final/
 reports/alerts_*_final.geojson
 reports/comparison_champions_fixed/
 reports/mosaic_overlay_debug.jpg
+
+# Mapping email anotadora a archivos: contiene PII del equipo colaborador,
+# por lo tanto no se versiona. Se regenera localmente con `make labelers`.
+reports/filenames_by_labeler.json

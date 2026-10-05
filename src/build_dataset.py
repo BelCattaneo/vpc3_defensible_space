@@ -1,17 +1,18 @@
 """Build a filtered COCO dataset from the v6 merged export.
 
-One script covers both historical derivatives:
+One script covers both historical derivatives. ``--labelers`` recibe las
+cuentas de las anotadoras (los emails reales se mantienen fuera del repo,
+leyendolos del mapping local ``reports/filenames_by_labeler.json``):
 
 * dataset_coco_v7 (author-only, same splits as v6):
     python src/build_dataset.py \\
-        --labelers belcattaneo@gmail.com \\
+        --labelers <author-email> \\
         --output data/processed/dataset_coco_v7 \\
         --mode preserve-splits --include-unmapped
 
 * dataset_coco_holdout_team (team-only, fused into a single test/):
     python src/build_dataset.py \\
-        --labelers martin.silva@lawal.com.ar joaquin.mansilla@lawal.com.ar \\
-                   florencia.otarola@lawal.com.ar \\
+        --labelers <team-email-1> <team-email-2> <team-email-3> \\
         --output data/processed/dataset_coco_holdout_team \\
         --mode merge-to-test
 """
