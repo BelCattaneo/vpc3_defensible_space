@@ -55,6 +55,8 @@ _docs/
 # evaluadores puedan ver los resultados sin correr nada.
 reports/alerts_*_final/
 reports/alerts_*_final.geojson
+reports/alerts_*_m2f/
+reports/alerts_*_m2f.geojson
 reports/comparison_champions_fixed/
 reports/mosaic_overlay_debug.jpg
 

@@ -76,6 +76,9 @@ train-m2f-s: | $(LOGS) ## Entrena Mask2Former + Swin-S sobre 927 mix (v13)
 eval-m2f: ## Evalua M2F sobre test propio con pycocotools
 	.venv/bin/python src/evaluate_m2f.py
 
+eval-yolo: ## Evalua YOLO sobre test propio con pycocotools (mismo pipeline que M2F)
+	.venv/bin/python src/evaluate_yolo.py
+
 compare: ## Genera paneles side-by-side GT | YOLO | M2F
 	.venv/bin/python src/compare_models.py
 
@@ -105,7 +108,7 @@ mosaic: ## Genera mosaico Web Mercator para fondo del mapa
 map: ## Renderiza mapa HTML interactivo con slider de confianza
 	.venv/bin/python src/generate_map.py \
 		--geojson $(ALERTS_DIR).geojson \
-		--output reports/alerts_map_$(SECTOR_SLUG).html \
+		--output reports/alerts_map_$(SECTOR_SLUG)_final.html \
 		--title "Alertas $(SECTOR)" \
 		--orthomosaic reports/orthomosaic_$(SECTOR_SLUG).png
 
@@ -175,7 +178,10 @@ clean-pycache: ## Elimina directorios __pycache__
 # Parametros configurables (override en linea: make map SECTOR=correntoso-arauco)
 # ------------------------------------------------------------
 SECTOR     ?= barrio-norte
-SECTOR_SLUG = $(subst -,_,$(SECTOR))
-WEIGHTS    ?= models/yolo_v12_l_927/weights/best.pt
+# Nombres de salida coinciden con los entregables del repo (reports/alerts_<sector>_final.*).
+# El sufijo _final marca el pipeline post-fixes (dedup IoU-only, danger_area
+# por unary_union, extraccion M2F con return_binary_maps=True).
+SECTOR_SLUG = $(SECTOR)
+WEIGHTS    ?= models/demo_champion/weights/best.pt
 CONF       ?= 0.15
-ALERTS_DIR  = reports/alerts_$(SECTOR_SLUG)
+ALERTS_DIR  = reports/alerts_$(SECTOR_SLUG)_final
