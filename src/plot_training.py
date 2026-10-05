@@ -83,11 +83,18 @@ def plot_m2f_losses() -> None:
 
 
 def plot_yolo_metrics() -> None:
-    """Compare YOLO runs on seg_loss and mask mAP@0.5 vs epoch."""
+    """Compare YOLO runs on seg_loss and mask mAP@0.5 vs epoch.
+
+    Las columnas de ``results.csv`` cambian entre versiones de Ultralytics,
+    por eso se accede con ``.get()`` y se saltea el run que no las tenga.
+    """
     runs = {label: read_yolo_csv(Path(p))
             for p, label in YOLO_RUNS.items() if Path(p).exists()}
+    runs = {k: v for k, v in runs.items()
+            if v.get("epoch") and v.get("train/seg_loss")
+               and v.get("metrics/mAP50(M)")}
     if not runs:
-        print("no yolo results.csv found")
+        print("no yolo results.csv found or expected columns missing")
         return
 
     _, axes = plt.subplots(1, 2, figsize=(12, 4))
