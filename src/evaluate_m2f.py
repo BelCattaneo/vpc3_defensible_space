@@ -22,9 +22,14 @@ TEST_DIR = Path(os.environ.get("DATASET_COCO", "data/processed/dataset_coco_v6")
 GT_PATH = TEST_DIR / "_annotations.coco.json"
 REPORT = Path(os.environ.get("M2F_REPORT", "reports/m2f_metrics.md"))
 
-# Roboflow adds a "root" class covering the union of foreground classes;
-# it distorts per-class mAP so we skip it in the per-class breakdown.
-ROOT_CLASS = "defensible-space-v1"
+# Roboflow adds a "root" class covering the union of foreground classes.
+# It distorts per-class mAP so we skip it in the per-class breakdown.
+# El set tiene las variantes conocidas de ambos exports (v6 y oracular_merged)
+# para espejar la logica de ``evaluate_yolo``.
+ROOT_CLASSES = {
+    "defensible-space-v1", "defensible-space-v1-AJLD",
+    "defensible-space-oracular",
+}
 
 M2F_THRESHOLD = float(os.environ.get("M2F_THRESHOLD", "0.5"))
 MIN_POLYGON_POINTS = 6  # 3 (x, y) pairs
@@ -92,7 +97,7 @@ def _write_report(gt_coco: COCO, pred_coco: COCO, name_to_gt_id: dict[str, int])
         "\n## Per-class mAP (0.5:0.95)\n",
     ]
     for name, gt_id in name_to_gt_id.items():
-        if name == ROOT_CLASS:
+        if name in ROOT_CLASSES:
             continue
         ev_c = COCOeval(gt_coco, pred_coco, iouType="segm")
         ev_c.params.catIds = [gt_id]
