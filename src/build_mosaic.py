@@ -41,7 +41,15 @@ EXPECTED_BANDS = 4
 # ---------------------------------------------------------------------------
 
 def _merge_native(tif_paths: list[Path]):
-    """Merge all TIF tiles at native resolution in the source UTM CRS."""
+    """Merge all TIF tiles at native resolution in the source UTM CRS.
+
+    ``rasterio.merge`` aloca el bounding box completo que contiene a todos
+    los tiles, lo cual puede ser muy grande (varios GB) cuando los tiles
+    estan dispersos geograficamente. Para sectores con mas de ~20 tiles
+    separados, considerar llamar este modulo por sub-sector y combinar los
+    mosaicos resultantes a nivel PNG, o usar ``bounds`` explicito para
+    recortar el area de interes antes del merge.
+    """
     srcs = [rasterio.open(p) for p in tif_paths]
     try:
         mosaic, out_transform = merge(srcs)
