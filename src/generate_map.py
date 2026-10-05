@@ -210,22 +210,31 @@ def _slider_html(map_name: str) -> str:
           }
           return false;
         }
+        function reactivate(layer) {
+          if (layer._path) { layer._path.style.pointerEvents = ''; }
+        }
         function styleBuilding(layer, p, tT) {
           var violation = effectiveViolation(p, tT);
           var fill = violation ? '__COLOR_VIO__' : '__COLOR_OK__';
           layer.setStyle({color: fill, fillColor: fill,
                           weight: 1.5, fillOpacity: 0.55, opacity: 1});
+          reactivate(layer);
         }
         function styleTree(layer) {
           layer.setStyle({color: '__COLOR_TREE__', fillColor: '__COLOR_TREE__',
                           weight: 0.5, fillOpacity: 0.35, opacity: 1});
+          reactivate(layer);
         }
         function styleDanger(layer) {
           layer.setStyle({color: '__COLOR_DZ__', fillColor: '__COLOR_DZ__',
                           weight: 1, fillOpacity: 0.7, opacity: 1});
+          reactivate(layer);
         }
         function hide(layer) {
+          // Transparentar la capa Y desactivar interactividad para que los
+          // tooltips/popups no se disparen sobre poligonos invisibles.
           layer.setStyle({fillOpacity: 0, opacity: 0});
+          if (layer._path) { layer._path.style.pointerEvents = 'none'; }
         }
 
         function apply() {
