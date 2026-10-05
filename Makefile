@@ -87,7 +87,7 @@ compare: ## Genera paneles side-by-side GT | YOLO | M2F
 # Parametros: SECTOR, WEIGHTS, CONF (ver seccion de abajo).
 # ------------------------------------------------------------
 alerts: | $(LOGS) ## Corre compute_alerts para SECTOR (default barrio-norte)
-	DEVICE=cpu YOLO_WEIGHTS=$(WEIGHTS) \
+	YOLO_WEIGHTS=$(WEIGHTS) \
 	.venv/bin/python -u src/compute_alerts.py \
 		--model yolo \
 		--input data/interim/tiles/$(SECTOR) \
@@ -138,7 +138,7 @@ demo-train: | $(LOGS) ## Entrena YOLOv8n desde cero sobre dataset v5 (86 autora)
 
 # Internal: inferencia + aggregate + mosaic + map. WEIGHTS lo pasa el caller.
 define run_demo_infer
-	DEVICE=cpu YOLO_WEIGHTS=$(1) \
+	YOLO_WEIGHTS=$(1) \
 	.venv/bin/python -u src/compute_alerts.py \
 		--model yolo \
 		--input data/interim/tiles/$(DEMO_SECTOR) \
