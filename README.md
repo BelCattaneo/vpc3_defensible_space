@@ -29,13 +29,32 @@ A parámetros equiparables (47 M vs 46 M), `Mask2Former + Swin-T` supera a `YOLO
 
 ## Setup
 
-Requiere [uv](https://github.com/astral-sh/uv) como manejador de paquetes.
+Requiere [uv](https://github.com/astral-sh/uv) como manejador de paquetes. Para instalarlo:
+
+```bash
+# macOS y Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Windows (PowerShell)
+powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+Después del clone:
 
 ```bash
 make setup
 ```
 
 Instala el ambiente en `.venv/` con las dependencias declaradas en `pyproject.toml`.
+
+### Device para training e inferencia
+
+Por defecto el código detecta automáticamente el *device* disponible: `mps` en Apple Silicon y `cpu` en el resto. Si tenés GPU NVIDIA y querés usarla, exportá `DEVICE=cuda` antes de los comandos de `make`:
+
+```bash
+export DEVICE=cuda
+make demo-full
+```
 
 Todos los pasos del pipeline están automatizados en el `Makefile`. `make help` lista los targets disponibles con una descripción corta de cada uno.
 

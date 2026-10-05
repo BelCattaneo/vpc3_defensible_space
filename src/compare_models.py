@@ -37,7 +37,14 @@ CONF_YOLO = CONF_SAME
 CONF_M2F = CONF_SAME
 
 TITLE_BAR_HEIGHT = 40
-TITLE_FONT_PATH = "/System/Library/Fonts/Helvetica.ttc"
+# Fuentes candidatas por SO para la barra de titulo. Si ninguna existe,
+# cae al fallback de Pillow en runtime.
+TITLE_FONT_PATHS = (
+    "/System/Library/Fonts/Helvetica.ttc",                                 # macOS
+    "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",                     # Debian/Ubuntu
+    "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",     # Fedora/RHEL
+    "C:/Windows/Fonts/arial.ttf",                                          # Windows
+)
 TITLE_FONT_SIZE = 24
 OVERLAY_ALPHA = 110  # 0-255; used for class-mask overlays
 
@@ -66,9 +73,14 @@ def label_image(img: Image.Image, text: str) -> Image.Image:
     out = Image.new("RGB", (img.width, img.height + TITLE_BAR_HEIGHT), "white")
     out.paste(img, (0, TITLE_BAR_HEIGHT))
     draw = ImageDraw.Draw(out)
-    try:
-        font = ImageFont.truetype(TITLE_FONT_PATH, TITLE_FONT_SIZE)
-    except OSError:
+    font = None
+    for path in TITLE_FONT_PATHS:
+        try:
+            font = ImageFont.truetype(path, TITLE_FONT_SIZE)
+            break
+        except OSError:
+            continue
+    if font is None:
         font = ImageFont.load_default()
     draw.text((10, 6), text, fill="black", font=font)
     return out

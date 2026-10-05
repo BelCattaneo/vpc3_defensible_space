@@ -39,7 +39,14 @@ COLOR_VIOLATION = (232, 65, 24)
 COLOR_TREES = (34, 189, 90)
 ALPHA_TREES = 70
 ALPHA_BUILDING = 150
-OVERLAY_FONT_PATH = "/System/Library/Fonts/Helvetica.ttc"
+# Fuentes candidatas por SO para la etiqueta de distancia del overlay.
+# Si ninguna existe, se usa el fallback de Pillow en runtime.
+OVERLAY_FONT_PATHS = (
+    "/System/Library/Fonts/Helvetica.ttc",                                 # macOS
+    "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",                     # Debian/Ubuntu
+    "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",     # Fedora/RHEL
+    "C:/Windows/Fonts/arial.ttf",                                          # Windows
+)
 OVERLAY_FONT_SIZE = 20
 
 # Polygon extraction constants.
@@ -274,9 +281,14 @@ def draw_overlay(image: Image.Image,
 
     out = Image.alpha_composite(base, overlay).convert("RGB")
     draw = ImageDraw.Draw(out)
-    try:
-        font = ImageFont.truetype(OVERLAY_FONT_PATH, OVERLAY_FONT_SIZE)
-    except OSError:
+    font = None
+    for path in OVERLAY_FONT_PATHS:
+        try:
+            font = ImageFont.truetype(path, OVERLAY_FONT_SIZE)
+            break
+        except OSError:
+            continue
+    if font is None:
         font = ImageFont.load_default()
     for rec in building_records:
         x, y, _, _ = rec["bbox"]
