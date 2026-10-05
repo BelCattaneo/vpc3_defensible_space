@@ -49,12 +49,7 @@ Instala el ambiente en `.venv/` con las dependencias declaradas en `pyproject.to
 
 ### Device para training e inferencia
 
-Por defecto el código detecta automáticamente el *device* disponible: `mps` en Apple Silicon y `cpu` en el resto. Si tenés GPU NVIDIA y querés usarla, exportá `DEVICE=cuda` antes de los comandos de `make`:
-
-```bash
-export DEVICE=cuda
-make demo-full
-```
+Por defecto el código autodetecta el *device* disponible en orden `cuda` (NVIDIA), `mps` (Apple Silicon), `cpu`. No hace falta configurar nada. Para forzar un *device* específico se puede exportar `DEVICE=cpu` (o `cuda`, `mps`) antes del comando de `make`.
 
 Todos los pasos del pipeline están automatizados en el `Makefile`. `make help` lista los targets disponibles con una descripción corta de cada uno.
 
@@ -67,7 +62,9 @@ data/
   processed/        datasets COCO y YOLO versionados
 docs/               informe HTML, walkthrough y documentos auxiliares
 models/             pesos entrenados (demo_nano y demo_champion versionados)
-reports/            alertas, mapas HTML, métricas, historial de experimentos
+reports/
+  maps/             mapas HTML interactivos finales por sector
+  ...               métricas por run, holdouts, historial de experimentos
 references/         bibliografía
 src/                código de todas las etapas
 logs/               stdout de training e inferencia (gitignored)
@@ -92,7 +89,7 @@ Para ver el *pipeline* operativo con la mejor calidad de detección sin entrenar
 make demo
 ```
 
-Equivale a `make demo-tiles` + `make demo-infer-champion`. Produce `reports/alerts_map_demo.html` (14 MB). Abrir en el navegador y mover los *sliders* de confianza para filtrar edificios y vegetación en vivo.
+Equivale a `make demo-tiles` + `make demo-infer-champion`. Produce `reports/maps/alerts_map_demo.html` (14 MB). Abrir en el navegador y mover los *sliders* de confianza para filtrar edificios y vegetación en vivo.
 
 ### Modo B, training desde cero + inferencia (~20 min)
 
@@ -108,10 +105,10 @@ Equivale a `make demo-train` (entrena `YOLOv8n-seg` sobre las 86 imágenes v5) +
 
 La ortofoto del demo cubre una sola *task* del vuelo. Los mapas sobre los sectores completos corridos con el campeón (`Mask2Former + Swin-T` v8) vienen pre-generados en el repo para abrir directamente en el navegador:
 
-- `reports/alerts_map_barrio-norte_m2f.html`
-- `reports/alerts_map_correntoso-arauco_m2f.html`
+- `reports/maps/alerts_map_barrio-norte_m2f.html`
+- `reports/maps/alerts_map_correntoso-arauco_m2f.html`
 
-Ambos autocontenidos: ortomosaico de fondo + detecciones en *overlay* + *widget* de confianza en vivo. No requieren servidor, se abren con `open reports/alerts_map_<sector>_m2f.html` en macOS o doble click.
+Ambos autocontenidos: ortomosaico de fondo + detecciones en *overlay* + *widget* de confianza en vivo. No requieren servidor, se abren con doble click o `open reports/maps/alerts_map_<sector>_m2f.html` en macOS (`xdg-open` en Linux, `start` en Windows).
 
 ## Pipeline general
 

@@ -108,7 +108,7 @@ mosaic: ## Genera mosaico Web Mercator para fondo del mapa
 map: ## Renderiza mapa HTML interactivo con slider de confianza
 	.venv/bin/python src/generate_map.py \
 		--geojson $(ALERTS_DIR).geojson \
-		--output reports/alerts_map_$(SECTOR_SLUG)_final.html \
+		--output reports/maps/alerts_map_$(SECTOR_SLUG)_final.html \
 		--title "Alertas $(SECTOR)" \
 		--orthomosaic reports/orthomosaic_$(SECTOR_SLUG).png
 
@@ -153,7 +153,7 @@ define run_demo_infer
 		--output reports/orthomosaic_$(DEMO_SECTOR).png
 	.venv/bin/python src/generate_map.py \
 		--geojson $(DEMO_ALERTS).geojson \
-		--output reports/alerts_map_$(DEMO_SECTOR).html \
+		--output reports/maps/alerts_map_$(DEMO_SECTOR).html \
 		--title "Demo defensible space" \
 		--orthomosaic reports/orthomosaic_$(DEMO_SECTOR).png
 endef
