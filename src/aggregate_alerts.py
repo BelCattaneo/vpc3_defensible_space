@@ -408,7 +408,10 @@ def reclassify_by_danger_volume(features: list[dict],
     """Cross-tile consistency + fuel-mass pass, in place.
 
     For every building we look up every danger zone polygon that intersects
-    it, sum their area in square metres, and store it as ``danger_area_m2``.
+    it, build their ``unary_union`` and take its area in square metres. Using
+    the union (instead of summing per-zone areas) avoids counting the overlap
+    between danger zones from adjacent tiles more than once. The result is
+    stored as ``danger_area_m2``.
 
     Two effects on the ``compliant`` flag:
       - a compliant building whose danger zones total >= ``min_danger_area_m2``
