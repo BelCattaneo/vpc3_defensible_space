@@ -27,8 +27,14 @@ M2F_LABEL = os.environ.get("M2F_LABEL", "Mask2Former + Swin-T")
 OUT_DIR = Path(os.environ.get("OUT_DIR", "reports/comparison_v6"))
 
 N_SAMPLES = 4
-CONF_YOLO = 0.25
-CONF_M2F = 0.5
+# Mismo threshold de confianza para los dos modelos. Comparar M2F a 0,5
+# contra YOLO a 0,25 produce figuras no comparables (YOLO muestra mas
+# cantidad de detecciones de menor confianza que M2F simplemente deja
+# fuera). 0,5 es el punto operativo estandar documentado por HF para
+# ``post_process_instance_segmentation``.
+CONF_SAME = float(os.environ.get("COMPARE_CONF", "0.5"))
+CONF_YOLO = CONF_SAME
+CONF_M2F = CONF_SAME
 
 TITLE_BAR_HEIGHT = 40
 TITLE_FONT_PATH = "/System/Library/Fonts/Helvetica.ttc"
@@ -89,7 +95,7 @@ def yolo_masks(model, img_path: Path, class_names: list[str]) -> dict[str, np.nd
     """Run YOLO on one tile and return per-class aggregated binary masks.
 
     Lee ``imgsz`` del checkpoint para no inflar las mascaras: inferir a
-    1024 contra un modelo entrenado a 640 produce <em>blobs</em> dilatados
+    1024 contra un modelo entrenado a 640 produce blobs dilatados
     (mismo bug corregido en ``compute_alerts.predict_yolo``).
     """
     with Image.open(img_path) as im:
