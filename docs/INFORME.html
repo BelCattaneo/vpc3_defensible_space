@@ -242,7 +242,7 @@ caption .v-ok, caption .v-ko, caption .v-mix, caption .v-open{
 </div>
 
 <div class="pullquote" style="margin-top:36px">
-  Resumen. Se compara empíricamente la familia Vision Transformer (<code>Mask2Former</code> con <em>backbones</em> Swin-T y Swin-S) contra la familia CNN (<code>YOLOv8-seg</code> en tamaños nano y large) sobre segmentación por instancias de imágenes aéreas de dron de Villa La Angostura. El estudio es un <em>ablation</em> factorial sobre cuatro ejes: arquitectura, capacidad, dataset y evaluador, con un <em>ground truth</em> oracular de 50 imágenes etiquetado con criterios documentados como referente más limpio. El ganador es <code>YOLOv8l-seg</code> entrenado con 927 imágenes mixtas, con 0,646 mAP@0,5. El <em>pipeline</em> va del tileado al mapa interactivo con alertas de incumplimiento del protocolo municipal de <em>defensible space</em> (regla de dos metros).
+  Resumen. Se compara empíricamente la familia Vision Transformer (<code>Mask2Former</code> con <em>backbones</em> Swin-T y Swin-S) contra la familia CNN (<code>YOLOv8-seg</code> en tamaños nano y large) sobre segmentación por instancias de imágenes aéreas de dron de Villa La Angostura. El estudio es un <em>ablation</em> factorial sobre cuatro ejes: arquitectura, capacidad, dataset y evaluador, con un <em>ground truth</em> oracular de 50 imágenes etiquetado con criterios documentados como referente más limpio. El campeón de mAP es <code>Mask2Former + Swin-T</code> entrenado con 927 imágenes mixtas, con 0,643 mAP@0,5 sobre oracular. A parámetros equiparables (47 M vs 46 M) la ViT supera a <code>YOLOv8l-seg</code> por 11,1 puntos. El <em>pipeline</em> de producción va del tileado al mapa interactivo con alertas de incumplimiento del protocolo municipal de <em>defensible space</em> (regla de dos metros).
 </div>
 
 <!-- ======================================================== -->
@@ -468,14 +468,14 @@ caption .v-ok, caption .v-ko, caption .v-mix, caption .v-open{
 <table>
   <caption>Tabla 2: Datasets usados en los experimentos y su composición en los <em>splits</em> de <em>training</em>, validación y test.</caption>
   <tr><th>Dataset</th><th>Train</th><th>Val</th><th>Test</th><th>Anotaciones</th><th>Labelers</th></tr>
-  <tr><td>v5 / v4 (86 autora)</td><td>50</td><td>18</td><td>18</td><td>1.236</td><td>autora</td></tr>
-  <tr><td>v6 (927 mix)</td><td>641</td><td>147</td><td>139</td><td>10.362</td><td>autora + equipo Lawal</td></tr>
-  <tr><td>v7 (486 autora filtrado)</td><td>332</td><td>77</td><td>77</td><td>4.116</td><td>autora</td></tr>
-  <tr><td><em>held-out</em> team (441)</td><td>-</td><td>-</td><td>441</td><td>6.246</td><td>equipo Lawal</td></tr>
-  <tr><td>oracular (50)</td><td>-</td><td>-</td><td>50</td><td>1.270</td><td>autora, criterios documentados</td></tr>
+  <tr><td>86 autora</td><td>50</td><td>18</td><td>18</td><td>1.236</td><td>autora</td></tr>
+  <tr><td>927 mix</td><td>641</td><td>147</td><td>139</td><td>10.362</td><td>autora + equipo Lawal</td></tr>
+  <tr><td>486 autora</td><td>332</td><td>77</td><td>77</td><td>4.116</td><td>autora</td></tr>
+  <tr><td><em>held-out</em> team</td><td>-</td><td>-</td><td>441</td><td>6.246</td><td>equipo Lawal</td></tr>
+  <tr><td>oracular</td><td>-</td><td>-</td><td>50</td><td>1.270</td><td>autora, criterios documentados</td></tr>
 </table>
 
-<p>El <em>held-out</em> team se construye con las 441 imágenes etiquetadas exclusivamente por el equipo Lawal, extraídas de los tres <em>splits</em> de v6. El dataset oracular se construye re-etiquetando 50 imágenes del <em>held-out</em> team por la autora con criterios documentados por escrito. Ningún modelo vio ninguno de los dos en <em>training</em>.</p>
+<p>El <em>held-out</em> team se construye con las 441 imágenes etiquetadas exclusivamente por el equipo Lawal, extraídas de los tres <em>splits</em> del 927 mix. Es verdadero <em>held-out</em> para los <em>runs</em> entrenados sobre "solo autora" (86 autora y 486 autora), que nunca vieron esas imágenes. Para los <em>runs</em> entrenados sobre 927 mix (que ya incluye las 441 del equipo), el <em>held-out</em> team mide ajuste al estilo del equipo más que generalización pura, y por eso se complementa con el oracular. El dataset oracular se construye re-etiquetando 50 imágenes del <em>held-out</em> team por la autora con criterios documentados por escrito. El oracular es independiente de los tres <em>splits</em> de entrenamiento (ningún modelo vio esas re-etiquetas) y además unifica la ontología de etiquetado, por lo que es el referente limpio para comparar <em>runs</em> entrenados sobre datasets distintos.</p>
 
 <h3>3.3. Modelos comparados</h3>
 <p>Se compararon dos familias pre-entrenadas en COCO, cada una en al menos dos tamaños para habilitar comparaciones a parámetros equiparables.</p>
@@ -507,7 +507,7 @@ caption .v-ok, caption .v-ko, caption .v-mix, caption .v-open{
   <tr><th>Etapa</th><th>Módulos (<code>src/</code>)</th><th>Rol</th></tr>
   <tr><td>Preparación</td><td><code>tile</code>, <code>coco_to_yolo</code>, <code>build_dataset</code>, <code>build_oracular_sample</code>, <code>merge_oracular_splits</code></td><td>Tileado 1024×1024, conversión COCO a YOLO, construcción de <em>test sets</em> cruzado y oracular</td></tr>
   <tr><td>Training</td><td><code>train_yolo_seg</code>, <code>train_mask2former</code></td><td><em>Fine-tuning</em> de ambas familias con parámetros vía variables de entorno</td></tr>
-  <tr><td>Evaluación</td><td><code>evaluate_m2f</code>, <code>compare_models</code></td><td>mAP con <code>pycocotools</code> y grillas visuales GT contra predicciones</td></tr>
+  <tr><td>Evaluación</td><td><code>evaluate_m2f</code>, <code>evaluate_yolo</code>, <code>compare_models</code></td><td>mAP con <code>pycocotools</code> (mismo pipeline para ambos modelos) y grillas visuales GT contra predicciones</td></tr>
   <tr><td>Alertas</td><td><code>compute_alerts</code>, <code>aggregate_alerts</code></td><td><em>Distance transform</em> y clasificación por regla de 2 m, deduplicación entre <em>tiles</em> y georreferenciación a <em>World Geodetic System 1984</em> (WGS84)</td></tr>
   <tr><td>Mapa</td><td><code>build_mosaic</code>, <code>generate_map</code></td><td>Mosaico reproyectado a Web Mercator y mapa HTML interactivo con <code>Folium</code></td></tr>
 </table>
@@ -521,9 +521,10 @@ caption .v-ok, caption .v-ko, caption .v-mix, caption .v-open{
 <p>Las métricas se calculan con la librería <code>pycocotools</code> usando intersección sobre unión (<em>Intersection over Union</em>, IoU) de segmentación. Se reportan mAP@0.5 y mAP@0.5:0.95, promediados entre clases y evaluados por clase individualmente. Se evalúan tres regímenes de <em>ground truth</em>:</p>
 <ol>
   <li><em>Test</em> propio de cada <em>run</em>: el <em>split</em> de test del dataset con el que entrenó.</li>
-  <li>Evaluación cruzada sobre <em>held-out</em> team: 441 imágenes etiquetadas por el equipo Lawal que ningún modelo vio en <em>training</em>.</li>
+  <li>Evaluación cruzada sobre <em>held-out</em> team: 441 imágenes etiquetadas por el equipo Lawal. Verdadero <em>held-out</em> para los <em>runs</em> entrenados sobre "solo autora" (86 autora, 486 autora). Para los <em>runs</em> entrenados sobre 927 mix esas imágenes son parte del conjunto de <em>training</em>, por lo que la métrica mide ajuste al estilo del equipo, no generalización.</li>
   <li>Evaluación sobre <em>ground truth</em> oracular: 50 imágenes del <em>held-out</em> team re-etiquetadas por una sola persona (autora) con criterios documentados por escrito. Es el referente más limpio porque la ontología de etiquetado es uniforme para toda la tabla.</li>
 </ol>
+<p>Nota técnica sobre la extracción de instancias de Mask2Former: la red predice 100 <em>queries</em> fijas por imagen y cada una es una propuesta de instancia (máscara + score + clase). Para calcular mAP de segmentación de instancias con <code>pycocotools</code> hay que recibirlas como máscaras binarias <em>independientes</em>, porque dos instancias pueden solaparse píxel a píxel. El <em>wrapper</em> <code>post_process_instance_segmentation</code> de HuggingFace devuelve ese formato cuando se pasa la opción <code>return_binary_maps=True</code>. Sin la <em>flag</em>, el <em>wrapper</em> construye un mapa panóptico <code>int32</code> donde cada píxel se asigna a una sola instancia por <code>argmax(mask_probs * scores)</code>, formato no apropiado para mAP de instancias porque fuerza píxeles únicos y subestima la métrica. El propio <em>docstring</em> de <code>transformers</code> (<code>image_processing_mask2former.py:639</code>) lo advierte: <em>"If instances could overlap, set either return_coco_annotation or return_binary_maps to True to get the correct segmentation result."</em> El pipeline de evaluación (<code>src/models_io.py:m2f_instance_masks</code>) usa la <em>flag</em> correcta.</p>
 
 <h3>4.2. Diseño experimental</h3>
 <p>El estudio se organiza como un <em>ablation</em> factorial sobre cuatro ejes. No todas las combinaciones se evalúan pero las elegidas permiten aislar el efecto de cada eje por separado:</p>
@@ -537,7 +538,7 @@ caption .v-ok, caption .v-ko, caption .v-mix, caption .v-open{
 </table>
 
 <h3>4.3. Recorrido experimental</h3>
-<p>El objetivo original era comparar <code>YOLOv8n</code> (3,3 M) contra <code>Mask2Former + Swin-T</code> (47 M) sobre un único dataset chico.</p>
+<p>El objetivo original era comparar <code>YOLOv8n</code> (3,3 M) contra <code>Mask2Former + Swin-T</code> (47 M) sobre un único dataset chico. La numeración <code>vN</code> de los <em>runs</em> es incremental sobre todo el proceso de experimentación. Los <em>runs</em> v1 a v7 fueron iteraciones exploratorias previas al pulido metodológico (hiperparámetros definitivos, <em>early stop</em> desactivado, <em>augmentation</em> mínima) y no se incluyen en las tablas finales.</p>
 
 <table class="exp-table">
   <caption>Tabla 5: Resumen de los experimentos agrupados por los cinco pasos de la narrativa, que luego se desarrolla paso por paso. Cada fila indica la hipótesis probada, su resultado y el veredicto final (<span class="v-ok">confirmado</span>, <span class="v-ko">descartado</span>, <span class="v-mix">parcial</span>, <span class="v-open">abierto</span>).</caption>
@@ -550,57 +551,50 @@ caption .v-ok, caption .v-ko, caption .v-mix, caption .v-open{
   </tr>
   <tr>
     <td>1</td>
-    <td>v5 YOLO<br>v4 M2F</td>
-    <td>0.538<br>0.509</td>
-    <td class="hyp">Baseline sobre 86 imágenes de una sola anotadora, 50 épocas sin <em>early stop</em>.</td>
+    <td>v9 YOLO<br>v9 M2F</td>
+    <td>0.221<br>0.532</td>
+    <td class="hyp">Baseline sobre 86 imágenes de una sola anotadora.</td>
     <td class="verdict v-ok">baseline</td>
   </tr>
   <tr>
     <td>2.1</td>
     <td>v8 YOLO<br>v8 M2F</td>
-    <td>0.355<br>0.277</td>
+    <td>0.516<br>0.643</td>
     <td class="hyp">Al escalar a 927 imágenes mixtas, mejoran las métricas respecto al baseline.</td>
-    <td class="verdict v-ko">descartada sobre test propio, confirmada sobre oracular</td>
+    <td class="verdict v-ok">confirmada</td>
   </tr>
   <tr>
     <td>2.2</td>
-    <td>Auditoría<br>Roboflow</td>
-    <td>0 AUTOLABEL en v6</td>
-    <td class="hyp">359 imágenes auto-etiquetadas (<code>Grounding DINO</code> con <code>SAM</code>) contaminan v6.</td>
-    <td class="verdict v-ko">descartada</td>
-  </tr>
-  <tr>
-    <td>2.3</td>
     <td>v10 YOLO<br>v10 M2F</td>
-    <td>0.292<br>0.238</td>
+    <td>0.335<br>0.599</td>
     <td class="hyp">Al filtrar labels del equipo Lawal, las métricas recuperan hacia los <em>baselines</em>.</td>
-    <td class="verdict v-ko">descartada</td>
+    <td class="verdict v-mix">parcial</td>
   </tr>
   <tr>
     <td>3.1</td>
-    <td>v11 YOLO<br>(YOLOv8l)</td>
-    <td>0.456</td>
+    <td>v11 YOLO<br>(YOLOv8l, 86)</td>
+    <td>0.405</td>
     <td class="hyp">Escalar params de YOLO (46 M) a parámetros comparables con M2F mejora sobre dataset chico.</td>
     <td class="verdict v-mix">parcial</td>
   </tr>
   <tr>
     <td>3.2</td>
-    <td>v12 YOLO<br>(YOLOv8l)</td>
-    <td>0.368 (test)<br>0.646 (oracular)</td>
-    <td class="hyp">Escalar params y data juntos maximiza capacidad.</td>
+    <td>v12 YOLO<br>(YOLOv8l, 927)</td>
+    <td>0.532</td>
+    <td class="hyp">Escalar params y data juntos maximiza capacidad en YOLO.</td>
     <td class="verdict v-ok">confirmada</td>
   </tr>
   <tr>
     <td>3.3</td>
     <td>v14 YOLO<br>(YOLOv8l, 486)</td>
-    <td>0.542 oracular</td>
+    <td>0.378</td>
     <td class="hyp">La CNN escala también en el régimen intermedio de datos, respetando el patrón params+data.</td>
-    <td class="verdict v-ok">confirmada</td>
+    <td class="verdict v-ko">descartada</td>
   </tr>
   <tr>
     <td>4</td>
     <td>Cruzada<br><em>held-out</em></td>
-    <td>v8 YOLO: 0.543<br>v9 YOLO: 0.278</td>
+    <td>v9 YOLO: 0.135<br>v9 M2F: 0.326</td>
     <td class="hyp">El ranking entre <em>runs</em> depende del evaluador, no solo de la capacidad del modelo.</td>
     <td class="verdict v-ok">confirmada</td>
   </tr>
@@ -614,181 +608,179 @@ caption .v-ok, caption .v-ko, caption .v-mix, caption .v-open{
   <tr>
     <td>5.2</td>
     <td>v13 M2F<br>(Swin-S, 927)</td>
-    <td>0.508 oracular</td>
+    <td>0.634</td>
     <td class="hyp">Escalar params de M2F (69 M) sobre 927 mix mejora respecto a Swin-T.</td>
-    <td class="verdict v-ok">confirmada parcialmente</td>
+    <td class="verdict v-ko">descartada</td>
   </tr>
   <tr>
     <td>5.3</td>
     <td>v14, v15 M2F<br>(Swin-S, 86 y 486)</td>
-    <td>0.424 y 0.463 oracular</td>
+    <td>0.574 y 0.590</td>
     <td class="hyp">La escalada del ViT a Swin-S también mejora en regímenes de datos menores.</td>
-    <td class="verdict v-ok">confirmada parcialmente, no cierra la brecha con la CNN en ningún régimen</td>
+    <td class="verdict v-mix">parcial, Swin-S y Swin-T quedan muy cerca en todos los regímenes</td>
   </tr>
 </table>
 
-<p>El baseline sobre 86 imágenes de una única anotadora dio <code>YOLOv8n</code> 0.538 mAP@0.5 y <code>Mask2Former + Swin-T</code> 0.509 sobre test propio, con la CNN ganando por margen modesto como era esperable.</p>
+<p>El baseline sobre 86 imágenes de una única anotadora dio <code>Mask2Former + Swin-T</code> 0.483 mAP@0.5 sobre test propio y <code>YOLOv8n</code> 0.180. La brecha a favor del ViT ya se ve en el baseline chico.</p>
 
-<p>Al escalar a 927 imágenes mixtas (equipo Lawal más autora) las métricas sobre test propio cayeron en vez de subir (<em>runs</em> v8: 0.355 y 0.277). Se descartaron dos explicaciones intuitivas: la auditoría del <em>export</em> de <code>Roboflow</code> confirmó cero imágenes AUTOLABEL en v6 y filtrar el dataset a solo etiquetas de la autora (v7, 486 imágenes, <em>runs</em> v10) tampoco recuperó la métrica. Luego se escaló la arquitectura: v11 <code>YOLOv8l</code> 46 M sobre 86 autora dio 0.456 y v12 <code>YOLOv8l</code> sobre 927 mix dio 0.368 sobre test propio, por debajo del baseline nano. Si el test propio fuera informativo, escalar parámetros y datos debería haber ayudado. No lo hizo, lo que puso bajo sospecha al evaluador antes que al modelo.</p>
+<p>Al escalar los datos el comportamiento sobre test propio se vuelve contradictorio entre arquitecturas: <code>Mask2Former + Swin-T</code> baja al cambiar de dataset, de 0.483 sobre 86 autora a 0.352 sobre 486 autora y a 0.372 sobre 927 mix, mientras <code>YOLOv8n</code> sube predeciblemente de 0.180 a 0.208 y a 0.312. Si el test propio fuera informativo, ambos modelos deberían haber escalado monotónicamente con más datos. Filtrar el dataset a solo etiquetas de la autora (486 autora, <em>runs</em> v10) tampoco uniformó la tendencia. El patrón divergente puso bajo sospecha al evaluador antes que al modelo.</p>
 
-<p>Para romper la ambigüedad se construyeron dos referentes externos. Primero un <em>held-out</em> team de 441 imágenes etiquetadas solo por el equipo Lawal: sobre él, v8 <code>YOLOv8n</code> 927 mix subió a 0.543 y v9 <code>YOLOv8n</code> 86 autora cayó a 0.278, confirmando que el <em>ranking</em> depende del evaluador. Después un <em>ground truth</em> oracular de 50 imágenes del <em>held-out</em> team re-etiquetadas por la autora con criterios documentados (ver <code>data/oracular_relabel/README.md</code>), independiente de ambas particiones de entrenamiento. Sobre oracular el <em>ranking</em> final fue v12 <code>YOLOv8l</code> 927 mix 0.646, v8 <code>YOLOv8n</code> 927 mix 0.622, v13 <code>Mask2Former + Swin-S</code> 69 M 0.508 y v8 <code>Mask2Former + Swin-T</code> 47 M 0.494. v13 Swin-S se entrenó específicamente para controlar que la diferencia entre familias no fuera un efecto de capacidad: aun con 23 M de ventaja de parámetros sobre <code>YOLOv8l</code>, la escalada del ViT aportó apenas 1,4 puntos y no cerró la brecha.</p>
+<p>Para romper la ambigüedad se construyeron dos referentes externos. Primero un <em>held-out</em> team de 441 imágenes etiquetadas solo por el equipo Lawal, que sirve como verdadero <em>held-out</em> para los <em>runs</em> entrenados en "solo autora" (86 y 486) pero no para los entrenados en 927 mix. Sobre el <em>held-out</em>, los <em>runs</em> 86 autora bajan fuertemente respecto a su test propio porque la ontología del evaluador es distinta: v9 Swin-T baja de 0.483 a 0.326 y v9 YOLOv8n baja de 0.180 a 0.135. Después un <em>ground truth</em> oracular de 50 imágenes del <em>held-out</em> team re-etiquetadas por la autora con criterios documentados (ver <code>data/oracular_relabel/README.md</code>), independiente de ambas particiones de entrenamiento. Sobre oracular el <em>ranking</em> final fue v8 <code>Mask2Former + Swin-T</code> 47 M 0.643, v13 <code>Mask2Former + Swin-S</code> 69 M 0.634, v10 <code>Mask2Former + Swin-T</code> 486 autora 0.599, v15 <code>Mask2Former + Swin-S</code> 486 autora 0.590, v14 <code>Mask2Former + Swin-S</code> 86 autora 0.574, v9 <code>Mask2Former + Swin-T</code> 86 autora 0.532 (empatado con v12 <code>YOLOv8l</code> 927 mix) y después toda la familia YOLO. Los seis <em>runs</em> M2F lideran los seis primeros puestos.</p>
 
-<p>El recorrido descartó dos explicaciones intuitivas (labels sintéticos de AUTOLABEL, <em>label noise</em> inter-anotadoras como factor único) y confirmó una: la métrica sobre test propio no refleja capacidad pura del modelo, sino coincidencia con la ontología del evaluador. Iteraciones exploratorias adicionales (v6 YOLO con <em>aug</em> aérea extra, v7 M2F con <code>Albumentations</code> completo, <em>checkpoints</em> "best" de M2F) se omiten de las tablas por legibilidad.</p>
+<figure>
+  <img src="images/m2f_training_curves.png" alt="Curvas de entrenamiento Mask2Former">
+  <figcaption>Figura 4: Curvas de entrenamiento de Mask2Former (<em>train</em> y <em>val loss</em>) para los <em>runs</em> relevantes del recorrido experimental.</figcaption>
+</figure>
+<figure>
+  <img src="images/yolo_training_curves.png" alt="Curvas de entrenamiento YOLO">
+  <figcaption>Figura 5: Curvas de entrenamiento de YOLO (<em>seg_loss</em> y mAP@0.5 sobre validación) para los <em>runs</em> relevantes.</figcaption>
+</figure>
+
+<p>El recorrido descartó la explicación intuitiva del <em>label noise</em> inter-anotadoras como factor único y confirmó una: la métrica sobre test propio no refleja capacidad pura del modelo, sino coincidencia con la ontología del evaluador. Iteraciones exploratorias adicionales se omiten de las tablas por legibilidad: la <em>augmentation</em> extra con <code>flipud</code>, <code>degrees</code> y <code>copy_paste</code> no mejoró la métrica respecto a los defaults de Ultralytics y se descartó, el <em>early stop</em> por <code>val_loss</code> con <code>patience=5</code> corta antes del óptimo en <em>splits</em> chicos porque la señal de validación es muy ruidosa a este régimen y la caída de mAP al cortar temprano es grande, por lo que se desactivó para los <em>runs</em> reportados.</p>
 
 <h3>4.4. Resultados de evaluación</h3>
-<p>Cada <em>run</em> se evalúa bajo tres regímenes: el <em>test</em> propio del dataset con el que entrenó, el <em>held-out</em> team (441 imágenes etiquetadas únicamente por el equipo Lawal, no vistas en <em>training</em>) y el oracular (50 imágenes del <em>held-out</em> team re-etiquetadas por la autora con criterios documentados). La Tabla 6 reúne las tres métricas en una matriz arquitectura × dataset con <em>heatmap</em> y la Tabla 7 muestra la métrica por clase sobre oracular para analizar el comportamiento diferencial en <code>building</code> y <code>trees_and_bushes</code>.</p>
+<p>Cada <em>run</em> se evalúa bajo los tres regímenes de evaluación descritos en 3.2 (test propio, <em>held-out</em> team y oracular). La Tabla 6 reúne las tres métricas en una matriz arquitectura por dataset con <em>heatmap</em>: cada celda muestra los tres valores en orden <em>test</em>, <em>held-out</em>, oracular, y la intensidad del verde escala con la métrica en los <em>bins</em> 0,30, 0,40, 0,50, 0,60. Las celdas <em>held-out</em> para los <em>runs</em> entrenados sobre 927 mix se omiten porque esas 441 imágenes del equipo son parte del <em>training</em> del dataset y la métrica no sería un verdadero <em>held-out</em>. Permite leer el efecto de los datos por fila, el efecto de la capacidad por columna y el efecto del evaluador por línea dentro de cada celda.</p>
 
 <table class="heatmap">
-  <caption>Tabla 6: Matriz arquitectura × dataset con mAP@0.5 bajo los tres regímenes de evaluación como <em>heatmap</em>. Cada celda muestra tres valores en orden <em>test</em> propio del <em>run</em>, <em>held-out</em> team y oracular. La intensidad del verde escala con la métrica (bins 0.30, 0.40, 0.50, 0.60). Permite leer el efecto de los datos por fila, el efecto de la capacidad por columna y el efecto del evaluador por línea dentro de cada celda. Las celdas marcadas como &mdash; son combinaciones que no se corrieron.</caption>
+  <caption>Tabla 6: Matriz arquitectura por dataset con mAP@0.5 bajo los tres regímenes de evaluación como <em>heatmap</em>.</caption>
   <tr><th>Arquitectura</th><th>86 autora</th><th>486 autora</th><th>927 mix</th></tr>
   <tr>
     <td><code>YOLOv8n</code> (3,3 M)</td>
     <td>
-      <div class="hm-row"><span class="hm-label">test</span><span class="hm hm-3">0.496</span></div>
-      <div class="hm-row"><span class="hm-label">held-out</span><span class="hm hm-1">0.278</span></div>
-      <div class="hm-row"><span class="hm-label">oracular</span><span class="hm hm-3">0.439</span></div>
+      <div class="hm-row"><span class="hm-label">test</span><span class="hm hm-1">0.180</span></div>
+      <div class="hm-row"><span class="hm-label">held-out</span><span class="hm hm-1">0.135</span></div>
+      <div class="hm-row"><span class="hm-label">oracular</span><span class="hm hm-1">0.221</span></div>
       <span class="hm-run">v9</span>
     </td>
     <td>
-      <div class="hm-row"><span class="hm-label">test</span><span class="hm hm-1">0.292</span></div>
-      <div class="hm-row"><span class="hm-label">held-out</span><span class="hm hm-2">0.334</span></div>
-      <div class="hm-row"><span class="hm-label">oracular</span><span class="hm hm-4">0.506</span></div>
+      <div class="hm-row"><span class="hm-label">test</span><span class="hm hm-1">0.208</span></div>
+      <div class="hm-row"><span class="hm-label">held-out</span><span class="hm hm-1">0.222</span></div>
+      <div class="hm-row"><span class="hm-label">oracular</span><span class="hm hm-2">0.335</span></div>
       <span class="hm-run">v10</span>
     </td>
     <td>
-      <div class="hm-row"><span class="hm-label">test</span><span class="hm hm-2">0.355</span></div>
-      <div class="hm-row"><span class="hm-label">held-out</span><span class="hm hm-4">0.543</span></div>
-      <div class="hm-row"><span class="hm-label">oracular</span><span class="hm hm-5">0.622</span></div>
+      <div class="hm-row"><span class="hm-label">test</span><span class="hm hm-2">0.312</span></div>
+      <div class="hm-row"><span class="hm-label">held-out</span><span class="hm hm-1">&mdash;</span></div>
+      <div class="hm-row"><span class="hm-label">oracular</span><span class="hm hm-4">0.516</span></div>
       <span class="hm-run">v8</span>
     </td>
   </tr>
   <tr>
     <td><code>YOLOv8l</code> (46 M)</td>
     <td>
-      <div class="hm-row"><span class="hm-label">test</span><span class="hm hm-3">0.456</span></div>
-      <div class="hm-row"><span class="hm-label">held-out</span><span class="hm hm-2">0.321</span></div>
-      <div class="hm-row"><span class="hm-label">oracular</span><span class="hm hm-4">0.506</span></div>
+      <div class="hm-row"><span class="hm-label">test</span><span class="hm hm-2">0.371</span></div>
+      <div class="hm-row"><span class="hm-label">held-out</span><span class="hm hm-1">0.249</span></div>
+      <div class="hm-row"><span class="hm-label">oracular</span><span class="hm hm-3">0.405</span></div>
       <span class="hm-run">v11</span>
     </td>
     <td>
-      <div class="hm-row"><span class="hm-label">test</span><span class="hm hm-2">0.326</span></div>
-      <div class="hm-row"><span class="hm-label">held-out</span><span class="hm hm-2">0.358</span></div>
-      <div class="hm-row"><span class="hm-label">oracular</span><span class="hm hm-4">0.542</span></div>
+      <div class="hm-row"><span class="hm-label">test</span><span class="hm hm-1">0.233</span></div>
+      <div class="hm-row"><span class="hm-label">held-out</span><span class="hm hm-1">0.244</span></div>
+      <div class="hm-row"><span class="hm-label">oracular</span><span class="hm hm-2">0.378</span></div>
       <span class="hm-run">v14</span>
     </td>
     <td>
-      <div class="hm-row"><span class="hm-label">test</span><span class="hm hm-2">0.368</span></div>
-      <div class="hm-row"><span class="hm-label">held-out</span><span class="hm hm-3">0.440</span></div>
-      <div class="hm-row"><span class="hm-label">oracular</span><span class="hm hm-5">0.646</span></div>
+      <div class="hm-row"><span class="hm-label">test</span><span class="hm hm-2">0.312</span></div>
+      <div class="hm-row"><span class="hm-label">held-out</span><span class="hm hm-1">&mdash;</span></div>
+      <div class="hm-row"><span class="hm-label">oracular</span><span class="hm hm-4">0.532</span></div>
       <span class="hm-run">v12</span>
     </td>
   </tr>
   <tr>
     <td><code>Mask2Former + Swin-T</code> (47 M)</td>
     <td>
-      <div class="hm-row"><span class="hm-label">test</span><span class="hm hm-1">0.230</span></div>
-      <div class="hm-row"><span class="hm-label">held-out</span><span class="hm hm-1">0.211</span></div>
-      <div class="hm-row"><span class="hm-label">oracular</span><span class="hm hm-2">0.379</span></div>
+      <div class="hm-row"><span class="hm-label">test</span><span class="hm hm-3">0.483</span></div>
+      <div class="hm-row"><span class="hm-label">held-out</span><span class="hm hm-2">0.326</span></div>
+      <div class="hm-row"><span class="hm-label">oracular</span><span class="hm hm-4">0.532</span></div>
       <span class="hm-run">v9</span>
     </td>
     <td>
-      <div class="hm-row"><span class="hm-label">test</span><span class="hm hm-1">0.238</span></div>
-      <div class="hm-row"><span class="hm-label">held-out</span><span class="hm hm-1">0.234</span></div>
-      <div class="hm-row"><span class="hm-label">oracular</span><span class="hm hm-3">0.444</span></div>
+      <div class="hm-row"><span class="hm-label">test</span><span class="hm hm-2">0.352</span></div>
+      <div class="hm-row"><span class="hm-label">held-out</span><span class="hm hm-2">0.369</span></div>
+      <div class="hm-row"><span class="hm-label">oracular</span><span class="hm hm-4">0.599</span></div>
       <span class="hm-run">v10</span>
     </td>
     <td>
-      <div class="hm-row"><span class="hm-label">test</span><span class="hm hm-1">0.277</span></div>
-      <div class="hm-row"><span class="hm-label">held-out</span><span class="hm hm-2">0.331</span></div>
-      <div class="hm-row"><span class="hm-label">oracular</span><span class="hm hm-3">0.494</span></div>
+      <div class="hm-row"><span class="hm-label">test</span><span class="hm hm-2">0.372</span></div>
+      <div class="hm-row"><span class="hm-label">held-out</span><span class="hm hm-1">&mdash;</span></div>
+      <div class="hm-row"><span class="hm-label">oracular</span><span class="hm hm-5">0.643</span></div>
       <span class="hm-run">v8</span>
     </td>
   </tr>
   <tr>
     <td><code>Mask2Former + Swin-S</code> (69 M)</td>
     <td>
-      <div class="hm-row"><span class="hm-label">test</span><span class="hm hm-3">0.429</span></div>
-      <div class="hm-row"><span class="hm-label">held-out</span><span class="hm hm-1">0.253</span></div>
-      <div class="hm-row"><span class="hm-label">oracular</span><span class="hm hm-3">0.424</span></div>
+      <div class="hm-row"><span class="hm-label">test</span><span class="hm hm-4">0.521</span></div>
+      <div class="hm-row"><span class="hm-label">held-out</span><span class="hm hm-2">0.345</span></div>
+      <div class="hm-row"><span class="hm-label">oracular</span><span class="hm hm-4">0.574</span></div>
       <span class="hm-run">v14</span>
     </td>
     <td>
-      <div class="hm-row"><span class="hm-label">test</span><span class="hm hm-1">0.279</span></div>
-      <div class="hm-row"><span class="hm-label">held-out</span><span class="hm hm-1">0.268</span></div>
-      <div class="hm-row"><span class="hm-label">oracular</span><span class="hm hm-3">0.463</span></div>
+      <div class="hm-row"><span class="hm-label">test</span><span class="hm hm-2">0.370</span></div>
+      <div class="hm-row"><span class="hm-label">held-out</span><span class="hm hm-2">0.370</span></div>
+      <div class="hm-row"><span class="hm-label">oracular</span><span class="hm hm-4">0.590</span></div>
       <span class="hm-run">v15</span>
     </td>
     <td>
-      <div class="hm-row"><span class="hm-label">test</span><span class="hm hm-2">0.305</span></div>
-      <div class="hm-row"><span class="hm-label">held-out</span><span class="hm hm-2">0.385</span></div>
-      <div class="hm-row"><span class="hm-label">oracular</span><span class="hm hm-4">0.508</span></div>
+      <div class="hm-row"><span class="hm-label">test</span><span class="hm hm-2">0.384</span></div>
+      <div class="hm-row"><span class="hm-label">held-out</span><span class="hm hm-1">&mdash;</span></div>
+      <div class="hm-row"><span class="hm-label">oracular</span><span class="hm hm-5">0.634</span></div>
       <span class="hm-run">v13</span>
     </td>
   </tr>
 </table>
-<p>Patrones visibles. Dentro de cada celda, oracular casi siempre está por encima del <em>held-out</em> team y por encima del test propio salvo en el baseline nano sobre 86 autora (que entrena con la misma anotadora que marca el oracular). La diferencia entre regímenes crece con el tamaño del dataset de <em>training</em>, lo que refleja que el ruido inter-anotadoras se expresa más cuando hay más labels en juego. Fila por fila, más datos ayudan en las cuatro arquitecturas sobre oracular. A parámetros equiparables la CNN supera a la ViT en los tres regímenes: por 8,2 puntos sobre 86 autora, 7,9 sobre 486 autora y 15,2 sobre 927 mix. Escalar la ViT de Swin-T a Swin-S aporta menos de medio punto en cada régimen y en ninguno alcanza a la CNN.</p>
+<p>Patrones visibles. Dentro de cada celda, oracular está por encima del test propio en todas las celdas. La diferencia entre regímenes crece con el tamaño del dataset de <em>training</em>, lo que refleja que el ruido inter-anotadoras se expresa más cuando hay más labels en juego. Fila por fila, más datos ayudan monotónicamente a tres de las cuatro arquitecturas sobre oracular (YOLOv8n, Swin-T y Swin-S). YOLOv8l rompe el patrón con 486 autora (0.378, por debajo del 0.405 que da sobre 86 autora) y recupera sobre 927 mix. A parámetros equiparables (47 M vs 46 M), la ViT supera a la CNN en los tres regímenes de datos: por 12,7 puntos sobre 86 autora (Swin-T 0.532 vs YOLOv8l 0.405), 22,1 sobre 486 autora (0.599 vs 0.378) y 11,1 sobre 927 mix (0.643 vs 0.532). Escalar la ViT de Swin-T a Swin-S es prácticamente neutro (Swin-S aporta 4,2 puntos sobre 86 autora pero resta 0,9 sobre 486 autora y 0,9 sobre 927 mix), lo que sugiere que la capacidad del ViT ya satura en el régimen explorado.</p>
+
+<p>La Tabla 7 muestra el desglose por clase sobre oracular (50 imágenes, 1.270 anotaciones) para analizar el comportamiento diferencial en una clase geométricamente bien definida (<code>building</code>) y una ontológicamente ambigua (<code>trees_and_bushes</code>). Ordenada por mAP@0.5 descendente.</p>
 
 <table>
-  <caption>Tabla 7: Desglose por clase sobre <em>ground truth</em> oracular (50 imágenes, 1.270 anotaciones). Permite comparar el comportamiento de cada <em>run</em> en una clase geométricamente bien definida (<code>building</code>) y una clase ontológicamente ambigua (<code>trees_and_bushes</code>). Ordenado por mAP@0.5 descendente.</caption>
+  <caption>Tabla 7: Desglose de mAP@0.5 por clase sobre <em>ground truth</em> oracular.</caption>
   <tr><th>Run</th><th>Arquitectura</th><th>Params</th><th>Dataset</th><th>mAP@0.5</th><th><code>building</code></th><th><code>trees_and_bushes</code></th></tr>
-  <tr><td>v12 YOLO</td><td>YOLOv8l</td><td>46 M</td><td>927 mix</td><td>0.646</td><td>0.739</td><td>0.553</td></tr>
-  <tr><td>v8 YOLO</td><td>YOLOv8n</td><td>3,3 M</td><td>927 mix</td><td>0.622</td><td>0.704</td><td>0.539</td></tr>
-  <tr><td>v14 YOLO</td><td>YOLOv8l</td><td>46 M</td><td>486 autora</td><td>0.542</td><td>0.590</td><td>0.494</td></tr>
-  <tr><td>v13 M2F</td><td>Swin-S</td><td>69 M</td><td>927 mix</td><td>0.508</td><td>0.707</td><td>0.309</td></tr>
-  <tr><td>v10 YOLO</td><td>YOLOv8n</td><td>3,3 M</td><td>486 autora</td><td>0.506</td><td>0.584</td><td>0.429</td></tr>
-  <tr><td>v11 YOLO</td><td>YOLOv8l</td><td>46 M</td><td>86 autora</td><td>0.506</td><td>0.611</td><td>0.400</td></tr>
-  <tr><td>v8 M2F</td><td>Swin-T</td><td>47 M</td><td>927 mix</td><td>0.494</td><td>0.670</td><td>0.319</td></tr>
-  <tr><td>v15 M2F</td><td>Swin-S</td><td>69 M</td><td>486 autora</td><td>0.463</td><td>0.633</td><td>0.294</td></tr>
-  <tr><td>v10 M2F</td><td>Swin-T</td><td>47 M</td><td>486 autora</td><td>0.444</td><td>0.602</td><td>0.286</td></tr>
-  <tr><td>v9 YOLO</td><td>YOLOv8n</td><td>3,3 M</td><td>86 autora</td><td>0.439</td><td>0.506</td><td>0.371</td></tr>
-  <tr><td>v14 M2F</td><td>Swin-S</td><td>69 M</td><td>86 autora</td><td>0.424</td><td>0.566</td><td>0.282</td></tr>
-  <tr><td>v9 M2F</td><td>Swin-T</td><td>47 M</td><td>86 autora</td><td>0.379</td><td>0.559</td><td>0.200</td></tr>
+  <tr><td>v8 M2F</td><td>Swin-T</td><td>47 M</td><td>927 mix</td><td>0.643</td><td>0.753</td><td>0.532</td></tr>
+  <tr><td>v13 M2F</td><td>Swin-S</td><td>69 M</td><td>927 mix</td><td>0.634</td><td>0.752</td><td>0.516</td></tr>
+  <tr><td>v10 M2F</td><td>Swin-T</td><td>47 M</td><td>486 autora</td><td>0.599</td><td>0.698</td><td>0.499</td></tr>
+  <tr><td>v15 M2F</td><td>Swin-S</td><td>69 M</td><td>486 autora</td><td>0.590</td><td>0.699</td><td>0.482</td></tr>
+  <tr><td>v14 M2F</td><td>Swin-S</td><td>69 M</td><td>86 autora</td><td>0.574</td><td>0.666</td><td>0.482</td></tr>
+  <tr><td>v9 M2F</td><td>Swin-T</td><td>47 M</td><td>86 autora</td><td>0.532</td><td>0.631</td><td>0.433</td></tr>
+  <tr><td>v12 YOLO</td><td>YOLOv8l</td><td>46 M</td><td>927 mix</td><td>0.532</td><td>0.593</td><td>0.470</td></tr>
+  <tr><td>v8 YOLO</td><td>YOLOv8n</td><td>3,3 M</td><td>927 mix</td><td>0.516</td><td>0.598</td><td>0.434</td></tr>
+  <tr><td>v11 YOLO</td><td>YOLOv8l</td><td>46 M</td><td>86 autora</td><td>0.405</td><td>0.440</td><td>0.369</td></tr>
+  <tr><td>v14 YOLO</td><td>YOLOv8l</td><td>46 M</td><td>486 autora</td><td>0.378</td><td>0.325</td><td>0.431</td></tr>
+  <tr><td>v10 YOLO</td><td>YOLOv8n</td><td>3,3 M</td><td>486 autora</td><td>0.335</td><td>0.303</td><td>0.368</td></tr>
+  <tr><td>v9 YOLO</td><td>YOLOv8n</td><td>3,3 M</td><td>86 autora</td><td>0.221</td><td>0.116</td><td>0.327</td></tr>
 </table>
 
 <h3>4.5. Análisis</h3>
 
-<h4>a. El evaluador modula el <em>ranking</em></h4>
-<p>Las métricas sobre test propio no comparan solamente capacidades del modelo, también miden la coincidencia entre la ontología de etiquetado con la que el modelo entrenó y la del evaluador. YOLO v8 (927 mix, 59% de labels del equipo) sube de 0.355 en su test a 0.543 sobre <em>held-out</em> team. YOLO v9 (86 autora) baja de 0.496 a 0.278. Las curvas se cruzan al cambiar el evaluador. Sobre oracular, con ontología uniforme para toda la tabla, YOLO v12 queda primero con 0.646, confirmando que el "drop" de v8 sobre su propio test era un artefacto del evaluador ruidoso. El sesgo inductivo también modula la amplitud del efecto: el delta YOLO v9 vs v8 sobre <em>held-out</em> team es 0.265 mientras que para M2F es 0.120. La CNN con <em>grid</em> denso se ajusta rápido al estilo específico de su train, el ViT con <em>queries</em> aprende representaciones más genéricas y pierde menos al cambiar el estilo.</p>
+<h4>El evaluador modula el <em>ranking</em></h4>
+<p>Las métricas sobre test propio no comparan solamente capacidades del modelo, también miden la coincidencia entre la ontología de etiquetado con la que el modelo entrenó y la del evaluador. En el <em>held-out</em> team, los <em>runs</em> "solo autora" bajan fuertemente respecto a su test propio porque la ontología del equipo es distinta: Swin-T v9 86 autora baja de 0.483 a 0.326 y YOLO v9 86 autora baja de 0.180 a 0.135. Sobre oracular, con ontología uniforme para toda la tabla, Swin-T v8 queda primero con 0.643 y el ranking se estabiliza. El sesgo inductivo modula la amplitud del efecto: al cambiar del test propio al <em>held-out</em> team, el delta de Swin-T v9 86 autora es 0.157 contra 0.045 para YOLO v9 86 autora. El ViT con <em>queries</em> arranca de un nivel más alto y conserva más margen, mientras la CNN con <em>grid</em> denso se ajusta más al estilo específico de su train y pierde menos en términos absolutos.</p>
 
-<h4>b. Capacidad, datos y clase ambigua</h4>
-<p>Sobre oracular con 927 imágenes, YOLO supera a M2F a parámetros comparables (v12 46 M 0.646 vs v8 Swin-T 47 M 0.494) y escalar M2F a Swin-S 69 M solo cierra 1,4 puntos. Dentro de YOLO, agregar parámetros sin más datos no mejora (v11 YOLOv8l 86 autora = v10 nano 486 autora = 0.506), pero combinar params más datos sí (v12 suma 2,4 puntos sobre v8 nano y 14 sobre v11). La ventaja de YOLO se concentra en la clase ambigua: en <code>building</code> ambas arquitecturas están casi parejas (v12 0.739, M2F v13 0.707), pero en <code>trees_and_bushes</code> YOLO saca 24 puntos (0.553 vs 0.309). Los edificios tienen geometría consistente entre anotadoras y las copas de árbol no, por lo que la clase donde el ruido inter-anotadores pesa más es también donde las <em>queries</em> esparsas del ViT quedan más atrás.</p>
+<h4>Capacidad, datos y clase ambigua</h4>
+<p>Sobre oracular con 927 imágenes, M2F supera a YOLO a parámetros comparables (v8 Swin-T 47 M 0.643 vs v12 YOLOv8l 46 M 0.532) y escalar M2F a Swin-S 69 M no agrega ganancia marginal (0.634). Dentro de YOLO, agregar parámetros sin más datos mejora poco (v11 YOLOv8l 86 autora 0.405, v9 YOLOv8n 86 autora 0.221, +18 puntos). Combinar params más datos escala predeciblemente (v12 suma 1,6 puntos sobre v8 nano a 927 mix). La ventaja de M2F sobre YOLO se concentra en la clase <code>building</code>: v8 Swin-T 0.753 vs v12 YOLOv8l 0.593, +16 puntos. En <code>trees_and_bushes</code> M2F también gana pero por menos: 0.532 vs 0.470, +6,2 puntos. Los edificios tienen geometría consistente entre anotadoras y el <em>pre-training</em> en COCO del ViT aprende a definirlos con bordes precisos. Las copas de árbol son ontológicamente ambiguas y acortan la ventaja.</p>
 
-<h4>c. Notas de hiperparámetros</h4>
-<p>La <em>augmentation</em> extra con <code>flipud</code>, <code>degrees</code> y <code>copy_paste</code> no mejoró la métrica respecto a los defaults de Ultralytics. El <em>early stop</em> por <code>val_loss</code> con <code>patience=5</code> corta antes del óptimo en <em>splits</em> chicos (v4 M2F 20 épocas da 0.509 contra v9 con <em>early stop</em> en epoch 14 que da 0.230). La señal de validación es muy ruidosa a este régimen.</p>
-
-<h4>d. Punto operativo del <em>threshold</em> de Mask2Former</h4>
-<p>Mask2Former se evalúa con el <em>threshold</em> de confianza por defecto en <code>post_process_instance_segmentation</code> de <code>transformers</code> (0,5), mientras que YOLO en Ultralytics usa 0,001 durante <code>val</code>. La asimetría es aparente: en M2F el <em>threshold</em> no es solo un filtro de salida, sino que es parte del procedimiento para separar las 100 <em>queries</em> fijas por imagen que tienen contenido real de las <em>queries</em> "no-object". Como control, se re-evaluó <code>v8 Swin-T</code> y <code>v13 Swin-S</code> sobre oracular bajando el <em>threshold</em> a 0,01 y el mAP@0.5 cayó respectivamente de 0.494 a 0.091 y de 0.508 a 0.085, porque las <em>queries</em> no-object saturan el <code>maxDets=100</code> de COCO y desplazan las detecciones reales en el <em>ranking</em>. YOLO no tiene este problema porque aplica <em>NMS</em> interno antes de reportar. El punto operativo 0,5 es por lo tanto el correcto para M2F.</p>
 
 <!-- ======================================================== -->
 <!-- SECCIÓN 5 · RESULTADOS Y EJEMPLOS                         -->
 <!-- ======================================================== -->
 <h2 class="page-break">5. Resultados y ejemplos</h2>
 
-<h3>5.1. Comparación visual</h3>
+<h3>5.1. Comparación visual de inferencias</h3>
 <figure>
   <img src="images/comparison_residencial.jpg" alt="Comparación GT vs campeones sobre tile residencial">
-  <figcaption>Figura 4: Comparación sobre <em>tile</em> de barrio residencial. GT (izquierda), <code>YOLOv8l</code> v12 (centro), <code>Mask2Former + Swin-S</code> v13 (derecha). <code>building</code> en rojo, <code>trees_and_bushes</code> en verde.</figcaption>
+  <figcaption>Figura 6: Comparación sobre <em>tile</em> de barrio residencial. GT (izquierda), <code>YOLOv8l</code> v12 (centro), <code>Mask2Former + Swin-T</code> v8 (derecha). <code>building</code> en rojo, <code>trees_and_bushes</code> en verde. Los dos modelos a parámetros equiparables (46 M vs 47 M) con el mismo <em>threshold</em> de confianza 0,5.</figcaption>
 </figure>
 <figure>
   <img src="images/comparison_forestal.jpg" alt="Comparación GT vs campeones sobre tile forestal">
-  <figcaption>Figura 5: Comparación sobre <em>tile</em> forestal cerrado con misma convención de colores que la Figura 4.</figcaption>
+  <figcaption>Figura 7: Comparación sobre <em>tile</em> forestal cerrado con misma convención de colores que la Figura 6.</figcaption>
 </figure>
 
-<figure>
-  <img src="images/yolo_training_curves.png" alt="Curvas de entrenamiento YOLO">
-  <figcaption>Figura 6: Curvas de entrenamiento de YOLO (<em>seg_loss</em> y mAP@0.5 sobre validación) para los <em>runs</em> relevantes del recorrido experimental.</figcaption>
-</figure>
-<figure>
-  <img src="images/m2f_training_curves.png" alt="Curvas de entrenamiento Mask2Former">
-  <figcaption>Figura 7: Curvas de entrenamiento de Mask2Former (<em>train</em> y <em>val loss</em>) para los <em>runs</em> relevantes.</figcaption>
-</figure>
 
 <h3>5.2. <em>Pipeline</em> del producto mínimo viable (MVP) de alertas</h3>
-<p>Dado el modelo seleccionado, el <em>pipeline</em> toma la ortofoto de un sector y produce un mapa interactivo con el estado de cada edificio. Para cada <em>tile</em> se detectan las instancias de <code>building</code> y <code>trees_and_bushes</code>, se mide la distancia mínima de cada edificio a la vegetación más cercana y se clasifica el edificio como cumple o viola según el umbral de 2 m.</p>
+<p>El <em>pipeline</em> toma la ortofoto de un sector y devuelve un mapa interactivo donde cada edificio aparece pintado según cumpla o no la regla de los dos metros. El sector se parte en imágenes chicas para que el modelo pueda procesarlas, se detectan las construcciones y la vegetación en cada una, y se mide cuán cerca pasa la vegetación de cada construcción. Si está a menos de dos metros, el edificio se marca como violación.</p>
 
-<p>Para unir las detecciones en una ortofoto global, cada <em>tile</em> conserva la transformación afín del GeoTIFF del que proviene. Los polígonos de píxeles se proyectan a WGS84 con esa transformación y pasan a vivir en el mismo sistema de referencia que el mapa final. El solapamiento del 20 % entre <em>tiles</em> genera duplicados: un mismo edificio aparece recortado en dos o tres predicciones vecinas. Esos duplicados se colapsan con un <em>union-find</em> espacial que indexa los polígonos con un <code>STRtree</code> y los agrupa cuando su IoU supera 0,3. Se descarta la fusión por simple contacto geométrico porque las casas vecinas suelen estar separadas por pocos centímetros y una detección a veces incluye el edificio junto a una porción de suelo adyacente, con lo cual cualquier criterio de "se tocan" encadena transitivamente edificios distintos. Finalmente, con el mapa ya consolidado, se recorre cada edificio y se suma el área total de vegetación dentro de su <em>buffer</em> de 2 m (uniendo las zonas de peligro intersectantes antes de medir, para no contar dos veces el solape entre <em>tiles</em>) y se refina la clasificación: una casa marcada como violación cuyo volumen total de vegetación cercana queda por debajo de 3 m² se degrada a cumple, y una casa marcada como cumple en un <em>tile</em> pero rodeada por vegetación en los vecinos se promueve a violación.</p>
+<p>El paso siguiente une todo lo detectado en una vista única del sector completo. Los recortes vecinos se superponen a propósito, así que cada edificio puede aparecer repetido en varias piezas; esas apariciones se agrupan comparando cuánto se solapan geográficamente, de modo que dos recortes del mismo edificio queden como uno solo pero sin fusionar construcciones distintas que estén pegadas. Como criterio de refinamiento final, se mira cuánta vegetación hay alrededor de cada edificio para evitar falsas alertas por un arbusto aislado y, al revés, para marcar como riesgo real a los edificios rodeados por una masa continua de vegetación aunque el modelo no la haya visto completa en una sola imagen.</p>
 
-<p>El resultado es un mapa HTML con el ortomosaico del dron de fondo, los edificios coloreados por estado y las zonas de vegetación cercana marcadas sobre cada violación.</p>
+<p>Durante el desarrollo iterativo del <em>pipeline</em> se usó <code>YOLOv8l</code> como detector rápido para poder correr sectores completos en minutos sobre una laptop sin GPU, pero los mapas finales incluidos en el repo son con el campeón de mAP (<code>Mask2Former + Swin-T</code>). El resultado es un mapa web con el ortomosaico del dron de fondo, los edificios coloreados por estado y la vegetación cercana marcada sobre cada violación.</p>
 
 <h3>5.3. Resultados</h3>
 <figure>
@@ -796,7 +788,7 @@ caption .v-ok, caption .v-ko, caption .v-mix, caption .v-open{
   <figcaption>Figura 8: Captura del mapa interactivo generado para Barrio Norte, con el ortomosaico del dron como fondo y las detecciones en <em>overlay</em>. Azul: cumple. Rojo: viola la regla de 2 m. Amarillo: vegetación dentro del <em>buffer</em>. El panel abajo a la derecha permite filtrar edificios y vegetación por confianza en vivo.</figcaption>
 </figure>
 
-<p>El <em>pipeline</em> se corrió sobre los dos sectores anotados. Barrio Norte produjo 1.100 edificios únicos (525 cumple, 575 violación con <em>conf</em> 0,15) y Correntoso/Arauco 797 edificios únicos (508 cumple, 289 violación). La tasa de incumplimiento no se reporta como número único porque depende del umbral de confianza elegido por el usuario en el mapa interactivo. El valor absoluto además debe leerse con dos cautelas de diseño: el modelo tiende a sobre-detectar estructuras (incluye cobertizos, galpones y techados menores que no son habitacionales, y fragmenta un mismo edificio en varias detecciones) y no distingue el tipo de vegetación próxima, lo que es importante porque un pastizal cerca de una casa no se propaga igual que un pino. En términos de orden entre sectores, ambos están en interfaz urbano-forestal y en Villa La Angostura es raro encontrar una vivienda sin vegetación arbórea en los dos metros alrededor.</p>
+<p>El <em>pipeline</em> se corrió sobre los dos sectores anotados (Barrio Norte y Correntoso/Arauco) y se publicaron sus mapas en el repo. La tasa de incumplimiento no se reporta como número único porque depende del umbral de confianza que el usuario elige en el mapa interactivo. Dos cautelas de diseño conviene mencionar: el modelo tiende a sobre-detectar estructuras (incluye cobertizos, galpones y techados menores que no son habitacionales y fragmenta un mismo edificio en varias detecciones) y no distingue el tipo de vegetación próxima, lo que es importante porque un pastizal cerca de una casa no se propaga igual que un pino. En términos de orden entre sectores, ambos están en interfaz urbano-forestal y en Villa La Angostura es raro encontrar una vivienda sin vegetación arbórea en los dos metros alrededor.</p>
 
 <!-- ======================================================== -->
 <!-- SECCIÓN 6 · CONCLUSIONES                                  -->
@@ -804,25 +796,24 @@ caption .v-ok, caption .v-ko, caption .v-mix, caption .v-open{
 <h2 class="page-break">6. Conclusiones y mejoras futuras</h2>
 
 <h3>6.1. Respuesta a la pregunta de investigación</h3>
-<p>Sobre el referente oracular (Tabla 7), la comparación central del estudio se hace a parámetros equiparables: <code>YOLOv8l</code> v12 (46 M, 927 mix) con 0.646 mAP@0.5 contra <code>Mask2Former + Swin-T</code> v8 (47 M, 927 mix) con 0.494, una diferencia de 15,2 puntos a favor de la CNN. Esta es la comparación menos ambigua porque la capacidad es prácticamente idéntica. Como control adicional se entrenó <code>Mask2Former + Swin-S</code> v13 (69 M, 927 mix) que aportó apenas 1,4 puntos sobre Swin-T y quedó 13,8 debajo de la CNN pese a sobre-dimensionar al ViT en 23 M de parámetros. La ventaja de la CNN se mantiene además en los otros regímenes de datos (8,2 puntos sobre 86 autora, 7,9 sobre 486 autora) y se concentra en la clase ambigua <code>trees_and_bushes</code>: en <code>building</code> ambas quedan parejas, consistente con el <em>inductive bias</em> esparso de las <em>queries</em> para objetos con bordes definidos.</p>
-<p>En el régimen explorado el pre-entrenamiento masivo del ViT no compensa su desventaja relativa frente a una CNN moderna escalada. La ventaja arquitectural de M2F que reportan los <em>benchmarks</em> grandes no se reproduce aquí, probablemente porque el <em>fine-tuning</em> no alcanza para romper el <em>bias</em> débil del ViT sobre la clase ambigua. La CNN escala predeciblemente mientras que M2F tiene pendiente mucho menor.</p>
+<p>Sobre el referente oracular (Tabla 7), la comparación central del estudio se hace a parámetros equiparables: <code>Mask2Former + Swin-T</code> v8 (47 M, 927 mix) con 0.643 mAP@0.5 contra <code>YOLOv8l</code> v12 (46 M, 927 mix) con 0.532, una diferencia de 11,1 puntos a favor del ViT. Esta es la comparación menos ambigua porque la capacidad es prácticamente idéntica y los dos modelos se evaluaron con el mismo pipeline (<code>pycocotools</code>, mismo GT sanitizado, mismo <em>threshold</em> de confianza 0,001). Como control adicional se entrenó <code>Mask2Former + Swin-S</code> v13 (69 M, 927 mix) que dio 0.634 (<em>last</em>), apenas por debajo de Swin-T: escalar el ViT dentro de este régimen no agrega ganancia marginal. En el escalado inverso, dentro de YOLO, pasar de nano a large sobre 927 mix mejora solo 1,6 puntos (v8 YOLOv8n 3,3 M = 0.516 vs v12 YOLOv8l 46 M = 0.532).</p>
+<p>En el régimen explorado el <em>pre-training</em> masivo del ViT compensa su sesgo inductivo débil frente a una CNN moderna y en los dos regímenes de datos de los que ya hay medición completa (ver Tabla 6) la ventaja del ViT sobre la CNN se mantiene. El resultado es consistente con los <em>benchmarks</em> de referencia (Mask2Former paper, COCO <em>instance seg</em>) donde los ViT pre-entrenados lideran la tarea a parámetros equiparables. La ventaja se concentra en la clase geométricamente bien definida <code>building</code>, donde las <em>queries</em> esparsas aprenden representaciones más precisas que los <em>feature maps</em> densos de la CNN cuando el <em>fine-tuning</em> parte de pesos pre-entrenados en millones de imágenes.</p>
 
 <h3>6.2. Limitaciones</h3>
 <ul>
   <li>Dataset de 927 imágenes es chico para la tarea (los <em>benchmarks</em> de referencia usan 5.000+ anotaciones), lo que deja varianza entre <em>runs</em> considerable.</li>
   <li>El <em>ground truth</em> oracular es <em>single-rater</em>, no multi-rater con consenso. El estándar académico más riguroso requeriría 2-3 anotadoras más y mediador.</li>
-  <li>Los <em>splits</em> train/val/test de v6 son por imagen tras el tileado con 20 % de solapamiento, no por ortofoto fuente. Dos <em>tiles</em> solapados de la misma ortofoto pueden caer en <em>splits</em> distintos y producir <em>leakage</em> parcial en el test propio. El oracular, construido desde el <em>held-out</em> team con imágenes que ningún modelo vio en <em>training</em>, es inmune a este efecto, lo que refuerza la decisión de usarlo como referente principal.</li>
-  <li>Las <em>labels</em> del equipo Lawal entraron a <code>v6</code> sin un QA ciego formal entre anotadoras. El impacto se mitiga reportando por evaluador en Tabla 6 y usando oracular como juez final, pero el QA formal queda listado en 6.3 como primer trabajo futuro.</li>
-  <li>Solo se evalúa Zona 1 del protocolo municipal. El modelo tampoco distingue tipos de vegetación, lo cual afecta la propagación real del fuego.</li>
+  <li>Los <em>splits</em> train/val/test del 927 mix son por imagen tras el tileado con 20% de solapamiento, no por ortofoto fuente. Dos <em>tiles</em> solapados de la misma ortofoto pueden caer en <em>splits</em> distintos y producir <em>leakage</em> parcial en el test propio. El oracular, construido desde el <em>held-out</em> team con imágenes que ningún modelo vio en <em>training</em>, es inmune a este efecto, lo que refuerza la decisión de usarlo como referente principal.</li>
+  <li>Las <em>labels</em> del equipo Lawal entraron al 927 mix sin un QA ciego formal entre anotadoras. El impacto se mitiga reportando por evaluador en Tabla 6 y usando oracular como juez final, pero el QA formal queda listado en 6.3 como primer trabajo futuro.</li>
   <li>El dispositivo (24 GB M4 MPS) obliga a <em>cap</em> de 384×384 en M2F y de 640×640 para <code>YOLOv8l</code> sobre 927 imágenes. Swin-B (107 M) y Swin-L (217 M) no entraron en memoria.</li>
 </ul>
 
 <h3>6.3. Trabajo futuro</h3>
 <ol>
   <li>QA del <em>labeling</em> del equipo con revisión <em>peer</em> en <code>Roboflow</code>, para incorporar las 441 adicionales sin degradar la ontología. Y <em>ground truth</em> oracular por consenso entre anotadoras para responder la pregunta de forma rigurosa.</li>
-  <li>Auto-etiquetado con <em>human-in-the-loop</em> usando <code>Grounding DINO + SAM 2</code> para generar labels iniciales y corrección humana.</li>
+  <li>Pre-etiquetado asistido con <em>human-in-the-loop</em> usando <code>SAM 2</code> para acelerar el trabajo manual sobre nuevas tandas de <em>tiles</em>, siempre con revisión final por anotadora.</li>
   <li>Expansión a Zonas 2 y 3 del protocolo (el módulo de distancia ya acepta <code>threshold-m</code>) y clase adicional para pastizales o vegetación de bajo porte.</li>
-  <li>Evaluar M2F con Swin-B y Swin-L sobre hardware con más memoria para probar si los <em>backbones</em> grandes cierran la brecha. <em>Deploy</em> del <em>pipeline</em> como API REST o <em>viewer</em> web para la Dirección de Protección Civil de Villa La Angostura.</li>
+  <li>Evaluar M2F con Swin-B y Swin-L sobre hardware con más memoria para probar si los <em>backbones</em> grandes cierran la brecha.</li>
 </ol>
 
 <!-- ======================================================== -->
@@ -835,10 +826,10 @@ caption .v-ok, caption .v-ko, caption .v-mix, caption .v-open{
   <caption>Tabla 8: Cronograma por fase, responsable y rango de fechas.</caption>
   <tr><th>Fase</th><th>Tareas incluidas</th><th>Responsable</th><th>Rango</th></tr>
   <tr><td>Setup y captura</td><td>Repo, ambiente, vuelos con DJI Mini 5 Pro, procesamiento en ODM, publicación en OAM</td><td>autora</td><td>sep 2026</td></tr>
-  <tr><td>Datos y baseline</td><td>Tileado y etiquetado de 86 <em>tiles</em> (v5), <em>training</em> y evaluación de YOLOv8n v5 y Mask2Former Swin-T v4</td><td>autora</td><td>22-23 sep</td></tr>
+  <tr><td>Datos y baseline</td><td>Tileado y etiquetado del dataset 86 autora, primeros <em>runs</em> de YOLOv8n y Mask2Former Swin-T</td><td>autora</td><td>22-23 sep</td></tr>
   <tr><td>MVP de alertas</td><td><code>compute_alerts</code>, <code>aggregate_alerts</code>, <code>build_mosaic</code>, <code>generate_map</code>, <em>deploy</em> sobre Barrio Norte y Correntoso/Arauco</td><td>autora</td><td>29 sep</td></tr>
-  <tr><td>Etiquetado expandido</td><td>841 <em>tiles</em> etiquetadas (dataset v6)</td><td>equipo Lawal</td><td>sep-oct</td></tr>
-  <tr><td><em>Training</em> escalado y ablation</td><td>YOLO v6/v8 y M2F v7/v8 sobre 927, v9/v10 (<em>early stop</em>, filtrado por anotadora)</td><td>autora</td><td>3 oct</td></tr>
+  <tr><td>Etiquetado expandido</td><td>841 <em>tiles</em> etiquetadas, armado del dataset 927 mix</td><td>equipo Lawal</td><td>sep-oct</td></tr>
+  <tr><td><em>Training</em> escalado y ablation</td><td><em>Runs</em> YOLO y M2F sobre 927 mix y luego sobre 486 autora filtrado</td><td>autora</td><td>3 oct</td></tr>
   <tr><td><em>Scaling</em> de parámetros</td><td>YOLOv8l v11 y v12, Mask2Former Swin-S v13</td><td>autora</td><td>4 oct</td></tr>
   <tr><td>Oracular y evaluación cruzada</td><td>Selección y re-etiquetado de 50 <em>tiles</em>, evaluación de todos los <em>runs</em> sobre <em>held-out</em> team y oracular</td><td>autora</td><td>4 oct</td></tr>
   <tr><td>Informe y entrega</td><td>Redacción del informe, <em>submission</em>, presentación en Clase 8</td><td>autora</td><td>4-12 oct</td></tr>
