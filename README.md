@@ -12,16 +12,20 @@ Entrega: 5 de octubre de 2026 (Clase 7).
 
 Pregunta: ¿el sesgo inductivo débil de los Vision Transformers constituye una desventaja frente a un *baseline* CNN sobre dataset de dominio específico con pocas muestras, o el pre-entrenamiento masivo compensa?
 
-Respuesta sobre *ground truth* oracular (50 imágenes re-etiquetadas por una sola persona con criterios documentados):
+Respuesta sobre *ground truth* oracular (50 imágenes re-etiquetadas por una sola persona con criterios documentados), ambos modelos evaluados con `pycocotools` sobre el mismo GT sanitizado y mismo *threshold* de confianza:
 
 | Run | Arquitectura | Params | Dataset | mAP@0.5 |
 |---|---|---:|---|---:|
-| v12 | `YOLOv8l` | 46 M | 927 mix | **0.646** |
-| v8 | `YOLOv8n` | 3,3 M | 927 mix | 0.622 |
-| v13 | `Mask2Former + Swin-S` | 69 M | 927 mix | 0.508 |
-| v8 | `Mask2Former + Swin-T` | 47 M | 927 mix | 0.494 |
+| v8  | `Mask2Former + Swin-T` | 47 M  | 927 mix | **0.643** |
+| v13 | `Mask2Former + Swin-S` | 69 M  | 927 mix | 0.634 |
+| v10 | `Mask2Former + Swin-T` | 47 M  | 486 autora | 0.599 |
+| v15 | `Mask2Former + Swin-S` | 69 M  | 486 autora | 0.590 |
+| v14 | `Mask2Former + Swin-S` | 69 M  | 86 autora | 0.574 |
+| v9  | `Mask2Former + Swin-T` | 47 M  | 86 autora | 0.532 |
+| v12 | `YOLOv8l`              | 46 M  | 927 mix | 0.532 |
+| v8  | `YOLOv8n`              | 3,3 M | 927 mix | 0.516 |
 
-A parámetros equiparables (46 M vs 47 M) la CNN supera a la ViT por 15,2 puntos. Escalar el ViT a Swin-S aporta 1,4 puntos y no cierra la brecha. El informe completo discute el recorrido experimental y la ambigüedad entre efecto de arquitectura, de capacidad y de evaluador.
+A parámetros equiparables (47 M vs 46 M), `Mask2Former + Swin-T` supera a `YOLOv8l` por 11,1 puntos sobre 927 mix. Los seis *runs* de M2F lideran los seis primeros puestos del ranking. Escalar la ViT de Swin-T a Swin-S no agrega ganancia marginal. El informe completo discute el recorrido experimental y la nota metodológica sobre `return_binary_maps=True` que es necesaria para medir mAP de instance segmentation correctamente con la implementación de `transformers` de HuggingFace.
 
 ## Setup
 
@@ -83,12 +87,12 @@ Equivale a `make demo-train` (entrena `YOLOv8n-seg` sobre las 86 imágenes v5) +
 
 ### Resultados finales sobre los sectores completos
 
-La ortofoto del demo cubre una sola *task* del vuelo. Los dos mapas HTML sobre los sectores completos vienen pre-generados en el repo para abrir directamente en el navegador:
+La ortofoto del demo cubre una sola *task* del vuelo. Los mapas sobre los sectores completos corridos con el campeón (`Mask2Former + Swin-T` v8) vienen pre-generados en el repo para abrir directamente en el navegador:
 
-- `reports/alerts_map_barrio-norte_final.html` — 714 *tiles*, 1.100 edificios detectados
-- `reports/alerts_map_correntoso-arauco_final.html` — 2.056 *tiles*, 797 edificios detectados
+- `reports/alerts_map_barrio-norte_m2f.html`
+- `reports/alerts_map_correntoso-arauco_m2f.html`
 
-Ambos son autocontenidos: ortomosaico de fondo + detecciones en *overlay* + *widget* de confianza en vivo. No requieren servidor, se abren con `open reports/alerts_map_<sector>_final.html` en macOS o doble click.
+Ambos autocontenidos: ortomosaico de fondo + detecciones en *overlay* + *widget* de confianza en vivo. No requieren servidor, se abren con `open reports/alerts_map_<sector>_m2f.html` en macOS o doble click.
 
 ## Pipeline general
 
@@ -148,7 +152,6 @@ El HTML resultante trae un *widget* abajo a la derecha con dos *checkboxes* (edi
 `docs/` contiene los entregables y documentos de referencia del proyecto:
 
 - `INFORME.html` — informe final con pregunta de investigación, recorrido experimental, matriz *heatmap* de resultados sobre los tres regímenes de evaluación, análisis y conclusiones.
-- `CODE_WALKTHROUGH.html` — recorrido por cada módulo de `src/` con justificación de decisiones y preguntas de defensa.
 - `PROPUESTA_TP.html` — planteo original del TP.
 - `DATA_PIPELINE.html` — pipeline operativo de datos (captura, procesamiento con ODM, anotación en Roboflow).
 - `LABELING_GUIDELINES.html` — guías de anotación usadas por el equipo.
