@@ -44,15 +44,23 @@ def m2f_instance_masks(
     ``target_hw`` is the (height, width) the mask should be resized to; passing
     the ground-truth size (from COCO metadata) keeps evaluation aligned, while
     passing ``(image.size[1], image.size[0])`` matches the visible image.
+
+    Usa ``return_binary_maps=True`` para que cada query devuelva su mascara
+    binaria propia. Sin esa flag, ``post_process_instance_segmentation``
+    construye un unico mapa panoptico donde cada pixel pertenece a una sola
+    instancia (argmax ponderado por score), lo que subestima mAP de segmentacion
+    de instancias cuando las instancias se solapan o cuando queries de bajo
+    score fragmentan las mascaras ganadoras.
     """
     with torch.no_grad():
         enc = processor(images=[image], return_tensors="pt")
         out = model(pixel_values=enc["pixel_values"].to(DEVICE))
 
     result = processor.post_process_instance_segmentation(
-        out, target_sizes=[target_hw], threshold=threshold
+        out, target_sizes=[target_hw], threshold=threshold,
+        return_binary_maps=True,
     )[0]
-    seg = result["segmentation"].cpu().numpy()
-    for info in result["segments_info"]:
-        bin_mask = (seg == info["id"]).astype(np.uint8)
+    masks = result["segmentation"].cpu().numpy()   # (N, H, W) binary per query
+    for mask, info in zip(masks, result["segments_info"]):
+        bin_mask = mask.astype(np.uint8)
         yield int(info["label_id"]), bin_mask, float(info["score"])
