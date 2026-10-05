@@ -21,10 +21,20 @@ def fill_polygon(mask: np.ndarray, polygon: Sequence[float]) -> None:
 
 
 def read_tif_as_rgb(path: Path) -> np.ndarray:
-    """Read a TIF via rasterio and return an HxWx3 uint8 RGB array (alpha dropped)."""
+    """Read a TIF via rasterio and return an HxWx3 uint8 RGB array (alpha dropped).
+
+    GeoTIFF puede venir con dtype uint8/uint16/float32; se escala al rango
+    [0, 255] y se convierte a uint8 para que ``Pillow`` lo acepte sin
+    quejarse. Si no hay senal (todo cero) se devuelve igualmente uint8.
+    """
     with rasterio.open(path) as src:
         data = src.read()  # (bands, H, W)
     img = np.transpose(data, (1, 2, 0))
     if img.shape[2] == 4:
         img = img[:, :, :3]
+    if img.dtype != np.uint8:
+        maxv = img.max() if img.size else 1
+        if maxv > 0:
+            img = np.clip(img / maxv * 255.0, 0, 255)
+        img = img.astype(np.uint8)
     return img

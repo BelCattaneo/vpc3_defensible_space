@@ -33,6 +33,10 @@ def _tile_one(tif: Path, out_dir: Path) -> None:
         meta.update(width=TILE_SIZE, height=TILE_SIZE, compress="lzw")
         kept = 0
         skipped = 0
+        if src.height < TILE_SIZE or src.width < TILE_SIZE:
+            print(f"{tif.name}: skipped (ortofoto {src.width}x{src.height} "
+                  f"smaller than tile size {TILE_SIZE}x{TILE_SIZE})")
+            return
         # step-based origins plus one final origin per axis so the last
         # ~STEP px band at the south/east edge is not silently dropped.
         ys = list(range(0, src.height - TILE_SIZE + 1, STEP))
