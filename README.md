@@ -112,40 +112,43 @@ Ambos autocontenidos: ortomosaico de fondo + detecciones en *overlay* + *widget*
 
 ## Pipeline general
 
-Los pasos listados abajo describen el *pipeline* completo tal como se corrió a lo largo del proyecto. Para solo validar el flujo end-to-end, el **demo** de la sección anterior alcanza. Los targets de preparación de datos y de *training* sobre los *splits* v6/v7 asumen el dataset completo (no versionado por tamaño); el *demo* trae los artefactos mínimos para que todo lo demás funcione.
+Los pasos listados abajo describen el *pipeline* completo tal como se corrió a lo largo del proyecto. Para solo validar el flujo end-to-end alcanza con el **demo** de la sección anterior. Los targets de preparación de datos y de *training* sobre los *splits* v6/v7 asumen el dataset completo (no versionado por tamaño); el *demo* trae los artefactos mínimos para que todo lo demás funcione.
 
-`make help` lista todos los *targets* con descripción corta.
+`make help` imprime la lista completa de *targets* con una línea de descripción cada uno. Resumen por fase:
 
 ### 1. Preparación de datos
 
 ```bash
-make tiles                 # orthophoto -> tiles 1024x1024
-make labelers              # mapea anotadora -> imágenes (Roboflow API)
-make dataset-v7            # 486 imágenes de la autora
-make dataset-holdout       # 441 imágenes solo del equipo (held-out)
+make tiles                 # ortofoto -> tiles 1024x1024 georreferenciados
+make labelers              # mapea anotadora -> imágenes vía Roboflow API
+make dataset-v7            # dataset filtrado por autora (486 imágenes)
+make dataset-holdout       # dataset held-out team (441 imágenes)
 make dataset-oracular      # muestrea 50 imágenes para re-etiquetar
 make coco-to-yolo          # convierte export COCO a formato YOLO
 ```
 
+Variables requeridas: `AUTHOR_EMAIL` para `dataset-v7`, `TEAM_EMAILS` para `dataset-holdout`. Ambos leen la clave `ROBOFLOW_API_KEY` desde `.env`.
+
 ### 2. Training
 
 ```bash
-make train-yolo-nano       # YOLOv8n baseline (86 autora)
-make train-yolo-large      # YOLOv8l 927 mix, imgsz 640 (campeón v12)
+make train-yolo-nano       # YOLOv8n-seg baseline (86 autora)
+make train-yolo-large      # YOLOv8l-seg sobre 927 mix (campeón v12)
 make train-m2f-t           # Mask2Former + Swin-T (default)
-make train-m2f-s           # Mask2Former + Swin-S 927 mix (v13)
+make train-m2f-s           # Mask2Former + Swin-S sobre 927 mix (v13)
 ```
 
 ### 3. Evaluación
 
 ```bash
-make eval-m2f              # mAP vía pycocotools
+make eval-yolo             # mAP de YOLO sobre test propio vía pycocotools
+make eval-m2f              # mAP de M2F sobre test propio vía pycocotools
 make compare               # paneles side-by-side GT | YOLO | M2F
 ```
 
 ### 4. Alertas y mapa
 
-Parametrizable por sector (`SECTOR=barrio-norte` por defecto):
+Parametrizable por sector. `SECTOR=barrio-norte` por defecto:
 
 ```bash
 make alerts-all                              # pipeline end-to-end sobre barrio-norte
@@ -161,7 +164,28 @@ make mosaic     SECTOR=correntoso-arauco     # mosaico Web Mercator
 make map        SECTOR=correntoso-arauco     # mapa HTML con slider
 ```
 
-El HTML resultante trae un *widget* abajo a la derecha con dos *checkboxes* (edificios, vegetación) y dos *sliders* de confianza independientes para explorar *recall* y *precision* en vivo. Overrides adicionales: `WEIGHTS=models/...` cambia el *checkpoint*, `CONF=0.3` el umbral de confianza de inferencia.
+Variables opcionales: `WEIGHTS=models/...` cambia el *checkpoint*, `CONF=0.3` el umbral de confianza de inferencia.
+
+El HTML resultante trae un *widget* abajo a la derecha con dos *checkboxes* (edificios, vegetación) y dos *sliders* de confianza independientes para explorar *recall* y *precision* en vivo.
+
+### Demo
+
+Targets listados en la sección [Demo end-to-end](#demo-end-to-end). Son atajos sobre los targets de arriba fijando `SECTOR=demo` y pesos específicos:
+
+```bash
+make demo                  # inferencia con pesos champion (~5 min)
+make demo-full             # training desde cero + inferencia (~20 min)
+make demo-tiles            # solo tilea la ortofoto demo
+make demo-train            # solo entrena YOLOv8n sobre v5
+make demo-infer-champion   # alerts + mapa con pesos champion
+make demo-infer-nano       # alerts + mapa con pesos nano recién entrenados
+```
+
+### Mantenimiento
+
+```bash
+make clean-pycache         # elimina directorios __pycache__
+```
 
 ## Documentación
 
