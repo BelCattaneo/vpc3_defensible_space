@@ -45,7 +45,7 @@ OVERLAY_FONT_SIZE = 20
 # Polygon extraction constants.
 POLY_SIMPLIFY_EPS_PX = 2.0   # ~10 cm at 5 cm/px
 DANGER_ZONE_MIN_AREA_PX = 4
-AT_EDGE_MARGIN_PX = 25   # 25 px at 5 cm/px = 1,25 m, cubre el umbral de 2 m
+AT_EDGE_MARGIN_PX = 40   # 40 px at 5 cm/px = 2 m, exactamente el umbral del protocolo
 
 
 # ---------------------------------------------------------------------------
@@ -454,8 +454,8 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--conf-threshold", type=float, default=None,
                         help="detection confidence threshold; "
                              "defaults to 0.7 for m2f and 0.25 for yolo")
-    parser.add_argument("--pattern", default="*.jpg",
-                        help="glob when input is a directory")
+    parser.add_argument("--pattern", default="*.tif",
+                        help="glob when input is a directory (tiles are GeoTIFF)")
     return parser.parse_args()
 
 
