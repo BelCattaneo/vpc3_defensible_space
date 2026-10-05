@@ -783,13 +783,14 @@ caption .v-ok, caption .v-ko, caption .v-mix, caption .v-open{
 <p>Durante el desarrollo iterativo del <em>pipeline</em> se usó <code>YOLOv8l</code> como detector rápido para poder correr sectores completos en minutos sobre una laptop sin GPU, pero los mapas finales incluidos en el repo son con el campeón de mAP (<code>Mask2Former + Swin-T</code>). El resultado es un mapa web con el ortomosaico del dron de fondo, los edificios coloreados por estado y la vegetación cercana marcada sobre cada violación.</p>
 
 <h3>5.3. Resultados</h3>
+<p>Las Figuras 8 y 9 muestran capturas del mapa interactivo generado para cada sector con <code>Mask2Former + Swin-T</code>. El ortomosaico del dron aparece como fondo y las detecciones en <em>overlay</em>: azul para edificios que cumplen la regla de 2 m, rojo para los que la violan y amarillo para la vegetación dentro del <em>buffer</em>. El panel abajo a la derecha permite filtrar edificios y vegetación por confianza en vivo.</p>
 <figure>
   <img src="images/mapa_folium.png" alt="Captura del mapa interactivo de Barrio Norte con Mask2Former Swin-T">
-  <figcaption>Figura 8: Captura del mapa interactivo generado para Barrio Norte con <code>Mask2Former + Swin-T</code>, con el ortomosaico del dron como fondo y las detecciones en <em>overlay</em>. Azul: cumple. Rojo: viola la regla de 2 m. Amarillo: vegetación dentro del <em>buffer</em>. El panel abajo a la derecha permite filtrar edificios y vegetación por confianza en vivo.</figcaption>
+  <figcaption>Figura 8: Mapa interactivo de Barrio Norte.</figcaption>
 </figure>
 <figure>
   <img src="images/mapa_folium_correntoso.png" alt="Captura del mapa interactivo de Correntoso/Arauco con Mask2Former Swin-T">
-  <figcaption>Figura 9: Captura del mapa interactivo generado para Correntoso/Arauco con <code>Mask2Former + Swin-T</code>, misma convención de colores que la Figura 8.</figcaption>
+  <figcaption>Figura 9: Mapa interactivo de Correntoso/Arauco.</figcaption>
 </figure>
 
 <p>El <em>pipeline</em> se corrió sobre los dos sectores anotados (Barrio Norte y Correntoso/Arauco) y se publicaron sus mapas en el repo. La tasa de incumplimiento no se reporta como número único porque depende del umbral de confianza que el usuario elige en el mapa interactivo. Dos cautelas de diseño conviene mencionar: el modelo tiende a sobre-detectar estructuras (incluye cobertizos, galpones y techados menores que no son habitacionales y fragmenta un mismo edificio en varias detecciones) y no distingue el tipo de vegetación próxima, lo que es importante porque un pastizal cerca de una casa no se propaga igual que un pino. En términos de orden entre sectores, ambos están en interfaz urbano-forestal y en Villa La Angostura es raro encontrar una vivienda sin vegetación arbórea en los dos metros alrededor.</p>
