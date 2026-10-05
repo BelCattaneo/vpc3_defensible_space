@@ -1,0 +1,19 @@
+{
+  "png": "orthomosaic_correntoso.png",
+  "bounds_wgs84": {
+    "south": -40.73610031372865,
+    "west": -71.69267051022403,
+    "north": -40.71617775876939,
+    "east": -71.66895754099238
+  },
+  "size_native": {
+    "rows": 53013,
+    "cols": 47703
+  },
+  "size_out": {
+    "rows": 3000,
+    "cols": 2706
+  },
+  "source_crs": "EPSG:32719",
+  "n_tiles_merged": 25
+}

@@ -1,0 +1,130 @@
+{
+  "yolo": {
+    "v6 (927 mix, aug extra, nano)": {
+      "mAP50": 0.6207806252357786,
+      "mAP50-95": 0.45940814109889805,
+      "per_class_mAP50": {
+        "building": 0.6966428650042287,
+        "trees_and_bushes": 0.5449183854673286
+      }
+    },
+    "v8 (927 mix, defaults, nano)": {
+      "mAP50": 0.6217803102060131,
+      "mAP50-95": 0.44357789282473126,
+      "per_class_mAP50": {
+        "building": 0.7044814949927168,
+        "trees_and_bushes": 0.5390791254193094
+      }
+    },
+    "v9 (86 autora, early stop, nano)": {
+      "mAP50": 0.43869730529341083,
+      "mAP50-95": 0.2629983783988566,
+      "per_class_mAP50": {
+        "building": 0.5059238558662316,
+        "trees_and_bushes": 0.3714707547205901
+      }
+    },
+    "v10 (486 autora, nano)": {
+      "mAP50": 0.5063298636702023,
+      "mAP50-95": 0.3151383443790475,
+      "per_class_mAP50": {
+        "building": 0.5837993019947825,
+        "trees_and_bushes": 0.428860425345622
+      }
+    },
+    "v11 (86 autora, YOLOv8l)": {
+      "mAP50": 0.5056109703832987,
+      "mAP50-95": 0.3116572060963464,
+      "per_class_mAP50": {
+        "building": 0.6114895033142236,
+        "trees_and_bushes": 0.39973243745237397
+      }
+    }
+  },
+  "m2f": {
+    "v8_last": {
+      "mAP50": 0.494,
+      "mAP50-95": 0.339,
+      "per_class": {
+        "building": {
+          "mAP50-95": 0.49,
+          "mAP50": 0.67
+        },
+        "trees_and_bushes": {
+          "mAP50-95": 0.188,
+          "mAP50": 0.319
+        }
+      }
+    },
+    "v9_last": {
+      "mAP50": 0.379,
+      "mAP50-95": 0.245,
+      "per_class": {
+        "building": {
+          "mAP50-95": 0.377,
+          "mAP50": 0.559
+        },
+        "trees_and_bushes": {
+          "mAP50-95": 0.113,
+          "mAP50": 0.2
+        }
+      }
+    },
+    "v10_best": {
+      "mAP50": 0.43,
+      "mAP50-95": 0.28,
+      "per_class": {
+        "building": {
+          "mAP50-95": 0.417,
+          "mAP50": 0.594
+        },
+        "trees_and_bushes": {
+          "mAP50-95": 0.144,
+          "mAP50": 0.267
+        }
+      }
+    },
+    "v10_last": {
+      "mAP50": 0.444,
+      "mAP50-95": 0.316,
+      "per_class": {
+        "building": {
+          "mAP50-95": 0.466,
+          "mAP50": 0.602
+        },
+        "trees_and_bushes": {
+          "mAP50-95": 0.167,
+          "mAP50": 0.286
+        }
+      }
+    },
+    "v9_best": {
+      "mAP50": 0.352,
+      "mAP50-95": 0.227,
+      "per_class": {
+        "building": {
+          "mAP50-95": 0.366,
+          "mAP50": 0.544
+        },
+        "trees_and_bushes": {
+          "mAP50-95": 0.088,
+          "mAP50": 0.16
+        }
+      }
+    },
+    "v8_best": {
+      "mAP50": 0.462,
+      "mAP50-95": 0.303,
+      "per_class": {
+        "building": {
+          "mAP50-95": 0.467,
+          "mAP50": 0.678
+        },
+        "trees_and_bushes": {
+          "mAP50-95": 0.14,
+          "mAP50": 0.247
+        }
+      }
+    }
+  }
+}

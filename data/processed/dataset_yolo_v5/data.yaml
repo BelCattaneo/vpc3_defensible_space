@@ -1,0 +1,6 @@
+path: /Users/belcattaneo/Documents/MIA/VpC3/TP_DefensibleSpace/data/processed/dataset_yolo_v5
+train: images/train
+val: images/val
+test: images/test
+nc: 2
+names: ['building', 'trees_and_bushes']

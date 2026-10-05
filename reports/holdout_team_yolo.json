@@ -1,0 +1,34 @@
+{
+  "v9 YOLO (86 clean, early stop)": {
+    "mAP50": 0.2783380963044873,
+    "mAP50-95": 0.16583532360834996,
+    "per_class_mAP50": {
+      "building": 0.30045992889045886,
+      "trees_and_bushes": 0.25621626371851575
+    }
+  },
+  "v10 YOLO (486 autora, early stop)": {
+    "mAP50": 0.3335883226906336,
+    "mAP50-95": 0.2063903170850617,
+    "per_class_mAP50": {
+      "building": 0.3500520087463903,
+      "trees_and_bushes": 0.3171246366348769
+    }
+  },
+  "v8 YOLO (927 merged, defaults)": {
+    "mAP50": 0.5428315122089068,
+    "mAP50-95": 0.40555339438886956,
+    "per_class_mAP50": {
+      "building": 0.543831102522399,
+      "trees_and_bushes": 0.5418319218954146
+    }
+  },
+  "v6 YOLO (927 merged, aug extra)": {
+    "mAP50": 0.46665770722743066,
+    "mAP50-95": 0.34178145406539906,
+    "per_class_mAP50": {
+      "building": 0.4801245099343878,
+      "trees_and_bushes": 0.4531909045204735
+    }
+  }
+}

@@ -8,39 +8,67 @@ from rasterio.windows import Window
 from rasterio.windows import transform as win_transform
 
 TILE_SIZE = 1024
-STEP = int(TILE_SIZE * 0.8)   # 20% overlap
-LIMIT = None                  # None to process all orthophotos
+OVERLAP = 0.2
+STEP = int(TILE_SIZE * (1.0 - OVERLAP))
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--sector", required=True, help="sector name (folder under data/raw/)")
-args = parser.parse_args()
+# Skip tiles whose transparent alpha covers more than this fraction.
+MAX_TRANSPARENT_FRACTION = 0.5
 
-INPUT = Path(f"data/raw/{args.sector}")
-OUTPUT = Path(f"data/interim/tiles/{args.sector}")
+# Set to an int to process only the first N orthophotos; None for all.
+LIMIT: int | None = None
 
-OUTPUT.mkdir(parents=True, exist_ok=True)
 
-paths = sorted(INPUT.glob("*.tif"))
-if LIMIT:
-    paths = paths[:LIMIT]
+def _parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--sector", required=True, help="sector name (folder under data/raw/)"
+    )
+    return parser.parse_args()
 
-for tif in paths:
+
+def _tile_one(tif: Path, out_dir: Path) -> None:
+    """Write all valid 1024x1024 tiles of a single orthophoto."""
     with rasterio.open(tif) as src:
         meta = src.meta.copy()
         meta.update(width=TILE_SIZE, height=TILE_SIZE, compress="lzw")
         kept = 0
         skipped = 0
-        for y in range(0, src.height - TILE_SIZE + 1, STEP):
-            for x in range(0, src.width - TILE_SIZE + 1, STEP):
+        # step-based origins plus one final origin per axis so the last
+        # ~STEP px band at the south/east edge is not silently dropped.
+        ys = list(range(0, src.height - TILE_SIZE + 1, STEP))
+        if ys and ys[-1] != src.height - TILE_SIZE:
+            ys.append(src.height - TILE_SIZE)
+        xs = list(range(0, src.width - TILE_SIZE + 1, STEP))
+        if xs and xs[-1] != src.width - TILE_SIZE:
+            xs.append(src.width - TILE_SIZE)
+        for y in ys:
+            for x in xs:
                 win = Window(x, y, TILE_SIZE, TILE_SIZE)
                 data = src.read(window=win)
-                # skip tiles that are more than 50% transparent
-                if src.count == 4 and (data[3] == 0).mean() > 0.5:
+                if src.count == 4 and (data[3] == 0).mean() > MAX_TRANSPARENT_FRACTION:
                     skipped += 1
                     continue
                 meta["transform"] = win_transform(win, src.transform)
-                out = OUTPUT / f"{tif.stem}__x{x}_y{y}.tif"
+                out = out_dir / f"{tif.stem}__x{x}_y{y}.tif"
                 with rasterio.open(out, "w", **meta) as dst:
                     dst.write(data)
                 kept += 1
         print(f"{tif.name}: {kept} tiles kept, {skipped} skipped (transparency)")
+
+
+def main() -> None:
+    args = _parse_args()
+    input_dir = Path(f"data/raw/{args.sector}")
+    output_dir = Path(f"data/interim/tiles/{args.sector}")
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    paths = sorted(input_dir.glob("*.tif"))
+    if LIMIT:
+        paths = paths[:LIMIT]
+
+    for tif in paths:
+        _tile_one(tif, output_dir)
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,19 @@
+{
+  "png": "orthomosaic_barrio_norte.png",
+  "bounds_wgs84": {
+    "south": -40.755034028043575,
+    "west": -71.66821203143392,
+    "north": -40.743187875912206,
+    "east": -71.65524028823098
+  },
+  "size_native": {
+    "rows": 25688,
+    "cols": 21146
+  },
+  "size_out": {
+    "rows": 2500,
+    "cols": 2074
+  },
+  "source_crs": "EPSG:32719",
+  "n_tiles_merged": 714
+}

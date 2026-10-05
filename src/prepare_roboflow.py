@@ -7,40 +7,50 @@ import argparse
 import random
 from pathlib import Path
 
-import numpy as np
-import rasterio
 from PIL import Image
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--samples-per-sector", type=int, default=25)
-parser.add_argument("--seed", type=int, default=42)
-parser.add_argument("--batch", type=str, default="train", help="output subfolder name")
-args = parser.parse_args()
+from mask_utils import read_tif_as_rgb
 
-SECTORS = ["barrio-norte", "correntoso-arauco"]
+SECTORS = ("barrio-norte", "correntoso-arauco")
 BASE = Path("data/processed/roboflow_upload")
-OUTPUT = BASE / args.batch
-OUTPUT.mkdir(parents=True, exist_ok=True)
 
-# collect names of tiles already staged in any previous batch to avoid duplicates
-already_used = {p.name for p in BASE.rglob("*.png")}
+DEFAULT_SAMPLES_PER_SECTOR = 25
+DEFAULT_SEED = 42
+DEFAULT_BATCH = "train"
 
-random.seed(args.seed)
 
-total = 0
-for sector in SECTORS:
-    tiles = sorted(Path(f"data/interim/tiles/{sector}").glob("*.tif"))
-    # filter out tiles already staged
-    candidates = [t for t in tiles if f"{sector}__{t.stem}.png" not in already_used]
-    picked = random.sample(candidates, min(args.samples_per_sector, len(candidates)))
-    for tif in picked:
-        with rasterio.open(tif) as src:
-            data = src.read()
-        img = np.transpose(data, (1, 2, 0))
-        if img.shape[2] == 4:
-            img = img[:, :, :3]
-        out = OUTPUT / f"{sector}__{tif.stem}.png"
-        Image.fromarray(img).save(out)
-        total += 1
+def _parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--samples-per-sector", type=int, default=DEFAULT_SAMPLES_PER_SECTOR)
+    parser.add_argument("--seed", type=int, default=DEFAULT_SEED)
+    parser.add_argument(
+        "--batch", type=str, default=DEFAULT_BATCH, help="output subfolder name"
+    )
+    return parser.parse_args()
 
-print(f"{total} PNGs saved to {OUTPUT}")
+
+def main() -> None:
+    args = _parse_args()
+    output = BASE / args.batch
+    output.mkdir(parents=True, exist_ok=True)
+
+    # Skip tiles already staged in any previous batch to avoid duplicates.
+    already_used = {p.name for p in BASE.rglob("*.png")}
+    random.seed(args.seed)
+
+    total = 0
+    for sector in SECTORS:
+        tiles = sorted(Path(f"data/interim/tiles/{sector}").glob("*.tif"))
+        candidates = [t for t in tiles if f"{sector}__{t.stem}.png" not in already_used]
+        picked = random.sample(candidates, min(args.samples_per_sector, len(candidates)))
+        for tif in picked:
+            img = read_tif_as_rgb(tif)
+            out = output / f"{sector}__{tif.stem}.png"
+            Image.fromarray(img).save(out)
+            total += 1
+
+    print(f"{total} PNGs saved to {output}")
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,19 @@
+{
+  "png": "orthomosaic_demo.png",
+  "bounds_wgs84": {
+    "south": -40.75047648708959,
+    "west": -71.65858193738788,
+    "north": -40.74668587834415,
+    "east": -71.65549039843465
+  },
+  "size_native": {
+    "rows": 8274,
+    "cols": 4976
+  },
+  "size_out": {
+    "rows": 3000,
+    "cols": 1854
+  },
+  "source_crs": "EPSG:32719",
+  "n_tiles_merged": 1
+}

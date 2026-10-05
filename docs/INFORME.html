@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Informe · Defensible Space</title>
+<style>
+:root{
+  --green:#143c2e;
+  --green-dark:#0a2418;
+  --cream:#f0e9d6;
+  --cream-light:#faf6ea;
+  --yellow:#f4c02f;
+  --red:#d3453a;
+  --grey:#6b6b6b;
+  --grey-light:#e5e5e5;
+  --text:#1a1a1a;
+}
+
+@page{ size:A4; margin:2cm 2.2cm; }
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+body{
+  font-family:"Charter","Georgia","Times New Roman",serif;
+  color:var(--text);
+  line-height:1.55;
+  font-size:11pt;
+  max-width:720px;
+  margin:0 auto;
+  padding:40px 50px;
+  background:white;
+}
+
+h1{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:22pt;
+  color:var(--green-dark);
+  border-bottom:3px solid var(--yellow);
+  padding-bottom:8px;
+  margin-bottom:4px;
+  letter-spacing:-0.3px;
+}
+h1 .subtitle{
+  display:block;
+  font-size:13pt;
+  color:var(--grey);
+  font-weight:400;
+  margin-top:6px;
+  letter-spacing:0;
+}
+h1 + .meta{
+  font-size:10pt;
+  color:var(--grey);
+  margin-bottom:28px;
+  font-family:-apple-system,sans-serif;
+}
+h2{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:15pt;
+  color:var(--green);
+  margin:28px 0 10px;
+  padding-left:12px;
+  border-left:4px solid var(--yellow);
+  page-break-after:avoid;
+}
+h3{
+  font-family:-apple-system,sans-serif;
+  font-size:12pt;
+  color:var(--green-dark);
+  margin:16px 0 6px;
+  font-weight:600;
+  page-break-after:avoid;
+}
+h4{
+  font-family:-apple-system,sans-serif;
+  font-size:10.5pt;
+  color:var(--green);
+  margin:12px 0 5px;
+  font-weight:600;
+}
+
+p{margin-bottom:10px;text-align:justify}
+li{text-align:justify}
+ul,ol{margin:6px 0 12px 22px}
+li{margin-bottom:4px}
+
+code{
+  font-family:"SF Mono",Menlo,Consolas,monospace;
+  background:var(--cream-light);
+  padding:1px 5px;
+  border-radius:3px;
+  font-size:9.5pt;
+  border:1px solid var(--grey-light);
+}
+th code{
+  background:rgba(255,255,255,0.15);
+  color:var(--yellow);
+  border-color:transparent;
+}
+
+figure{margin:16px 0;text-align:center;page-break-inside:avoid}
+figure img{max-width:100%}
+figcaption{font-size:9pt;color:var(--grey);margin-top:6px;font-style:italic}
+
+caption{
+  caption-side:bottom;
+  font-size:9pt;
+  color:var(--grey);
+  margin-top:6px;
+  font-style:italic;
+  text-align:center;
+  padding:4px 0;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin:12px 0 18px;
+  font-size:10pt;
+  page-break-inside:avoid;
+}
+th{
+  background:var(--green);
+  color:white;
+  font-weight:500;
+  padding:7px 10px;
+  text-align:left;
+  font-family:-apple-system,sans-serif;
+}
+td{
+  padding:6px 10px;
+  border-bottom:1px solid var(--grey-light);
+  font-family:-apple-system,sans-serif;
+}
+tr:last-child td{border-bottom:none}
+
+.pullquote{
+  border-left:4px solid var(--green);
+  background:var(--cream-light);
+  padding:10px 16px;
+  margin:14px 0;
+  font-size:10.5pt;
+  color:var(--green-dark);
+  page-break-inside:avoid;
+}
+
+.todo{
+  background:#fff4d6;
+  border-left:4px solid var(--yellow);
+  padding:10px 14px;
+  margin:12px 0;
+  font-size:9.5pt;
+  color:var(--grey);
+  font-family:-apple-system,sans-serif;
+  font-style:italic;
+}
+
+.placeholder{
+  border:1px dashed var(--grey);
+  padding:28px;
+  color:var(--grey);
+  font-size:9.5pt;
+  font-style:italic;
+  background:var(--cream-light);
+  font-family:-apple-system,sans-serif;
+}
+
+.exp-table{
+  font-size:8.5pt;
+}
+.exp-table th, .exp-table td{
+  padding:5px 7px;
+}
+.exp-table td.verdict{
+  font-weight:600;
+  text-align:center;
+  font-size:8.5pt;
+  line-height:1.3;
+}
+.exp-table td.v-ok{ background:#d9ecd3; color:#1b5422 }
+.exp-table td.v-ko{ background:#f5d5d1; color:#8c1f14 }
+.exp-table td.v-mix{ background:#fdeec3; color:#78540b }
+.exp-table td.v-open{ background:#dde6f0; color:#2a4466 }
+
+.exp-table td.hyp{
+  font-style:italic;
+  color:var(--grey);
+}
+
+.legend{
+  font-size:9pt;
+  color:var(--grey);
+  margin:4px 0 14px;
+  font-family:-apple-system,sans-serif;
+}
+.legend span,
+caption .v-ok, caption .v-ko, caption .v-mix, caption .v-open{
+  display:inline-block;
+  padding:1px 7px;
+  margin:0 2px;
+  border-radius:3px;
+  font-weight:600;
+}
+.legend .v-ok, caption .v-ok{ background:#d9ecd3; color:#1b5422 }
+.legend .v-ko, caption .v-ko{ background:#f5d5d1; color:#8c1f14 }
+.legend .v-mix, caption .v-mix{ background:#fdeec3; color:#78540b }
+.legend .v-open, caption .v-open{ background:#dde6f0; color:#2a4466 }
+
+.heatmap td{ text-align:center; vertical-align:middle; padding:6px 8px }
+.heatmap th{ text-align:center }
+.heatmap td:first-child{ text-align:left }
+.hm{ display:inline-block; padding:2px 7px; border-radius:3px; min-width:52px;
+     font-variant-numeric:tabular-nums; font-weight:600 }
+.hm-1{ background:#eaf3e5; color:#143c2e }
+.hm-2{ background:#c8e4bf; color:#143c2e }
+.hm-3{ background:#9bd090; color:#143c2e }
+.hm-4{ background:#5fae56; color:white }
+.hm-5{ background:#1b5422; color:white }
+.hm-label{ display:inline-block; width:60px; color:var(--grey); font-size:9pt;
+           text-align:right; margin-right:4px; font-variant-numeric:tabular-nums }
+.hm-row{ white-space:nowrap; line-height:1.8 }
+.hm-run{ display:block; font-size:9pt; color:var(--grey); margin-top:4px }
+
+@media print{
+  body{padding:0;max-width:none}
+  .page-break{page-break-before:always}
+}
+</style>
+</head>
+<body>
+
+<!-- ======================================================== -->
+<!-- PORTADA                                                   -->
+<!-- ======================================================== -->
+<h1>
+  Defensible Space
+  <span class="subtitle">Detección automática de incumplimiento del protocolo municipal de prevención de incendios de interfase urbano-forestal en Villa La Angostura</span>
+</h1>
+<div class="meta">
+  Trabajo Práctico Final · Visión por Computadora III · CEIA FIUBA<br>
+  Octubre 2026 · M. Belén Cattaneo
+</div>
+
+<div class="pullquote" style="margin-top:36px">
+  Resumen. Se compara empíricamente la familia Vision Transformer (<code>Mask2Former</code> con <em>backbones</em> Swin-T y Swin-S) contra la familia CNN (<code>YOLOv8-seg</code> en tamaños nano y large) sobre segmentación por instancias de imágenes aéreas de dron de Villa La Angostura. El estudio es un <em>ablation</em> factorial sobre cuatro ejes: arquitectura, capacidad, dataset y evaluador, con un <em>ground truth</em> oracular de 50 imágenes etiquetado con criterios documentados como referente más limpio. El ganador es <code>YOLOv8l-seg</code> entrenado con 927 imágenes mixtas, con 0,646 mAP@0,5. El <em>pipeline</em> va del tileado al mapa interactivo con alertas de incumplimiento del protocolo municipal de <em>defensible space</em> (regla de dos metros).
+</div>
+
+<!-- ======================================================== -->
+<!-- SECCIÓN 1 · OBJETIVO DEL PROYECTO                         -->
+<!-- ======================================================== -->
+<h2>1. Objetivo del proyecto</h2>
+
+<h3>1.1. Problema y aplicación</h3>
+<p>El trabajo aborda la detección automática de incumplimiento del protocolo municipal de <em>defensible space</em> en Villa La Angostura, Neuquén, mediante segmentación por instancias sobre imágenes aéreas de dron. El protocolo, publicado por la Dirección de Protección Civil, establece que ninguna vegetación debe encontrarse a menos de dos metros de una estructura habitacional, regla orientada a mitigar la propagación de incendios de interfase urbano-forestal. El <em>pipeline</em> produce, dada una ortofoto (imagen aérea georreferenciada con corrección geométrica para escala uniforme) de dron, un mapa interactivo donde cada edificio aparece coloreado según su cumplimiento. El trabajo se enmarca en una propuesta de la cooperativa Lawal a la convocatoria Open Call 2026 (<em>Map your city with fAIr</em>) del <em>Humanitarian OpenStreetMap Team</em> (HOT).</p>
+
+<h3>1.2. Pregunta de investigación</h3>
+<div class="pullquote">
+  <em>¿El sesgo inductivo débil de los Vision Transformers constituye una desventaja significativa frente a un baseline CNN en datasets de dominio específico con pocas muestras, o el pre-entrenamiento masivo lo compensa?</em>
+</div>
+<p>Se aborda empíricamente comparando dos familias pre-entrenadas en COCO sobre el mismo dataset de dos clases (<code>building</code> y <code>trees_and_bushes</code>): <code>YOLOv8-seg</code> (CNN) y <code>Mask2Former</code> con backbone Swin (ViT). La comparación limpia requiere controlar cuatro variables: arquitectura, capacidad del modelo, dataset (volumen y ontología) y <em>ground truth</em> (GT) de evaluación. El estudio se armó como un diseño factorial que se describe en Sección 4.</p>
+
+
+<!-- ======================================================== -->
+<!-- SECCIÓN 2 · ARQUITECTURA GENERAL                          -->
+<!-- ======================================================== -->
+<h2 class="page-break">2. Arquitectura general</h2>
+<figure>
+<svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:720px;font-family:-apple-system,sans-serif">
+  <defs>
+    <marker id="arrFlat" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#143c2e"/>
+    </marker>
+    <marker id="arrLoadFlat" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#6b6b6b"/>
+    </marker>
+  </defs>
+
+  <g font-size="10" fill="#1a1a1a">
+
+    <!-- EXTERNAL INPUT: DRONE (top-left) -->
+    <g font-size="10" fill="#143c2e">
+      <text x="42" y="36" text-anchor="middle" font-weight="600">Vuelo de dron</text>
+      <text x="42" y="50" text-anchor="middle" fill="#6b6b6b" font-style="italic" font-size="9">ortofoto aérea</text>
+    </g>
+    <line x1="42" y1="58" x2="42" y2="110" stroke="#143c2e" stroke-width="1.3" marker-end="url(#arrFlat)"/>
+
+    <!-- MODEL CHAMPION (top, aligned above component 2 Detección) -->
+    <rect x="152" y="22" width="134" height="46" rx="4" fill="#fff7dc" stroke="#f4c02f" stroke-width="1.5"/>
+    <text x="219" y="40" text-anchor="middle" fill="#0a2418" font-size="10.5" font-weight="700">Modelo de segmentación</text>
+    <text x="219" y="54" text-anchor="middle" fill="#78540b" font-size="9">YOLOv8l entrenado</text>
+    <text x="219" y="64" text-anchor="middle" fill="#6b6b6b" font-size="8" font-style="italic">seleccionado en Sección 4</text>
+    <line x1="219" y1="70" x2="219" y2="116" stroke="#6b6b6b" stroke-width="1.3" stroke-dasharray="4,3" marker-end="url(#arrLoadFlat)"/>
+
+    <!-- =============================================
+         COMPONENT 1: Fragmentación
+    ============================================= -->
+    <rect x="6" y="118" width="128" height="150" rx="4" fill="#faf6ea" stroke="#143c2e" stroke-width="1.5"/>
+    <rect x="6" y="118" width="128" height="24" rx="4" fill="#143c2e"/>
+    <rect x="6" y="134" width="128" height="8" fill="#143c2e"/>
+    <text x="16" y="135" fill="#f4c02f" font-weight="700" font-size="11">1</text>
+    <text x="70" y="135" text-anchor="middle" fill="#ffffff" font-weight="700" font-size="10.5">Fragmentación</text>
+    <!-- icon -->
+    <g transform="translate(70, 170)">
+      <rect x="-12" y="-9" width="8" height="8" rx="1" fill="none" stroke="#143c2e" stroke-width="1.3"/>
+      <rect x="-2" y="-9" width="8" height="8" rx="1" fill="#f4c02f" stroke="#143c2e" stroke-width="1.3"/>
+      <rect x="8" y="-9" width="8" height="8" rx="1" fill="none" stroke="#143c2e" stroke-width="1.3"/>
+      <rect x="-12" y="1" width="8" height="8" rx="1" fill="none" stroke="#143c2e" stroke-width="1.3"/>
+      <rect x="-2" y="1" width="8" height="8" rx="1" fill="none" stroke="#143c2e" stroke-width="1.3"/>
+      <rect x="8" y="1" width="8" height="8" rx="1" fill="#f4c02f" stroke="#143c2e" stroke-width="1.3"/>
+    </g>
+    <text x="70" y="206" text-anchor="middle" fill="#6b6b6b" font-size="9">Divide la ortofoto</text>
+    <text x="70" y="218" text-anchor="middle" fill="#6b6b6b" font-size="9">en imágenes chicas</text>
+    <text x="70" y="230" text-anchor="middle" fill="#6b6b6b" font-size="9">con solapamiento</text>
+    <text x="70" y="256" text-anchor="middle" fill="#143c2e" font-size="8.5" font-weight="600">→ imágenes</text>
+
+    <!-- =============================================
+         COMPONENT 2: Detección
+    ============================================= -->
+    <rect x="150" y="118" width="138" height="150" rx="4" fill="#faf6ea" stroke="#143c2e" stroke-width="1.5"/>
+    <rect x="150" y="118" width="138" height="24" rx="4" fill="#143c2e"/>
+    <rect x="150" y="134" width="138" height="8" fill="#143c2e"/>
+    <text x="160" y="135" fill="#f4c02f" font-weight="700" font-size="11">2</text>
+    <text x="219" y="135" text-anchor="middle" fill="#ffffff" font-weight="700" font-size="10.5">Detección</text>
+    <!-- icon: neural net -->
+    <g transform="translate(219, 170)">
+      <path d="M -12 -2 Q -14 -8 -8 -10 Q -4 -14 2 -11 Q 10 -13 12 -5 Q 15 2 10 7 Q 8 12 0 11 Q -8 13 -11 7 Q -15 3 -12 -2 Z" fill="none" stroke="#143c2e" stroke-width="1.4"/>
+      <circle cx="-4" cy="-3" r="1.5" fill="#f4c02f"/>
+      <circle cx="4" cy="-2" r="1.5" fill="#f4c02f"/>
+      <circle cx="0" cy="4" r="1.5" fill="#f4c02f"/>
+      <line x1="-4" y1="-3" x2="4" y2="-2" stroke="#143c2e" stroke-width="0.8"/>
+      <line x1="4" y1="-2" x2="0" y2="4" stroke="#143c2e" stroke-width="0.8"/>
+      <line x1="-4" y1="-3" x2="0" y2="4" stroke="#143c2e" stroke-width="0.8"/>
+    </g>
+    <text x="219" y="206" text-anchor="middle" fill="#6b6b6b" font-size="9">Identifica edificios</text>
+    <text x="219" y="218" text-anchor="middle" fill="#6b6b6b" font-size="9">y vegetación con el</text>
+    <text x="219" y="230" text-anchor="middle" fill="#6b6b6b" font-size="9">modelo entrenado</text>
+    <text x="219" y="256" text-anchor="middle" fill="#143c2e" font-size="8.5" font-weight="600">→ máscaras por clase</text>
+
+    <!-- =============================================
+         COMPONENT 3: Cálculo de distancia
+    ============================================= -->
+    <rect x="304" y="118" width="138" height="150" rx="4" fill="#faf6ea" stroke="#143c2e" stroke-width="1.5"/>
+    <rect x="304" y="118" width="138" height="24" rx="4" fill="#143c2e"/>
+    <rect x="304" y="134" width="138" height="8" fill="#143c2e"/>
+    <text x="314" y="135" fill="#f4c02f" font-weight="700" font-size="11">3</text>
+    <text x="373" y="135" text-anchor="middle" fill="#ffffff" font-weight="700" font-size="10.5">Cálculo de distancia</text>
+    <!-- icon: ruler/measure -->
+    <g transform="translate(373, 170)">
+      <circle cx="-10" cy="0" r="4" fill="#143c2e"/>
+      <circle cx="10" cy="0" r="4" fill="#34bd5a" stroke="#143c2e" stroke-width="1"/>
+      <line x1="-6" y1="0" x2="6" y2="0" stroke="#f4c02f" stroke-width="2" stroke-dasharray="2,1.5"/>
+      <line x1="-10" y1="-7" x2="-10" y2="-10" stroke="#143c2e" stroke-width="1"/>
+      <line x1="-11" y1="-11" x2="-9" y2="-9" stroke="#143c2e" stroke-width="1"/>
+      <text x="0" y="-9" text-anchor="middle" fill="#6b6b6b" font-size="7" font-style="italic">2 m</text>
+    </g>
+    <text x="373" y="206" text-anchor="middle" fill="#6b6b6b" font-size="9">Mide distancia mínima</text>
+    <text x="373" y="218" text-anchor="middle" fill="#6b6b6b" font-size="9">entre cada edificio y</text>
+    <text x="373" y="230" text-anchor="middle" fill="#6b6b6b" font-size="9">la vegetación más cercana</text>
+    <text x="373" y="256" text-anchor="middle" fill="#143c2e" font-size="8.5" font-weight="600">→ alertas por imagen</text>
+
+    <!-- =============================================
+         COMPONENT 4: Agregación
+    ============================================= -->
+    <rect x="458" y="118" width="128" height="150" rx="4" fill="#faf6ea" stroke="#143c2e" stroke-width="1.5"/>
+    <rect x="458" y="118" width="128" height="24" rx="4" fill="#143c2e"/>
+    <rect x="458" y="134" width="128" height="8" fill="#143c2e"/>
+    <text x="468" y="135" fill="#f4c02f" font-weight="700" font-size="11">4</text>
+    <text x="522" y="135" text-anchor="middle" fill="#ffffff" font-weight="700" font-size="10.5">Agregación</text>
+    <!-- icon: globe -->
+    <g transform="translate(522, 170)">
+      <circle cx="0" cy="0" r="11" fill="none" stroke="#143c2e" stroke-width="1.3"/>
+      <ellipse cx="0" cy="0" rx="11" ry="4.5" fill="none" stroke="#143c2e" stroke-width="1"/>
+      <line x1="0" y1="-11" x2="0" y2="11" stroke="#143c2e" stroke-width="1"/>
+      <ellipse cx="0" cy="0" rx="4.5" ry="11" fill="none" stroke="#143c2e" stroke-width="1"/>
+      <circle cx="0" cy="0" r="2" fill="#f4c02f" stroke="#143c2e" stroke-width="1"/>
+    </g>
+    <text x="522" y="206" text-anchor="middle" fill="#6b6b6b" font-size="9">Une alertas de</text>
+    <text x="522" y="218" text-anchor="middle" fill="#6b6b6b" font-size="9">todas las imágenes y</text>
+    <text x="522" y="230" text-anchor="middle" fill="#6b6b6b" font-size="9">las georreferencia</text>
+    <text x="522" y="256" text-anchor="middle" fill="#143c2e" font-size="8.5" font-weight="600">→ archivo geográfico</text>
+
+    <!-- =============================================
+         COMPONENT 5: Generación del mapa
+    ============================================= -->
+    <rect x="602" y="118" width="116" height="150" rx="4" fill="#faf6ea" stroke="#143c2e" stroke-width="1.5"/>
+    <rect x="602" y="118" width="116" height="24" rx="4" fill="#143c2e"/>
+    <rect x="602" y="134" width="116" height="8" fill="#143c2e"/>
+    <text x="612" y="135" fill="#f4c02f" font-weight="700" font-size="11">5</text>
+    <text x="660" y="135" text-anchor="middle" fill="#ffffff" font-weight="700" font-size="10.5">Mapa</text>
+    <!-- icon: map pin -->
+    <g transform="translate(660, 170)">
+      <path d="M 0 -11 C -7 -11 -11 -7 -11 0 C -11 7 0 12 0 12 C 0 12 11 7 11 0 C 11 -7 7 -11 0 -11 Z" fill="#d3453a" stroke="#143c2e" stroke-width="1.4"/>
+      <circle cx="0" cy="-1" r="3.5" fill="#faf6ea"/>
+    </g>
+    <text x="660" y="206" text-anchor="middle" fill="#6b6b6b" font-size="9">Renderiza un mapa</text>
+    <text x="660" y="218" text-anchor="middle" fill="#6b6b6b" font-size="9">interactivo con las</text>
+    <text x="660" y="230" text-anchor="middle" fill="#6b6b6b" font-size="9">alertas superpuestas</text>
+    <text x="660" y="256" text-anchor="middle" fill="#143c2e" font-size="8.5" font-weight="600">→ mapa web</text>
+
+    <!-- ARROWS BETWEEN COMPONENTS (simple black, flat) -->
+    <line x1="134" y1="193" x2="148" y2="193" stroke="#143c2e" stroke-width="1.5" marker-end="url(#arrFlat)"/>
+    <line x1="288" y1="193" x2="302" y2="193" stroke="#143c2e" stroke-width="1.5" marker-end="url(#arrFlat)"/>
+    <line x1="442" y1="193" x2="456" y2="193" stroke="#143c2e" stroke-width="1.5" marker-end="url(#arrFlat)"/>
+    <line x1="586" y1="193" x2="600" y2="193" stroke="#143c2e" stroke-width="1.5" marker-end="url(#arrFlat)"/>
+
+    <!-- EXTERNAL OUTPUT: PROTECCION CIVIL (bottom-right) -->
+    <line x1="660" y1="270" x2="660" y2="282" stroke="#143c2e" stroke-width="1.3" marker-end="url(#arrFlat)"/>
+    <g font-size="10" fill="#143c2e">
+      <text x="660" y="294" text-anchor="middle" font-weight="600">Protección Civil VLA</text>
+    </g>
+  </g>
+</svg>
+<figcaption>Figura 1: Arquitectura del sistema. La ortofoto del dron se procesa en cinco etapas hasta producir un mapa interactivo con las alertas.</figcaption>
+</figure>
+
+<p>Descripción breve de cada componente del sistema de la Figura 1:</p>
+<ol>
+  <li>Modelo de segmentación: red neuronal entrenada para distinguir edificios y vegetación en imágenes aéreas. Es el único componente que requirió un desarrollo iterativo largo (ver Sección 4). El modelo final elegido se usa como caja negra desde el sistema de producción.</li>
+  <li>Fragmentación: la ortofoto completa (típicamente varios cientos de MB) se divide en imágenes más chicas con solapamiento controlado para que la detección pueda hacerse con una red de tamaño fijo sin perder los objetos que caen sobre los bordes.</li>
+  <li>Detección: por cada imagen chica, el modelo entrenado identifica los contornos de los edificios y de la vegetación. La salida es un conjunto de máscaras por clase para esa imagen.</li>
+  <li>Cálculo de distancia: sobre esas máscaras se calcula geométricamente la distancia mínima de cada edificio a la vegetación más cercana. Es el primer criterio de incumplimiento del protocolo de dos metros.</li>
+  <li>Agregación geoespacial: las alertas se consolidan en coordenadas geográficas reales, se deduplican edificios repetidos por el solapamiento entre imágenes y se refina la clasificación según el área total de vegetación dentro del <em>buffer</em> de dos metros de cada edificio (demota violaciones por árboles sueltos y promueve edificios con masa continua de vegetación cercana).</li>
+  <li>Generación del mapa: con las alertas georreferenciadas y el ortomosaico de fondo se construye un mapa web interactivo que la Dirección de Protección Civil puede abrir en el navegador para inspeccionar cada edificio y su estado de cumplimiento.</li>
+</ol>
+
+<!-- ======================================================== -->
+<!-- SECCIÓN 3 · IMPLEMENTACIÓN TÉCNICA                        -->
+<!-- ======================================================== -->
+<h2 class="page-break">3. Implementación técnica</h2>
+
+<h3>3.1. Captura de imágenes aéreas</h3>
+<p>Las imágenes se capturaron con un <em>DJI Mini 5 Pro</em> operado mediante el control remoto. La planificación de los vuelos se realizó con <em>Drone Tasking Manager</em>, una plataforma de HOT que divide un área de interés en tareas de vuelo acotadas, asigna cada tarea a un piloto, verifica la captura y gestiona el procesamiento posterior en <em>OpenDroneMap</em> (ODM) para generar el ortomosaico publicado en <em>OpenAerialMap</em> (OAM).</p>
+
+<p>Se crearon dos proyectos cubriendo regímenes distintos del área de estudio:</p>
+<ul>
+  <li>"Defensible Space: Correntoso/Arauco": baja densidad residencial sobre bosque cerrado.</li>
+  <li>"Defensible Space: Lomas del Correntoso/Norte": interfaz urbano-forestal, residencial denso.</li>
+</ul>
+
+<figure>
+  <img src="images/dronetm_correntoso.png" alt="Drone Tasking Manager - proyecto Correntoso/Arauco">
+  <figcaption>Figura 2: Proyecto "Defensible Space: Correntoso/Arauco" en Drone Tasking Manager. El área (1,179 km²) se dividió en 25 tareas de 300 m de lado.</figcaption>
+</figure>
+<figure>
+  <img src="images/dronetm_norte.png" alt="Drone Tasking Manager - proyecto Lomas del Correntoso/Norte">
+  <figcaption>Figura 3: Proyecto "Defensible Space: Lomas del Correntoso/Norte". El área (0,729 km²) se dividió en 12 tareas de 350 m con <em>Terrain Following</em> activo.</figcaption>
+</figure>
+
+<p>Los parámetros se eligieron para obtener resolución espacial suficiente para distinguir vegetación individual y bordes de edificaciones (<em>Ground Sampling Distance</em>, GSD, en torno a los 3-4 cm/px) manteniendo tiempos de vuelo razonables. Los <em>overlaps</em> del 75% en ambos ejes garantizan la cobertura necesaria para que ODM reconstruya el ortomosaico sin huecos.</p>
+
+<table>
+  <caption>Tabla 1: Parámetros de vuelo por proyecto en Drone Tasking Manager.</caption>
+  <tr><th>Parámetro</th><th>Correntoso/Arauco</th><th>Lomas del Correntoso/Norte</th></tr>
+  <tr><td>Área total</td><td>1,179 km²</td><td>0,729 km²</td></tr>
+  <tr><td>Cantidad de tareas</td><td>25</td><td>12</td></tr>
+  <tr><td>Tamaño de tarea</td><td>300 m</td><td>350 m</td></tr>
+  <tr><td>Altitud de vuelo</td><td>118,8 m</td><td>100 m</td></tr>
+  <tr><td>GSD</td><td>4 cm/px</td><td>3,37 cm/px</td></tr>
+  <tr><td><em>Overlap</em> frontal y lateral</td><td>75% y 75%</td><td>75% y 75%</td></tr>
+  <tr><td><em>Terrain Following</em></td><td>No</td><td>Sí</td></tr>
+</table>
+
+<h3>3.2. Dataset y <em>splits</em></h3>
+<p>El dataset se construyó a partir de la ortofoto de cada tarea individual, no del mosaico global del proyecto, para evitar propagar errores de alineación entre tareas vecinas. En Correntoso/Arauco, que tiene la topografía más irregular, <em>Terrain Following</em> estuvo desactivado, lo que puede introducir cambios locales de escala en zonas de altitud variable. A partir de esa experiencia, en Lomas del Correntoso/Norte se activó el parámetro para mitigar esa deformación.</p>
+
+<p>El etiquetado se realizó en <code>Roboflow</code> con <em>Smart Polygon</em> (<code>SAM</code> asistido). El proyecto inicial fue etiquetado íntegramente por la autora y el dataset expandido se produjo con el aporte del equipo Lawal.</p>
+
+<table>
+  <caption>Tabla 2: Datasets usados en los experimentos y su composición en los <em>splits</em> de <em>training</em>, validación y test.</caption>
+  <tr><th>Dataset</th><th>Train</th><th>Val</th><th>Test</th><th>Anotaciones</th><th>Labelers</th></tr>
+  <tr><td>v5 / v4 (86 autora)</td><td>50</td><td>18</td><td>18</td><td>1.236</td><td>autora</td></tr>
+  <tr><td>v6 (927 mix)</td><td>641</td><td>147</td><td>139</td><td>10.362</td><td>autora + equipo Lawal</td></tr>
+  <tr><td>v7 (486 autora filtrado)</td><td>332</td><td>77</td><td>77</td><td>4.116</td><td>autora</td></tr>
+  <tr><td><em>held-out</em> team (441)</td><td>-</td><td>-</td><td>441</td><td>6.246</td><td>equipo Lawal</td></tr>
+  <tr><td>oracular (50)</td><td>-</td><td>-</td><td>50</td><td>1.270</td><td>autora, criterios documentados</td></tr>
+</table>
+
+<p>El <em>held-out</em> team se construye con las 441 imágenes etiquetadas exclusivamente por el equipo Lawal, extraídas de los tres <em>splits</em> de v6. El dataset oracular se construye re-etiquetando 50 imágenes del <em>held-out</em> team por la autora con criterios documentados por escrito. Ningún modelo vio ninguno de los dos en <em>training</em>.</p>
+
+<h3>3.3. Modelos comparados</h3>
+<p>Se compararon dos familias pre-entrenadas en COCO, cada una en al menos dos tamaños para habilitar comparaciones a parámetros equiparables.</p>
+
+<h4>Familia CNN</h4>
+<p><code>YOLOv8-seg</code> (Ultralytics). Arquitectura <em>one-stage anchor-free</em> con <em>backbone</em> <code>CSPDarknet</code>, <em>neck</em> <code>PANet</code> y cabezal que combina coeficientes de máscara con un banco de prototipos compartidos (estilo <code>YOLACT</code>). Variantes evaluadas: <code>YOLOv8n-seg</code> (nano, 3,3 M, 1024×1024) y <code>YOLOv8l-seg</code> (large, 46 M, 1024×1024 sobre 86 imágenes y 640×640 sobre 927 por memoria).</p>
+
+<h4>Familia ViT</h4>
+<p><code>Mask2Former</code> con <em>backbone</em> <code>Swin</code>. Arquitectura <em>encoder-decoder</em> con atención enmascarada: Swin tokeniza en parches y aplica autoatención local en ventanas desplazadas con jerarquía multi-escala, un <em>pixel decoder</em> refina los mapas y un <em>transformer decoder</em> con 100 <em>queries</em> aprendidas resuelve la segmentación con asignación bipartita óptima estilo <code>DETR</code>. Variantes: <code>Swin-T</code> (47 M) y <code>Swin-S</code> (69 M). Ambas entrenadas a 384×384 por memoria del dispositivo (Apple M4 MPS, 24 GB). Swin-B y Swin-L no entraron en memoria.</p>
+
+<h3>3.4. <em>Stack</em> técnico</h3>
+<table>
+  <caption>Tabla 3: <em>Stack</em> técnico utilizado en el proyecto por dominio funcional.</caption>
+  <tr><th>Dominio</th><th>Herramienta</th><th>Rol</th></tr>
+  <tr><td><em>Deep learning</em></td><td><code>PyTorch</code> 2.14</td><td><em>Framework</em> base, <em>backend</em> MPS</td></tr>
+  <tr><td>Modelo CNN</td><td><code>Ultralytics YOLOv8</code></td><td>YOLOv8n-seg y YOLOv8l-seg con API de <em>training</em></td></tr>
+  <tr><td>Modelo ViT</td><td><code>HuggingFace Transformers</code></td><td>Mask2Former + Swin-T y Swin-S pre-entrenados</td></tr>
+  <tr><td><em>Augmentation</em></td><td><code>Albumentations</code></td><td>Transformaciones imagen y máscara consistentes</td></tr>
+  <tr><td>Etiquetado</td><td><code>Roboflow</code></td><td><em>Smart Polygon</em> asistido por SAM, <em>dataset management</em></td></tr>
+  <tr><td>Captura y planificación</td><td>Drone Tasking Manager, OpenDroneMap, OpenAerialMap</td><td>Flujo abierto de vuelo, ortofoto y publicación</td></tr>
+  <tr><td>Geoespacial</td><td><code>rasterio</code>, <code>shapely</code></td><td><em>Geotransforms</em>, operaciones poligonales</td></tr>
+  <tr><td>Visualización</td><td><code>Folium</code> (<code>Leaflet.js</code>)</td><td>Mapa interactivo HTML</td></tr>
+  <tr><td>Evaluación</td><td><code>pycocotools</code></td><td>mAP estándar COCO</td></tr>
+  <tr><td>Imagen</td><td><code>Pillow</code>, <code>OpenCV</code>, <code>scipy.ndimage</code></td><td>Máscaras, contornos, EDT</td></tr>
+</table>
+
+<h3>3.5. Módulos clave</h3>
+<table>
+  <tr><th>Etapa</th><th>Módulos (<code>src/</code>)</th><th>Rol</th></tr>
+  <tr><td>Preparación</td><td><code>tile</code>, <code>coco_to_yolo</code>, <code>build_dataset</code>, <code>build_oracular_sample</code>, <code>merge_oracular_splits</code></td><td>Tileado 1024×1024, conversión COCO a YOLO, construcción de <em>test sets</em> cruzado y oracular</td></tr>
+  <tr><td>Training</td><td><code>train_yolo_seg</code>, <code>train_mask2former</code></td><td><em>Fine-tuning</em> de ambas familias con parámetros vía variables de entorno</td></tr>
+  <tr><td>Evaluación</td><td><code>evaluate_m2f</code>, <code>compare_models</code></td><td>mAP con <code>pycocotools</code> y grillas visuales GT contra predicciones</td></tr>
+  <tr><td>Alertas</td><td><code>compute_alerts</code>, <code>aggregate_alerts</code></td><td><em>Distance transform</em> y clasificación por regla de 2 m, deduplicación entre <em>tiles</em> y georreferenciación a <em>World Geodetic System 1984</em> (WGS84)</td></tr>
+  <tr><td>Mapa</td><td><code>build_mosaic</code>, <code>generate_map</code></td><td>Mosaico reproyectado a Web Mercator y mapa HTML interactivo con <code>Folium</code></td></tr>
+</table>
+
+<!-- ======================================================== -->
+<!-- SECCIÓN 4 · EVALUACIÓN                                    -->
+<!-- ======================================================== -->
+<h2 class="page-break">4. Evaluación</h2>
+
+<h3>4.1. Protocolo de evaluación</h3>
+<p>Las métricas se calculan con la librería <code>pycocotools</code> usando intersección sobre unión (<em>Intersection over Union</em>, IoU) de segmentación. Se reportan mAP@0.5 y mAP@0.5:0.95, promediados entre clases y evaluados por clase individualmente. Se evalúan tres regímenes de <em>ground truth</em>:</p>
+<ol>
+  <li><em>Test</em> propio de cada <em>run</em>: el <em>split</em> de test del dataset con el que entrenó.</li>
+  <li>Evaluación cruzada sobre <em>held-out</em> team: 441 imágenes etiquetadas por el equipo Lawal que ningún modelo vio en <em>training</em>.</li>
+  <li>Evaluación sobre <em>ground truth</em> oracular: 50 imágenes del <em>held-out</em> team re-etiquetadas por una sola persona (autora) con criterios documentados por escrito. Es el referente más limpio porque la ontología de etiquetado es uniforme para toda la tabla.</li>
+</ol>
+
+<h3>4.2. Diseño experimental</h3>
+<p>El estudio se organiza como un <em>ablation</em> factorial sobre cuatro ejes. No todas las combinaciones se evalúan pero las elegidas permiten aislar el efecto de cada eje por separado:</p>
+<table>
+  <caption>Tabla 4: Ejes del diseño experimental con los niveles explorados.</caption>
+  <tr><th>Eje</th><th>Niveles</th><th>Propósito</th></tr>
+  <tr><td>Arquitectura</td><td>CNN (YOLOv8), ViT (Mask2Former + Swin)</td><td>Sesgo inductivo fuerte vs débil</td></tr>
+  <tr><td>Capacidad</td><td>Chico (3,3 M), medio (46-47 M), grande (69 M)</td><td>Efecto del escalado de parámetros</td></tr>
+  <tr><td>Dataset</td><td>86 autora, 486 autora, 927 mix</td><td>Efecto del volumen y de la ontología de etiquetado</td></tr>
+  <tr><td>Evaluador</td><td>Test propio, <em>held-out</em> team, oracular</td><td>Efecto del <em>ground truth</em> sobre el <em>ranking</em></td></tr>
+</table>
+
+<h3>4.3. Recorrido experimental</h3>
+<p>El objetivo original era comparar <code>YOLOv8n</code> (3,3 M) contra <code>Mask2Former + Swin-T</code> (47 M) sobre un único dataset chico.</p>
+
+<table class="exp-table">
+  <caption>Tabla 5: Resumen de los experimentos agrupados por los cinco pasos de la narrativa, que luego se desarrolla paso por paso. Cada fila indica la hipótesis probada, su resultado y el veredicto final (<span class="v-ok">confirmado</span>, <span class="v-ko">descartado</span>, <span class="v-mix">parcial</span>, <span class="v-open">abierto</span>).</caption>
+  <tr>
+    <th style="width:32px">Paso</th>
+    <th style="width:68px"><em>Run</em></th>
+    <th style="width:70px">mAP@0.5</th>
+    <th>Hipótesis probada</th>
+    <th style="width:150px">Veredicto</th>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>v5 YOLO<br>v4 M2F</td>
+    <td>0.538<br>0.509</td>
+    <td class="hyp">Baseline sobre 86 imágenes de una sola anotadora, 50 épocas sin <em>early stop</em>.</td>
+    <td class="verdict v-ok">baseline</td>
+  </tr>
+  <tr>
+    <td>2.1</td>
+    <td>v8 YOLO<br>v8 M2F</td>
+    <td>0.355<br>0.277</td>
+    <td class="hyp">Al escalar a 927 imágenes mixtas, mejoran las métricas respecto al baseline.</td>
+    <td class="verdict v-ko">descartada sobre test propio, confirmada sobre oracular</td>
+  </tr>
+  <tr>
+    <td>2.2</td>
+    <td>Auditoría<br>Roboflow</td>
+    <td>0 AUTOLABEL en v6</td>
+    <td class="hyp">359 imágenes auto-etiquetadas (<code>Grounding DINO</code> con <code>SAM</code>) contaminan v6.</td>
+    <td class="verdict v-ko">descartada</td>
+  </tr>
+  <tr>
+    <td>2.3</td>
+    <td>v10 YOLO<br>v10 M2F</td>
+    <td>0.292<br>0.238</td>
+    <td class="hyp">Al filtrar labels del equipo Lawal, las métricas recuperan hacia los <em>baselines</em>.</td>
+    <td class="verdict v-ko">descartada</td>
+  </tr>
+  <tr>
+    <td>3.1</td>
+    <td>v11 YOLO<br>(YOLOv8l)</td>
+    <td>0.456</td>
+    <td class="hyp">Escalar params de YOLO (46 M) a parámetros comparables con M2F mejora sobre dataset chico.</td>
+    <td class="verdict v-mix">parcial</td>
+  </tr>
+  <tr>
+    <td>3.2</td>
+    <td>v12 YOLO<br>(YOLOv8l)</td>
+    <td>0.368 (test)<br>0.646 (oracular)</td>
+    <td class="hyp">Escalar params y data juntos maximiza capacidad.</td>
+    <td class="verdict v-ok">confirmada</td>
+  </tr>
+  <tr>
+    <td>3.3</td>
+    <td>v14 YOLO<br>(YOLOv8l, 486)</td>
+    <td>0.542 oracular</td>
+    <td class="hyp">La CNN escala también en el régimen intermedio de datos, respetando el patrón params+data.</td>
+    <td class="verdict v-ok">confirmada</td>
+  </tr>
+  <tr>
+    <td>4</td>
+    <td>Cruzada<br><em>held-out</em></td>
+    <td>v8 YOLO: 0.543<br>v9 YOLO: 0.278</td>
+    <td class="hyp">El ranking entre <em>runs</em> depende del evaluador, no solo de la capacidad del modelo.</td>
+    <td class="verdict v-ok">confirmada</td>
+  </tr>
+  <tr>
+    <td>5.1</td>
+    <td>Oracular</td>
+    <td>ver Tabla 7</td>
+    <td class="hyp">Un <em>ground truth</em> con ontología consistente establece el <em>ranking</em> real de capacidad.</td>
+    <td class="verdict v-ok">confirmada</td>
+  </tr>
+  <tr>
+    <td>5.2</td>
+    <td>v13 M2F<br>(Swin-S, 927)</td>
+    <td>0.508 oracular</td>
+    <td class="hyp">Escalar params de M2F (69 M) sobre 927 mix mejora respecto a Swin-T.</td>
+    <td class="verdict v-ok">confirmada parcialmente</td>
+  </tr>
+  <tr>
+    <td>5.3</td>
+    <td>v14, v15 M2F<br>(Swin-S, 86 y 486)</td>
+    <td>0.424 y 0.463 oracular</td>
+    <td class="hyp">La escalada del ViT a Swin-S también mejora en regímenes de datos menores.</td>
+    <td class="verdict v-ok">confirmada parcialmente, no cierra la brecha con la CNN en ningún régimen</td>
+  </tr>
+</table>
+
+<p>El baseline sobre 86 imágenes de una única anotadora dio <code>YOLOv8n</code> 0.538 mAP@0.5 y <code>Mask2Former + Swin-T</code> 0.509 sobre test propio, con la CNN ganando por margen modesto como era esperable.</p>
+
+<p>Al escalar a 927 imágenes mixtas (equipo Lawal más autora) las métricas sobre test propio cayeron en vez de subir (<em>runs</em> v8: 0.355 y 0.277). Se descartaron dos explicaciones intuitivas: la auditoría del <em>export</em> de <code>Roboflow</code> confirmó cero imágenes AUTOLABEL en v6 y filtrar el dataset a solo etiquetas de la autora (v7, 486 imágenes, <em>runs</em> v10) tampoco recuperó la métrica. Luego se escaló la arquitectura: v11 <code>YOLOv8l</code> 46 M sobre 86 autora dio 0.456 y v12 <code>YOLOv8l</code> sobre 927 mix dio 0.368 sobre test propio, por debajo del baseline nano. Si el test propio fuera informativo, escalar parámetros y datos debería haber ayudado. No lo hizo, lo que puso bajo sospecha al evaluador antes que al modelo.</p>
+
+<p>Para romper la ambigüedad se construyeron dos referentes externos. Primero un <em>held-out</em> team de 441 imágenes etiquetadas solo por el equipo Lawal: sobre él, v8 <code>YOLOv8n</code> 927 mix subió a 0.543 y v9 <code>YOLOv8n</code> 86 autora cayó a 0.278, confirmando que el <em>ranking</em> depende del evaluador. Después un <em>ground truth</em> oracular de 50 imágenes del <em>held-out</em> team re-etiquetadas por la autora con criterios documentados (ver <code>data/oracular_relabel/README.md</code>), independiente de ambas particiones de entrenamiento. Sobre oracular el <em>ranking</em> final fue v12 <code>YOLOv8l</code> 927 mix 0.646, v8 <code>YOLOv8n</code> 927 mix 0.622, v13 <code>Mask2Former + Swin-S</code> 69 M 0.508 y v8 <code>Mask2Former + Swin-T</code> 47 M 0.494. v13 Swin-S se entrenó específicamente para controlar que la diferencia entre familias no fuera un efecto de capacidad: aun con 23 M de ventaja de parámetros sobre <code>YOLOv8l</code>, la escalada del ViT aportó apenas 1,4 puntos y no cerró la brecha.</p>
+
+<p>El recorrido descartó dos explicaciones intuitivas (labels sintéticos de AUTOLABEL, <em>label noise</em> inter-anotadoras como factor único) y confirmó una: la métrica sobre test propio no refleja capacidad pura del modelo, sino coincidencia con la ontología del evaluador. Iteraciones exploratorias adicionales (v6 YOLO con <em>aug</em> aérea extra, v7 M2F con <code>Albumentations</code> completo, <em>checkpoints</em> "best" de M2F) se omiten de las tablas por legibilidad.</p>
+
+<h3>4.4. Resultados de evaluación</h3>
+<p>Cada <em>run</em> se evalúa bajo tres regímenes: el <em>test</em> propio del dataset con el que entrenó, el <em>held-out</em> team (441 imágenes etiquetadas únicamente por el equipo Lawal, no vistas en <em>training</em>) y el oracular (50 imágenes del <em>held-out</em> team re-etiquetadas por la autora con criterios documentados). La Tabla 6 reúne las tres métricas en una matriz arquitectura × dataset con <em>heatmap</em> y la Tabla 7 muestra la métrica por clase sobre oracular para analizar el comportamiento diferencial en <code>building</code> y <code>trees_and_bushes</code>.</p>
+
+<table class="heatmap">
+  <caption>Tabla 6: Matriz arquitectura × dataset con mAP@0.5 bajo los tres regímenes de evaluación como <em>heatmap</em>. Cada celda muestra tres valores en orden <em>test</em> propio del <em>run</em>, <em>held-out</em> team y oracular. La intensidad del verde escala con la métrica (bins 0.30, 0.40, 0.50, 0.60). Permite leer el efecto de los datos por fila, el efecto de la capacidad por columna y el efecto del evaluador por línea dentro de cada celda. Las celdas marcadas como &mdash; son combinaciones que no se corrieron.</caption>
+  <tr><th>Arquitectura</th><th>86 autora</th><th>486 autora</th><th>927 mix</th></tr>
+  <tr>
+    <td><code>YOLOv8n</code> (3,3 M)</td>
+    <td>
+      <div class="hm-row"><span class="hm-label">test</span><span class="hm hm-3">0.496</span></div>
+      <div class="hm-row"><span class="hm-label">held-out</span><span class="hm hm-1">0.278</span></div>
+      <div class="hm-row"><span class="hm-label">oracular</span><span class="hm hm-3">0.439</span></div>
+      <span class="hm-run">v9</span>
+    </td>
+    <td>
+      <div class="hm-row"><span class="hm-label">test</span><span class="hm hm-1">0.292</span></div>
+      <div class="hm-row"><span class="hm-label">held-out</span><span class="hm hm-2">0.334</span></div>
+      <div class="hm-row"><span class="hm-label">oracular</span><span class="hm hm-4">0.506</span></div>
+      <span class="hm-run">v10</span>
+    </td>
+    <td>
+      <div class="hm-row"><span class="hm-label">test</span><span class="hm hm-2">0.355</span></div>
+      <div class="hm-row"><span class="hm-label">held-out</span><span class="hm hm-4">0.543</span></div>
+      <div class="hm-row"><span class="hm-label">oracular</span><span class="hm hm-5">0.622</span></div>
+      <span class="hm-run">v8</span>
+    </td>
+  </tr>
+  <tr>
+    <td><code>YOLOv8l</code> (46 M)</td>
+    <td>
+      <div class="hm-row"><span class="hm-label">test</span><span class="hm hm-3">0.456</span></div>
+      <div class="hm-row"><span class="hm-label">held-out</span><span class="hm hm-2">0.321</span></div>
+      <div class="hm-row"><span class="hm-label">oracular</span><span class="hm hm-4">0.506</span></div>
+      <span class="hm-run">v11</span>
+    </td>
+    <td>
+      <div class="hm-row"><span class="hm-label">test</span><span class="hm hm-2">0.326</span></div>
+      <div class="hm-row"><span class="hm-label">held-out</span><span class="hm hm-2">0.358</span></div>
+      <div class="hm-row"><span class="hm-label">oracular</span><span class="hm hm-4">0.542</span></div>
+      <span class="hm-run">v14</span>
+    </td>
+    <td>
+      <div class="hm-row"><span class="hm-label">test</span><span class="hm hm-2">0.368</span></div>
+      <div class="hm-row"><span class="hm-label">held-out</span><span class="hm hm-3">0.440</span></div>
+      <div class="hm-row"><span class="hm-label">oracular</span><span class="hm hm-5">0.646</span></div>
+      <span class="hm-run">v12</span>
+    </td>
+  </tr>
+  <tr>
+    <td><code>Mask2Former + Swin-T</code> (47 M)</td>
+    <td>
+      <div class="hm-row"><span class="hm-label">test</span><span class="hm hm-1">0.230</span></div>
+      <div class="hm-row"><span class="hm-label">held-out</span><span class="hm hm-1">0.211</span></div>
+      <div class="hm-row"><span class="hm-label">oracular</span><span class="hm hm-2">0.379</span></div>
+      <span class="hm-run">v9</span>
+    </td>
+    <td>
+      <div class="hm-row"><span class="hm-label">test</span><span class="hm hm-1">0.238</span></div>
+      <div class="hm-row"><span class="hm-label">held-out</span><span class="hm hm-1">0.234</span></div>
+      <div class="hm-row"><span class="hm-label">oracular</span><span class="hm hm-3">0.444</span></div>
+      <span class="hm-run">v10</span>
+    </td>
+    <td>
+      <div class="hm-row"><span class="hm-label">test</span><span class="hm hm-1">0.277</span></div>
+      <div class="hm-row"><span class="hm-label">held-out</span><span class="hm hm-2">0.331</span></div>
+      <div class="hm-row"><span class="hm-label">oracular</span><span class="hm hm-3">0.494</span></div>
+      <span class="hm-run">v8</span>
+    </td>
+  </tr>
+  <tr>
+    <td><code>Mask2Former + Swin-S</code> (69 M)</td>
+    <td>
+      <div class="hm-row"><span class="hm-label">test</span><span class="hm hm-3">0.429</span></div>
+      <div class="hm-row"><span class="hm-label">held-out</span><span class="hm hm-1">0.253</span></div>
+      <div class="hm-row"><span class="hm-label">oracular</span><span class="hm hm-3">0.424</span></div>
+      <span class="hm-run">v14</span>
+    </td>
+    <td>
+      <div class="hm-row"><span class="hm-label">test</span><span class="hm hm-1">0.279</span></div>
+      <div class="hm-row"><span class="hm-label">held-out</span><span class="hm hm-1">0.268</span></div>
+      <div class="hm-row"><span class="hm-label">oracular</span><span class="hm hm-3">0.463</span></div>
+      <span class="hm-run">v15</span>
+    </td>
+    <td>
+      <div class="hm-row"><span class="hm-label">test</span><span class="hm hm-2">0.305</span></div>
+      <div class="hm-row"><span class="hm-label">held-out</span><span class="hm hm-2">0.385</span></div>
+      <div class="hm-row"><span class="hm-label">oracular</span><span class="hm hm-4">0.508</span></div>
+      <span class="hm-run">v13</span>
+    </td>
+  </tr>
+</table>
+<p>Patrones visibles. Dentro de cada celda, oracular casi siempre está por encima del <em>held-out</em> team y por encima del test propio salvo en el baseline nano sobre 86 autora (que entrena con la misma anotadora que marca el oracular). La diferencia entre regímenes crece con el tamaño del dataset de <em>training</em>, lo que refleja que el ruido inter-anotadoras se expresa más cuando hay más labels en juego. Fila por fila, más datos ayudan en las cuatro arquitecturas sobre oracular. A parámetros equiparables la CNN supera a la ViT en los tres regímenes: por 8,2 puntos sobre 86 autora, 7,9 sobre 486 autora y 15,2 sobre 927 mix. Escalar la ViT de Swin-T a Swin-S aporta menos de medio punto en cada régimen y en ninguno alcanza a la CNN.</p>
+
+<table>
+  <caption>Tabla 7: Desglose por clase sobre <em>ground truth</em> oracular (50 imágenes, 1.270 anotaciones). Permite comparar el comportamiento de cada <em>run</em> en una clase geométricamente bien definida (<code>building</code>) y una clase ontológicamente ambigua (<code>trees_and_bushes</code>). Ordenado por mAP@0.5 descendente.</caption>
+  <tr><th>Run</th><th>Arquitectura</th><th>Params</th><th>Dataset</th><th>mAP@0.5</th><th><code>building</code></th><th><code>trees_and_bushes</code></th></tr>
+  <tr><td>v12 YOLO</td><td>YOLOv8l</td><td>46 M</td><td>927 mix</td><td>0.646</td><td>0.739</td><td>0.553</td></tr>
+  <tr><td>v8 YOLO</td><td>YOLOv8n</td><td>3,3 M</td><td>927 mix</td><td>0.622</td><td>0.704</td><td>0.539</td></tr>
+  <tr><td>v14 YOLO</td><td>YOLOv8l</td><td>46 M</td><td>486 autora</td><td>0.542</td><td>0.590</td><td>0.494</td></tr>
+  <tr><td>v13 M2F</td><td>Swin-S</td><td>69 M</td><td>927 mix</td><td>0.508</td><td>0.707</td><td>0.309</td></tr>
+  <tr><td>v10 YOLO</td><td>YOLOv8n</td><td>3,3 M</td><td>486 autora</td><td>0.506</td><td>0.584</td><td>0.429</td></tr>
+  <tr><td>v11 YOLO</td><td>YOLOv8l</td><td>46 M</td><td>86 autora</td><td>0.506</td><td>0.611</td><td>0.400</td></tr>
+  <tr><td>v8 M2F</td><td>Swin-T</td><td>47 M</td><td>927 mix</td><td>0.494</td><td>0.670</td><td>0.319</td></tr>
+  <tr><td>v15 M2F</td><td>Swin-S</td><td>69 M</td><td>486 autora</td><td>0.463</td><td>0.633</td><td>0.294</td></tr>
+  <tr><td>v10 M2F</td><td>Swin-T</td><td>47 M</td><td>486 autora</td><td>0.444</td><td>0.602</td><td>0.286</td></tr>
+  <tr><td>v9 YOLO</td><td>YOLOv8n</td><td>3,3 M</td><td>86 autora</td><td>0.439</td><td>0.506</td><td>0.371</td></tr>
+  <tr><td>v14 M2F</td><td>Swin-S</td><td>69 M</td><td>86 autora</td><td>0.424</td><td>0.566</td><td>0.282</td></tr>
+  <tr><td>v9 M2F</td><td>Swin-T</td><td>47 M</td><td>86 autora</td><td>0.379</td><td>0.559</td><td>0.200</td></tr>
+</table>
+
+<h3>4.5. Análisis</h3>
+
+<h4>a. El evaluador modula el <em>ranking</em></h4>
+<p>Las métricas sobre test propio no comparan solamente capacidades del modelo, también miden la coincidencia entre la ontología de etiquetado con la que el modelo entrenó y la del evaluador. YOLO v8 (927 mix, 59% de labels del equipo) sube de 0.355 en su test a 0.543 sobre <em>held-out</em> team. YOLO v9 (86 autora) baja de 0.496 a 0.278. Las curvas se cruzan al cambiar el evaluador. Sobre oracular, con ontología uniforme para toda la tabla, YOLO v12 queda primero con 0.646, confirmando que el "drop" de v8 sobre su propio test era un artefacto del evaluador ruidoso. El sesgo inductivo también modula la amplitud del efecto: el delta YOLO v9 vs v8 sobre <em>held-out</em> team es 0.265 mientras que para M2F es 0.120. La CNN con <em>grid</em> denso se ajusta rápido al estilo específico de su train, el ViT con <em>queries</em> aprende representaciones más genéricas y pierde menos al cambiar el estilo.</p>
+
+<h4>b. Capacidad, datos y clase ambigua</h4>
+<p>Sobre oracular con 927 imágenes, YOLO supera a M2F a parámetros comparables (v12 46 M 0.646 vs v8 Swin-T 47 M 0.494) y escalar M2F a Swin-S 69 M solo cierra 1,4 puntos. Dentro de YOLO, agregar parámetros sin más datos no mejora (v11 YOLOv8l 86 autora = v10 nano 486 autora = 0.506), pero combinar params más datos sí (v12 suma 2,4 puntos sobre v8 nano y 14 sobre v11). La ventaja de YOLO se concentra en la clase ambigua: en <code>building</code> ambas arquitecturas están casi parejas (v12 0.739, M2F v13 0.707), pero en <code>trees_and_bushes</code> YOLO saca 24 puntos (0.553 vs 0.309). Los edificios tienen geometría consistente entre anotadoras y las copas de árbol no, por lo que la clase donde el ruido inter-anotadores pesa más es también donde las <em>queries</em> esparsas del ViT quedan más atrás.</p>
+
+<h4>c. Notas de hiperparámetros</h4>
+<p>La <em>augmentation</em> extra con <code>flipud</code>, <code>degrees</code> y <code>copy_paste</code> no mejoró la métrica respecto a los defaults de Ultralytics. El <em>early stop</em> por <code>val_loss</code> con <code>patience=5</code> corta antes del óptimo en <em>splits</em> chicos (v4 M2F 20 épocas da 0.509 contra v9 con <em>early stop</em> en epoch 14 que da 0.230). La señal de validación es muy ruidosa a este régimen.</p>
+
+<h4>d. Punto operativo del <em>threshold</em> de Mask2Former</h4>
+<p>Mask2Former se evalúa con el <em>threshold</em> de confianza por defecto en <code>post_process_instance_segmentation</code> de <code>transformers</code> (0,5), mientras que YOLO en Ultralytics usa 0,001 durante <code>val</code>. La asimetría es aparente: en M2F el <em>threshold</em> no es solo un filtro de salida, sino que es parte del procedimiento para separar las 100 <em>queries</em> fijas por imagen que tienen contenido real de las <em>queries</em> "no-object". Como control, se re-evaluó <code>v8 Swin-T</code> y <code>v13 Swin-S</code> sobre oracular bajando el <em>threshold</em> a 0,01 y el mAP@0.5 cayó respectivamente de 0.494 a 0.091 y de 0.508 a 0.085, porque las <em>queries</em> no-object saturan el <code>maxDets=100</code> de COCO y desplazan las detecciones reales en el <em>ranking</em>. YOLO no tiene este problema porque aplica <em>NMS</em> interno antes de reportar. El punto operativo 0,5 es por lo tanto el correcto para M2F.</p>
+
+<!-- ======================================================== -->
+<!-- SECCIÓN 5 · RESULTADOS Y EJEMPLOS                         -->
+<!-- ======================================================== -->
+<h2 class="page-break">5. Resultados y ejemplos</h2>
+
+<h3>5.1. Comparación visual</h3>
+<figure>
+  <img src="images/comparison_residencial.jpg" alt="Comparación GT vs campeones sobre tile residencial">
+  <figcaption>Figura 4: Comparación sobre <em>tile</em> de barrio residencial. GT (izquierda), <code>YOLOv8l</code> v12 (centro), <code>Mask2Former + Swin-S</code> v13 (derecha). <code>building</code> en rojo, <code>trees_and_bushes</code> en verde.</figcaption>
+</figure>
+<figure>
+  <img src="images/comparison_forestal.jpg" alt="Comparación GT vs campeones sobre tile forestal">
+  <figcaption>Figura 5: Comparación sobre <em>tile</em> forestal cerrado con misma convención de colores que la Figura 4.</figcaption>
+</figure>
+
+<figure>
+  <img src="images/yolo_training_curves.png" alt="Curvas de entrenamiento YOLO">
+  <figcaption>Figura 6: Curvas de entrenamiento de YOLO (<em>seg_loss</em> y mAP@0.5 sobre validación) para los <em>runs</em> relevantes del recorrido experimental.</figcaption>
+</figure>
+<figure>
+  <img src="images/m2f_training_curves.png" alt="Curvas de entrenamiento Mask2Former">
+  <figcaption>Figura 7: Curvas de entrenamiento de Mask2Former (<em>train</em> y <em>val loss</em>) para los <em>runs</em> relevantes.</figcaption>
+</figure>
+
+<h3>5.2. <em>Pipeline</em> del producto mínimo viable (MVP) de alertas</h3>
+<p>Dado el modelo seleccionado, el <em>pipeline</em> toma la ortofoto de un sector y produce un mapa interactivo con el estado de cada edificio. Para cada <em>tile</em> se detectan las instancias de <code>building</code> y <code>trees_and_bushes</code>, se mide la distancia mínima de cada edificio a la vegetación más cercana y se clasifica el edificio como cumple o viola según el umbral de 2 m.</p>
+
+<p>Para unir las detecciones en una ortofoto global, cada <em>tile</em> conserva la transformación afín del GeoTIFF del que proviene. Los polígonos de píxeles se proyectan a WGS84 con esa transformación y pasan a vivir en el mismo sistema de referencia que el mapa final. El solapamiento del 20 % entre <em>tiles</em> genera duplicados: un mismo edificio aparece recortado en dos o tres predicciones vecinas. Esos duplicados se colapsan con un <em>union-find</em> espacial que indexa los polígonos con un <code>STRtree</code> y los agrupa cuando su IoU supera 0,3. Se descarta la fusión por simple contacto geométrico porque las casas vecinas suelen estar separadas por pocos centímetros y una detección a veces incluye el edificio junto a una porción de suelo adyacente, con lo cual cualquier criterio de "se tocan" encadena transitivamente edificios distintos. Finalmente, con el mapa ya consolidado, se recorre cada edificio y se suma el área total de vegetación dentro de su <em>buffer</em> de 2 m (uniendo las zonas de peligro intersectantes antes de medir, para no contar dos veces el solape entre <em>tiles</em>) y se refina la clasificación: una casa marcada como violación cuyo volumen total de vegetación cercana queda por debajo de 3 m² se degrada a cumple, y una casa marcada como cumple en un <em>tile</em> pero rodeada por vegetación en los vecinos se promueve a violación.</p>
+
+<p>El resultado es un mapa HTML con el ortomosaico del dron de fondo, los edificios coloreados por estado y las zonas de vegetación cercana marcadas sobre cada violación.</p>
+
+<h3>5.3. Resultados</h3>
+<figure>
+  <img src="images/mapa_folium.png" alt="Captura del mapa Folium interactivo de Barrio Norte">
+  <figcaption>Figura 8: Captura del mapa interactivo generado para Barrio Norte, con el ortomosaico del dron como fondo y las detecciones en <em>overlay</em>. Azul: cumple. Rojo: viola la regla de 2 m. Amarillo: vegetación dentro del <em>buffer</em>. El panel abajo a la derecha permite filtrar edificios y vegetación por confianza en vivo.</figcaption>
+</figure>
+
+<p>El <em>pipeline</em> se corrió sobre los dos sectores anotados. Barrio Norte produjo 1.100 edificios únicos (525 cumple, 575 violación con <em>conf</em> 0,15) y Correntoso/Arauco 797 edificios únicos (508 cumple, 289 violación). La tasa de incumplimiento no se reporta como número único porque depende del umbral de confianza elegido por el usuario en el mapa interactivo. El valor absoluto además debe leerse con dos cautelas de diseño: el modelo tiende a sobre-detectar estructuras (incluye cobertizos, galpones y techados menores que no son habitacionales, y fragmenta un mismo edificio en varias detecciones) y no distingue el tipo de vegetación próxima, lo que es importante porque un pastizal cerca de una casa no se propaga igual que un pino. En términos de orden entre sectores, ambos están en interfaz urbano-forestal y en Villa La Angostura es raro encontrar una vivienda sin vegetación arbórea en los dos metros alrededor.</p>
+
+<!-- ======================================================== -->
+<!-- SECCIÓN 6 · CONCLUSIONES                                  -->
+<!-- ======================================================== -->
+<h2 class="page-break">6. Conclusiones y mejoras futuras</h2>
+
+<h3>6.1. Respuesta a la pregunta de investigación</h3>
+<p>Sobre el referente oracular (Tabla 7), la comparación central del estudio se hace a parámetros equiparables: <code>YOLOv8l</code> v12 (46 M, 927 mix) con 0.646 mAP@0.5 contra <code>Mask2Former + Swin-T</code> v8 (47 M, 927 mix) con 0.494, una diferencia de 15,2 puntos a favor de la CNN. Esta es la comparación menos ambigua porque la capacidad es prácticamente idéntica. Como control adicional se entrenó <code>Mask2Former + Swin-S</code> v13 (69 M, 927 mix) que aportó apenas 1,4 puntos sobre Swin-T y quedó 13,8 debajo de la CNN pese a sobre-dimensionar al ViT en 23 M de parámetros. La ventaja de la CNN se mantiene además en los otros regímenes de datos (8,2 puntos sobre 86 autora, 7,9 sobre 486 autora) y se concentra en la clase ambigua <code>trees_and_bushes</code>: en <code>building</code> ambas quedan parejas, consistente con el <em>inductive bias</em> esparso de las <em>queries</em> para objetos con bordes definidos.</p>
+<p>En el régimen explorado el pre-entrenamiento masivo del ViT no compensa su desventaja relativa frente a una CNN moderna escalada. La ventaja arquitectural de M2F que reportan los <em>benchmarks</em> grandes no se reproduce aquí, probablemente porque el <em>fine-tuning</em> no alcanza para romper el <em>bias</em> débil del ViT sobre la clase ambigua. La CNN escala predeciblemente mientras que M2F tiene pendiente mucho menor.</p>
+
+<h3>6.2. Limitaciones</h3>
+<ul>
+  <li>Dataset de 927 imágenes es chico para la tarea (los <em>benchmarks</em> de referencia usan 5.000+ anotaciones), lo que deja varianza entre <em>runs</em> considerable.</li>
+  <li>El <em>ground truth</em> oracular es <em>single-rater</em>, no multi-rater con consenso. El estándar académico más riguroso requeriría 2-3 anotadoras más y mediador.</li>
+  <li>Los <em>splits</em> train/val/test de v6 son por imagen tras el tileado con 20 % de solapamiento, no por ortofoto fuente. Dos <em>tiles</em> solapados de la misma ortofoto pueden caer en <em>splits</em> distintos y producir <em>leakage</em> parcial en el test propio. El oracular, construido desde el <em>held-out</em> team con imágenes que ningún modelo vio en <em>training</em>, es inmune a este efecto, lo que refuerza la decisión de usarlo como referente principal.</li>
+  <li>Las <em>labels</em> del equipo Lawal entraron a <code>v6</code> sin un QA ciego formal entre anotadoras. El impacto se mitiga reportando por evaluador en Tabla 6 y usando oracular como juez final, pero el QA formal queda listado en 6.3 como primer trabajo futuro.</li>
+  <li>Solo se evalúa Zona 1 del protocolo municipal. El modelo tampoco distingue tipos de vegetación, lo cual afecta la propagación real del fuego.</li>
+  <li>El dispositivo (24 GB M4 MPS) obliga a <em>cap</em> de 384×384 en M2F y de 640×640 para <code>YOLOv8l</code> sobre 927 imágenes. Swin-B (107 M) y Swin-L (217 M) no entraron en memoria.</li>
+</ul>
+
+<h3>6.3. Trabajo futuro</h3>
+<ol>
+  <li>QA del <em>labeling</em> del equipo con revisión <em>peer</em> en <code>Roboflow</code>, para incorporar las 441 adicionales sin degradar la ontología. Y <em>ground truth</em> oracular por consenso entre anotadoras para responder la pregunta de forma rigurosa.</li>
+  <li>Auto-etiquetado con <em>human-in-the-loop</em> usando <code>Grounding DINO + SAM 2</code> para generar labels iniciales y corrección humana.</li>
+  <li>Expansión a Zonas 2 y 3 del protocolo (el módulo de distancia ya acepta <code>threshold-m</code>) y clase adicional para pastizales o vegetación de bajo porte.</li>
+  <li>Evaluar M2F con Swin-B y Swin-L sobre hardware con más memoria para probar si los <em>backbones</em> grandes cierran la brecha. <em>Deploy</em> del <em>pipeline</em> como API REST o <em>viewer</em> web para la Dirección de Protección Civil de Villa La Angostura.</li>
+</ol>
+
+<!-- ======================================================== -->
+<!-- SECCIÓN 7 · PLANIFICACIÓN DEL EQUIPO                       -->
+<!-- ======================================================== -->
+<h2 class="page-break">7. Planificación del equipo</h2>
+<p>Trabajo Práctico Final en modalidad individual (M. Belén Cattaneo). Durante la fase de etiquetado se contó con el aporte del equipo de la cooperativa Lawal (Florencia Otárola, Martín Silva, Joaquín Mansilla), que colaboraron con 441 imágenes etiquetadas del dataset expandido.</p>
+
+<table>
+  <caption>Tabla 8: Cronograma por fase, responsable y rango de fechas.</caption>
+  <tr><th>Fase</th><th>Tareas incluidas</th><th>Responsable</th><th>Rango</th></tr>
+  <tr><td>Setup y captura</td><td>Repo, ambiente, vuelos con DJI Mini 5 Pro, procesamiento en ODM, publicación en OAM</td><td>autora</td><td>sep 2026</td></tr>
+  <tr><td>Datos y baseline</td><td>Tileado y etiquetado de 86 <em>tiles</em> (v5), <em>training</em> y evaluación de YOLOv8n v5 y Mask2Former Swin-T v4</td><td>autora</td><td>22-23 sep</td></tr>
+  <tr><td>MVP de alertas</td><td><code>compute_alerts</code>, <code>aggregate_alerts</code>, <code>build_mosaic</code>, <code>generate_map</code>, <em>deploy</em> sobre Barrio Norte y Correntoso/Arauco</td><td>autora</td><td>29 sep</td></tr>
+  <tr><td>Etiquetado expandido</td><td>841 <em>tiles</em> etiquetadas (dataset v6)</td><td>equipo Lawal</td><td>sep-oct</td></tr>
+  <tr><td><em>Training</em> escalado y ablation</td><td>YOLO v6/v8 y M2F v7/v8 sobre 927, v9/v10 (<em>early stop</em>, filtrado por anotadora)</td><td>autora</td><td>3 oct</td></tr>
+  <tr><td><em>Scaling</em> de parámetros</td><td>YOLOv8l v11 y v12, Mask2Former Swin-S v13</td><td>autora</td><td>4 oct</td></tr>
+  <tr><td>Oracular y evaluación cruzada</td><td>Selección y re-etiquetado de 50 <em>tiles</em>, evaluación de todos los <em>runs</em> sobre <em>held-out</em> team y oracular</td><td>autora</td><td>4 oct</td></tr>
+  <tr><td>Informe y entrega</td><td>Redacción del informe, <em>submission</em>, presentación en Clase 8</td><td>autora</td><td>4-12 oct</td></tr>
+</table>
+
+
+<!-- ======================================================== -->
+<!-- REFERENCIAS                                               -->
+<!-- ======================================================== -->
+<h2>Referencias</h2>
+<ul style="font-size:9.5pt">
+  <li>Vaswani, A. et al. (2017). <em>Attention Is All You Need.</em> NeurIPS.</li>
+  <li>Dosovitskiy, A. et al. (2020). <em>An Image is Worth 16×16 Words.</em> ICLR.</li>
+  <li>Liu, Z. et al. (2021). <em>Swin Transformer.</em> ICCV.</li>
+  <li>Cheng, B. et al. (2022). <em>Masked-attention Mask Transformer for Universal Image Segmentation.</em> CVPR.</li>
+  <li>Bolya, D. et al. (2019). <em>YOLACT: Real-time Instance Segmentation.</em> ICCV.</li>
+  <li>Redmon, J. et al. (2016). <em>You Only Look Once.</em> CVPR.</li>
+  <li>Zhang, H. et al. (2023). <em>Understanding Why ViT Trains Badly on Small Datasets.</em> arXiv.</li>
+  <li>Kirillov, A. et al. (2023). <em>Segment Anything.</em> ICCV.</li>
+</ul>
+
+</body>
+</html>

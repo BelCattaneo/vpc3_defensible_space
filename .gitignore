@@ -10,18 +10,50 @@ __pycache__/
 # ide
 .vscode/
 .idea/
+.claude/
+.ruff_cache/
 
 # env
 .env
 
-# data (grande, no versionar)
-data/
+# data (grande, no versionar) con excepciones para el demo autocontenido.
+# git no reincluye archivos dentro de un directorio ignorado como tal,
+# por eso se ignora su contenido con /* y se reincluyen rutas puntuales.
+data/*
+!data/raw/
+data/raw/*
+!data/raw/demo/
+!data/raw/demo/*.tif
+!data/processed/
+data/processed/*
+!data/processed/dataset_coco_v5/
+!data/processed/dataset_yolo_v5/
+# criterios de etiquetado oracular, referenciados desde el informe
+!data/oracular_relabel/
+data/oracular_relabel/*
+!data/oracular_relabel/README.md
+!data/oracular_relabel/priority_first_20.txt
 
-# trained model weights
-models/
+# trained model weights con excepciones para los pesos del demo
+models/*
+!models/demo_nano/
+!models/demo_champion/
 
-# training logs
+# training and pipeline logs
+/logs/
 *.log
 
 # ultralytics pretrained cache
 yolov8n-seg.pt
+yolov8l-seg.pt
+
+# documentos internos de trabajo (no entregables)
+_docs/
+
+# intermedios del pipeline de alertas (regenerables con `make alerts-all`).
+# Los mapas HTML finales y los mosaicos SI se versionan para que los
+# evaluadores puedan ver los resultados sin correr nada.
+reports/alerts_*_final/
+reports/alerts_*_final.geojson
+reports/comparison_champions_fixed/
+reports/mosaic_overlay_debug.jpg
