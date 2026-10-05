@@ -85,7 +85,7 @@ El repo incluye un *demo* autocontenido para que los evaluadores corran el *pipe
 Lo que viene en el repo:
 
 - `data/raw/demo/orthophoto_*.tif` (89 MB) — una *task* real de Villa La Angostura.
-- `data/processed/dataset_coco_v5/` y `dataset_yolo_v5/` (17 MB cada uno) — 86 imágenes etiquetadas por la autora.
+- `data/processed/dataset_yolo_v5/` (17 MB) — 86 imágenes etiquetadas por la autora, usadas por `make demo-train`.
 - `models/demo_nano/weights/best.pt` (6,5 MB) — pesos `YOLOv8n-seg` pre-entrenados sobre v5 (equivale al *run* v5).
 - `models/demo_champion/weights/best.pt` (88 MB) — pesos del campeón `YOLOv8l-seg` v12 (46 M parámetros, entrenado sobre las 927 imágenes mixtas).
 

@@ -3,11 +3,10 @@
 Esta carpeta contiene 50 tiles del *held-out* team (25 de barrio-norte + 25 de
 correntoso-arauco), seleccionadas al azar en dos pasadas:
 
-- **Prioridad 1 (20 tiles)**: las primeras 10 + 10 picks con semilla 42 (listadas
-  en `priority_first_20.txt`). Son las que ya habías empezado a etiquetar. Si
-  solo llegás a hacer 20, hacé estas.
+- **Prioridad 1 (20 tiles)**: las primeras 10 + 10 picks con semilla 42. Si solo
+  se llega a etiquetar 20, se etiquetan estas.
 - **Extensión (30 tiles)**: 15 + 15 adicionales con semilla 43. Agregan poder
-  estadístico cuando se pueda terminar las primeras 20.
+  estadístico cuando se puede terminar las primeras 20.
 
 Ningún modelo las vio durante *training*.
 

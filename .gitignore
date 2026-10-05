@@ -26,13 +26,11 @@ data/raw/*
 !data/raw/demo/*.tif
 !data/processed/
 data/processed/*
-!data/processed/dataset_coco_v5/
 !data/processed/dataset_yolo_v5/
 # criterios de etiquetado oracular, referenciados desde el informe
 !data/oracular_relabel/
 data/oracular_relabel/*
 !data/oracular_relabel/README.md
-!data/oracular_relabel/priority_first_20.txt
 
 # trained model weights con excepciones para los pesos del demo
 models/*
