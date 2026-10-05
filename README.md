@@ -12,7 +12,7 @@ Entrega: 5 de octubre de 2026 (Clase 7).
 
 Pregunta: ¿el sesgo inductivo débil de los Vision Transformers constituye una desventaja frente a un *baseline* CNN sobre dataset de dominio específico con pocas muestras, o el pre-entrenamiento masivo compensa?
 
-Respuesta sobre *ground truth* oracular (50 imágenes re-etiquetadas por una sola persona con criterios documentados), ambos modelos evaluados con `pycocotools` sobre el mismo GT sanitizado y mismo *threshold* de confianza:
+Respuesta sobre *ground truth* oracular (50 imágenes re-etiquetadas por una sola persona con criterios documentados):
 
 | Run | Arquitectura | Params | Dataset | mAP@0.5 |
 |---|---|---:|---|---:|
@@ -29,7 +29,7 @@ A parámetros equiparables (47 M vs 46 M), `Mask2Former + Swin-T` supera a `YOLO
 
 ## Setup
 
-Requiere [uv](https://github.com/astral-sh/uv) como manejador de paquetes. Para instalarlo:
+Requiere Python ≥ 3.11 y [uv](https://github.com/astral-sh/uv) como manejador de paquetes. Para instalar `uv`:
 
 ```bash
 # macOS y Linux
@@ -45,13 +45,21 @@ Después del clone:
 make setup
 ```
 
-Instala el ambiente en `.venv/` con las dependencias declaradas en `pyproject.toml`.
+Instala el ambiente en `.venv/` con las dependencias declaradas en `pyproject.toml`. Todos los pasos del pipeline están automatizados en el `Makefile`.
+
+### Variables de entorno
+
+Opcional, solo para los targets de preparación de datos que consultan la API de Roboflow (`make labelers`, `make dataset-v7`, `make dataset-holdout`, `make dataset-oracular`). Crear un `.env` en la raíz con:
+
+```
+ROBOFLOW_API_KEY=<tu api key>
+```
+
+El *demo* y los targets de *training* / evaluación / alertas no necesitan `.env`.
 
 ### Device para training e inferencia
 
 Por defecto el código autodetecta el *device* disponible en orden `cuda` (NVIDIA), `mps` (Apple Silicon), `cpu`. No hace falta configurar nada. Para forzar un *device* específico se puede exportar `DEVICE=cpu` (o `cuda`, `mps`) antes del comando de `make`.
-
-Todos los pasos del pipeline están automatizados en el `Makefile`. `make help` lista los targets disponibles con una descripción corta de cada uno.
 
 ## Estructura
 
@@ -168,30 +176,16 @@ Variables opcionales: `WEIGHTS=models/...` cambia el *checkpoint*, `CONF=0.3` el
 
 El HTML resultante trae un *widget* abajo a la derecha con dos *checkboxes* (edificios, vegetación) y dos *sliders* de confianza independientes para explorar *recall* y *precision* en vivo.
 
-### Demo
+### Demo y mantenimiento
 
-Targets listados en la sección [Demo end-to-end](#demo-end-to-end). Son atajos sobre los targets de arriba fijando `SECTOR=demo` y pesos específicos:
-
-```bash
-make demo                  # inferencia con pesos champion (~5 min)
-make demo-full             # training desde cero + inferencia (~20 min)
-make demo-tiles            # solo tilea la ortofoto demo
-make demo-train            # solo entrena YOLOv8n sobre v5
-make demo-infer-champion   # alerts + mapa con pesos champion
-make demo-infer-nano       # alerts + mapa con pesos nano recién entrenados
-```
-
-### Mantenimiento
-
-```bash
-make clean-pycache         # elimina directorios __pycache__
-```
+Los targets `demo*` son atajos sobre los de arriba fijando `SECTOR=demo` y pesos específicos (ver [Demo end-to-end](#demo-end-to-end)). `make clean-pycache` elimina los directorios `__pycache__`.
 
 ## Documentación
 
 `docs/` contiene los entregables y documentos de referencia del proyecto:
 
 - `INFORME.html` — informe final con pregunta de investigación, recorrido experimental, matriz *heatmap* de resultados sobre los tres regímenes de evaluación, análisis y conclusiones.
+- `INFORME.pdf` — misma versión del informe en PDF.
 - `PROPUESTA_TP.html` — planteo original del TP.
 - `DATA_PIPELINE.html` — pipeline operativo de datos (captura, procesamiento con ODM, anotación en Roboflow).
 - `LABELING_GUIDELINES.html` — guías de anotación usadas por el equipo.
@@ -201,3 +195,11 @@ make clean-pycache         # elimina directorios __pycache__
 ## Referencias
 
 `references/` — bibliografía descargada (ver `references/README.md`).
+
+## Autoría
+
+Belén Cattaneo — Maestría en Inteligencia Artificial (MIA · FIUBA), 2026. En el marco del proyecto Lawal (HOT Open Call 2026).
+
+## Licencia
+
+MIT — ver [`LICENSE`](LICENSE).

@@ -69,7 +69,7 @@ decisión y la aplica igual a todas las imágenes.
 
 ## Después del etiquetado
 
-Pasame la carpeta exportada a `data/processed/dataset_coco_oracular/test/` y
-corro la evaluación de los modelos sobre ese *ground truth*. Comparo contra las
-métricas del *held-out* team actual para separar "capacidad del modelo" de
-"sesgo del evaluador".
+El export COCO queda en `data/processed/dataset_coco_oracular/test/`. La
+evaluación sobre ese *ground truth* se corre con `make eval-yolo` y
+`make eval-m2f` (o equivalentes) para separar "capacidad del modelo" de
+"sesgo del evaluador" comparando contra el *held-out* team.
