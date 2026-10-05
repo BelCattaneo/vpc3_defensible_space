@@ -186,8 +186,6 @@ Los targets `demo*` son atajos sobre los de arriba fijando `SECTOR=demo` y pesos
 
 - `INFORME.html` — informe final con pregunta de investigación, recorrido experimental, matriz *heatmap* de resultados sobre los tres regímenes de evaluación, análisis y conclusiones.
 - `INFORME.pdf` — misma versión del informe en PDF.
-- `PROPUESTA_TP.html` — planteo original del TP.
-- `DATA_PIPELINE.html` — pipeline operativo de datos (captura, procesamiento con ODM, anotación en Roboflow).
 - `LABELING_GUIDELINES.html` — guías de anotación usadas por el equipo.
 
 `reports/HISTORY.md` y `reports/EXPERIMENTS.md` guardan el historial detallado de *runs* con comandos reproducibles.
