@@ -91,7 +91,12 @@ class CocoSegDataset(Dataset):
         info = self.images[idx]
         img_path = self.split_dir / info["file_name"]
         image = np.array(Image.open(img_path).convert("RGB"))
-        h, w = info["height"], info["width"]
+        # Usar dimensiones reales del archivo en vez de la metadata COCO.
+        # Si Roboflow redimensiono la imagen durante el export, la metadata
+        # queda desincronizada y las mascaras rasterizadas quedan en una
+        # resolucion distinta a la de la imagen -> albumentations rompe
+        # o desalinea geometricamente.
+        h, w = image.shape[:2]
 
         class_labels: list[int] = []
         masks: list[np.ndarray] = []
