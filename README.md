@@ -1,6 +1,6 @@
 # TP Visión por Computadora III · Defensible Space
 
-Trabajo Práctico Final de Visión por Computadora III (CEIA · FIUBA).
+Trabajo Práctico Final de Visión por Computadora III (MIA · FIUBA).
 
 Detección automática de incumplimiento del protocolo municipal de *defensible space* (Zona 1, 2 m) en Villa La Angostura (Neuquén), sobre ortofotos de dron.
 
